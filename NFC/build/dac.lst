@@ -1,0 +1,596 @@
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccQBevIg.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"dac.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Core/Src/dac.c"
+  20              		.section	.text.MX_DAC_Init,"ax",%progbits
+  21              		.align	1
+  22              		.global	MX_DAC_Init
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	MX_DAC_Init:
+  28              	.LFB239:
+   1:Core/Src/dac.c **** /* USER CODE BEGIN Header */
+   2:Core/Src/dac.c **** /**
+   3:Core/Src/dac.c ****   ******************************************************************************
+   4:Core/Src/dac.c ****   * @file    dac.c
+   5:Core/Src/dac.c ****   * @brief   This file provides code for the configuration
+   6:Core/Src/dac.c ****   *          of the DAC instances.
+   7:Core/Src/dac.c ****   ******************************************************************************
+   8:Core/Src/dac.c ****   * @attention
+   9:Core/Src/dac.c ****   *
+  10:Core/Src/dac.c ****   * Copyright (c) 2026 STMicroelectronics.
+  11:Core/Src/dac.c ****   * All rights reserved.
+  12:Core/Src/dac.c ****   *
+  13:Core/Src/dac.c ****   * This software is licensed under terms that can be found in the LICENSE file
+  14:Core/Src/dac.c ****   * in the root directory of this software component.
+  15:Core/Src/dac.c ****   * If no LICENSE file comes with this software, it is provided AS-IS.
+  16:Core/Src/dac.c ****   *
+  17:Core/Src/dac.c ****   ******************************************************************************
+  18:Core/Src/dac.c ****   */
+  19:Core/Src/dac.c **** /* USER CODE END Header */
+  20:Core/Src/dac.c **** /* Includes ------------------------------------------------------------------*/
+  21:Core/Src/dac.c **** #include "dac.h"
+  22:Core/Src/dac.c **** 
+  23:Core/Src/dac.c **** /* USER CODE BEGIN 0 */
+  24:Core/Src/dac.c **** 
+  25:Core/Src/dac.c **** /* USER CODE END 0 */
+  26:Core/Src/dac.c **** 
+  27:Core/Src/dac.c **** DAC_HandleTypeDef hdac;
+  28:Core/Src/dac.c **** DMA_HandleTypeDef hdma_dac1;
+  29:Core/Src/dac.c **** 
+  30:Core/Src/dac.c **** /* DAC init function */
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccQBevIg.s 			page 2
+
+
+  31:Core/Src/dac.c **** void MX_DAC_Init(void)
+  32:Core/Src/dac.c **** {
+  29              		.loc 1 32 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 8
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 00B5     		push	{lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 4
+  36              		.cfi_offset 14, -4
+  37 0002 83B0     		sub	sp, sp, #12
+  38              	.LCFI1:
+  39              		.cfi_def_cfa_offset 16
+  33:Core/Src/dac.c **** 
+  34:Core/Src/dac.c ****   /* USER CODE BEGIN DAC_Init 0 */
+  35:Core/Src/dac.c **** 
+  36:Core/Src/dac.c ****   /* USER CODE END DAC_Init 0 */
+  37:Core/Src/dac.c **** 
+  38:Core/Src/dac.c ****   DAC_ChannelConfTypeDef sConfig = {0};
+  40              		.loc 1 38 3 view .LVU1
+  41              		.loc 1 38 26 is_stmt 0 view .LVU2
+  42 0004 0023     		movs	r3, #0
+  43 0006 0093     		str	r3, [sp]
+  44 0008 0193     		str	r3, [sp, #4]
+  39:Core/Src/dac.c **** 
+  40:Core/Src/dac.c ****   /* USER CODE BEGIN DAC_Init 1 */
+  41:Core/Src/dac.c **** 
+  42:Core/Src/dac.c ****   /* USER CODE END DAC_Init 1 */
+  43:Core/Src/dac.c **** 
+  44:Core/Src/dac.c ****   /** DAC Initialization
+  45:Core/Src/dac.c ****   */
+  46:Core/Src/dac.c ****   hdac.Instance = DAC;
+  45              		.loc 1 46 3 is_stmt 1 view .LVU3
+  46              		.loc 1 46 17 is_stmt 0 view .LVU4
+  47 000a 0C48     		ldr	r0, .L7
+  48 000c 0C4B     		ldr	r3, .L7+4
+  49 000e 0360     		str	r3, [r0]
+  47:Core/Src/dac.c ****   if (HAL_DAC_Init(&hdac) != HAL_OK)
+  50              		.loc 1 47 3 is_stmt 1 view .LVU5
+  51              		.loc 1 47 7 is_stmt 0 view .LVU6
+  52 0010 FFF7FEFF 		bl	HAL_DAC_Init
+  53              	.LVL0:
+  54              		.loc 1 47 6 discriminator 1 view .LVU7
+  55 0014 58B9     		cbnz	r0, .L5
+  56              	.L2:
+  48:Core/Src/dac.c ****   {
+  49:Core/Src/dac.c ****     Error_Handler();
+  50:Core/Src/dac.c ****   }
+  51:Core/Src/dac.c **** 
+  52:Core/Src/dac.c ****   /** DAC channel OUT1 config
+  53:Core/Src/dac.c ****   */
+  54:Core/Src/dac.c ****   sConfig.DAC_Trigger = DAC_TRIGGER_T2_TRGO;
+  57              		.loc 1 54 3 is_stmt 1 view .LVU8
+  58              		.loc 1 54 23 is_stmt 0 view .LVU9
+  59 0016 2423     		movs	r3, #36
+  60 0018 0093     		str	r3, [sp]
+  55:Core/Src/dac.c ****   sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccQBevIg.s 			page 3
+
+
+  61              		.loc 1 55 3 is_stmt 1 view .LVU10
+  62              		.loc 1 55 28 is_stmt 0 view .LVU11
+  63 001a 0022     		movs	r2, #0
+  64 001c 0192     		str	r2, [sp, #4]
+  56:Core/Src/dac.c ****   if (HAL_DAC_ConfigChannel(&hdac, &sConfig, DAC_CHANNEL_1) != HAL_OK)
+  65              		.loc 1 56 3 is_stmt 1 view .LVU12
+  66              		.loc 1 56 7 is_stmt 0 view .LVU13
+  67 001e 6946     		mov	r1, sp
+  68 0020 0648     		ldr	r0, .L7
+  69 0022 FFF7FEFF 		bl	HAL_DAC_ConfigChannel
+  70              	.LVL1:
+  71              		.loc 1 56 6 discriminator 1 view .LVU14
+  72 0026 28B9     		cbnz	r0, .L6
+  73              	.L1:
+  57:Core/Src/dac.c ****   {
+  58:Core/Src/dac.c ****     Error_Handler();
+  59:Core/Src/dac.c ****   }
+  60:Core/Src/dac.c ****   /* USER CODE BEGIN DAC_Init 2 */
+  61:Core/Src/dac.c **** 
+  62:Core/Src/dac.c ****   /* USER CODE END DAC_Init 2 */
+  63:Core/Src/dac.c **** 
+  64:Core/Src/dac.c **** }
+  74              		.loc 1 64 1 view .LVU15
+  75 0028 03B0     		add	sp, sp, #12
+  76              	.LCFI2:
+  77              		.cfi_remember_state
+  78              		.cfi_def_cfa_offset 4
+  79              		@ sp needed
+  80 002a 5DF804FB 		ldr	pc, [sp], #4
+  81              	.L5:
+  82              	.LCFI3:
+  83              		.cfi_restore_state
+  49:Core/Src/dac.c ****   }
+  84              		.loc 1 49 5 is_stmt 1 view .LVU16
+  85 002e FFF7FEFF 		bl	Error_Handler
+  86              	.LVL2:
+  87 0032 F0E7     		b	.L2
+  88              	.L6:
+  58:Core/Src/dac.c ****   }
+  89              		.loc 1 58 5 view .LVU17
+  90 0034 FFF7FEFF 		bl	Error_Handler
+  91              	.LVL3:
+  92              		.loc 1 64 1 is_stmt 0 view .LVU18
+  93 0038 F6E7     		b	.L1
+  94              	.L8:
+  95 003a 00BF     		.align	2
+  96              	.L7:
+  97 003c 00000000 		.word	hdac
+  98 0040 00740040 		.word	1073771520
+  99              		.cfi_endproc
+ 100              	.LFE239:
+ 102              		.section	.text.HAL_DAC_MspInit,"ax",%progbits
+ 103              		.align	1
+ 104              		.global	HAL_DAC_MspInit
+ 105              		.syntax unified
+ 106              		.thumb
+ 107              		.thumb_func
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccQBevIg.s 			page 4
+
+
+ 109              	HAL_DAC_MspInit:
+ 110              	.LVL4:
+ 111              	.LFB240:
+  65:Core/Src/dac.c **** 
+  66:Core/Src/dac.c **** void HAL_DAC_MspInit(DAC_HandleTypeDef* dacHandle)
+  67:Core/Src/dac.c **** {
+ 112              		.loc 1 67 1 is_stmt 1 view -0
+ 113              		.cfi_startproc
+ 114              		@ args = 0, pretend = 0, frame = 32
+ 115              		@ frame_needed = 0, uses_anonymous_args = 0
+ 116              		.loc 1 67 1 is_stmt 0 view .LVU20
+ 117 0000 30B5     		push	{r4, r5, lr}
+ 118              	.LCFI4:
+ 119              		.cfi_def_cfa_offset 12
+ 120              		.cfi_offset 4, -12
+ 121              		.cfi_offset 5, -8
+ 122              		.cfi_offset 14, -4
+ 123 0002 89B0     		sub	sp, sp, #36
+ 124              	.LCFI5:
+ 125              		.cfi_def_cfa_offset 48
+  68:Core/Src/dac.c **** 
+  69:Core/Src/dac.c ****   GPIO_InitTypeDef GPIO_InitStruct = {0};
+ 126              		.loc 1 69 3 is_stmt 1 view .LVU21
+ 127              		.loc 1 69 20 is_stmt 0 view .LVU22
+ 128 0004 0023     		movs	r3, #0
+ 129 0006 0393     		str	r3, [sp, #12]
+ 130 0008 0493     		str	r3, [sp, #16]
+ 131 000a 0593     		str	r3, [sp, #20]
+ 132 000c 0693     		str	r3, [sp, #24]
+ 133 000e 0793     		str	r3, [sp, #28]
+  70:Core/Src/dac.c ****   if(dacHandle->Instance==DAC)
+ 134              		.loc 1 70 3 is_stmt 1 view .LVU23
+ 135              		.loc 1 70 15 is_stmt 0 view .LVU24
+ 136 0010 0268     		ldr	r2, [r0]
+ 137              		.loc 1 70 5 view .LVU25
+ 138 0012 224B     		ldr	r3, .L15
+ 139 0014 9A42     		cmp	r2, r3
+ 140 0016 01D0     		beq	.L13
+ 141              	.LVL5:
+ 142              	.L9:
+  71:Core/Src/dac.c ****   {
+  72:Core/Src/dac.c ****   /* USER CODE BEGIN DAC_MspInit 0 */
+  73:Core/Src/dac.c **** 
+  74:Core/Src/dac.c ****   /* USER CODE END DAC_MspInit 0 */
+  75:Core/Src/dac.c ****     /* DAC clock enable */
+  76:Core/Src/dac.c ****     __HAL_RCC_DAC_CLK_ENABLE();
+  77:Core/Src/dac.c **** 
+  78:Core/Src/dac.c ****     __HAL_RCC_GPIOA_CLK_ENABLE();
+  79:Core/Src/dac.c ****     /**DAC GPIO Configuration
+  80:Core/Src/dac.c ****     PA4     ------> DAC_OUT1
+  81:Core/Src/dac.c ****     */
+  82:Core/Src/dac.c ****     GPIO_InitStruct.Pin = SPEAKER_Pin;
+  83:Core/Src/dac.c ****     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  84:Core/Src/dac.c ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+  85:Core/Src/dac.c ****     HAL_GPIO_Init(SPEAKER_GPIO_Port, &GPIO_InitStruct);
+  86:Core/Src/dac.c **** 
+  87:Core/Src/dac.c ****     /* DAC DMA Init */
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccQBevIg.s 			page 5
+
+
+  88:Core/Src/dac.c ****     /* DAC1 Init */
+  89:Core/Src/dac.c ****     hdma_dac1.Instance = DMA1_Stream5;
+  90:Core/Src/dac.c ****     hdma_dac1.Init.Channel = DMA_CHANNEL_7;
+  91:Core/Src/dac.c ****     hdma_dac1.Init.Direction = DMA_MEMORY_TO_PERIPH;
+  92:Core/Src/dac.c ****     hdma_dac1.Init.PeriphInc = DMA_PINC_DISABLE;
+  93:Core/Src/dac.c ****     hdma_dac1.Init.MemInc = DMA_MINC_ENABLE;
+  94:Core/Src/dac.c ****     hdma_dac1.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+  95:Core/Src/dac.c ****     hdma_dac1.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+  96:Core/Src/dac.c ****     hdma_dac1.Init.Mode = DMA_NORMAL;
+  97:Core/Src/dac.c ****     hdma_dac1.Init.Priority = DMA_PRIORITY_LOW;
+  98:Core/Src/dac.c ****     hdma_dac1.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+  99:Core/Src/dac.c ****     if (HAL_DMA_Init(&hdma_dac1) != HAL_OK)
+ 100:Core/Src/dac.c ****     {
+ 101:Core/Src/dac.c ****       Error_Handler();
+ 102:Core/Src/dac.c ****     }
+ 103:Core/Src/dac.c **** 
+ 104:Core/Src/dac.c ****     __HAL_LINKDMA(dacHandle,DMA_Handle1,hdma_dac1);
+ 105:Core/Src/dac.c **** 
+ 106:Core/Src/dac.c ****   /* USER CODE BEGIN DAC_MspInit 1 */
+ 107:Core/Src/dac.c **** 
+ 108:Core/Src/dac.c ****   /* USER CODE END DAC_MspInit 1 */
+ 109:Core/Src/dac.c ****   }
+ 110:Core/Src/dac.c **** }
+ 143              		.loc 1 110 1 view .LVU26
+ 144 0018 09B0     		add	sp, sp, #36
+ 145              	.LCFI6:
+ 146              		.cfi_remember_state
+ 147              		.cfi_def_cfa_offset 12
+ 148              		@ sp needed
+ 149 001a 30BD     		pop	{r4, r5, pc}
+ 150              	.LVL6:
+ 151              	.L13:
+ 152              	.LCFI7:
+ 153              		.cfi_restore_state
+ 154              		.loc 1 110 1 view .LVU27
+ 155 001c 0446     		mov	r4, r0
+  76:Core/Src/dac.c **** 
+ 156              		.loc 1 76 5 is_stmt 1 view .LVU28
+ 157              	.LBB2:
+  76:Core/Src/dac.c **** 
+ 158              		.loc 1 76 5 view .LVU29
+ 159 001e 0025     		movs	r5, #0
+ 160 0020 0195     		str	r5, [sp, #4]
+  76:Core/Src/dac.c **** 
+ 161              		.loc 1 76 5 view .LVU30
+ 162 0022 03F5E233 		add	r3, r3, #115712
+ 163 0026 1A6C     		ldr	r2, [r3, #64]
+ 164 0028 42F00052 		orr	r2, r2, #536870912
+ 165 002c 1A64     		str	r2, [r3, #64]
+  76:Core/Src/dac.c **** 
+ 166              		.loc 1 76 5 view .LVU31
+ 167 002e 1A6C     		ldr	r2, [r3, #64]
+ 168 0030 02F00052 		and	r2, r2, #536870912
+ 169 0034 0192     		str	r2, [sp, #4]
+  76:Core/Src/dac.c **** 
+ 170              		.loc 1 76 5 view .LVU32
+ 171 0036 019A     		ldr	r2, [sp, #4]
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccQBevIg.s 			page 6
+
+
+ 172              	.LBE2:
+  76:Core/Src/dac.c **** 
+ 173              		.loc 1 76 5 view .LVU33
+  78:Core/Src/dac.c ****     /**DAC GPIO Configuration
+ 174              		.loc 1 78 5 view .LVU34
+ 175              	.LBB3:
+  78:Core/Src/dac.c ****     /**DAC GPIO Configuration
+ 176              		.loc 1 78 5 view .LVU35
+ 177 0038 0295     		str	r5, [sp, #8]
+  78:Core/Src/dac.c ****     /**DAC GPIO Configuration
+ 178              		.loc 1 78 5 view .LVU36
+ 179 003a 1A6B     		ldr	r2, [r3, #48]
+ 180 003c 42F00102 		orr	r2, r2, #1
+ 181 0040 1A63     		str	r2, [r3, #48]
+  78:Core/Src/dac.c ****     /**DAC GPIO Configuration
+ 182              		.loc 1 78 5 view .LVU37
+ 183 0042 1B6B     		ldr	r3, [r3, #48]
+ 184 0044 03F00103 		and	r3, r3, #1
+ 185 0048 0293     		str	r3, [sp, #8]
+  78:Core/Src/dac.c ****     /**DAC GPIO Configuration
+ 186              		.loc 1 78 5 view .LVU38
+ 187 004a 029B     		ldr	r3, [sp, #8]
+ 188              	.LBE3:
+  78:Core/Src/dac.c ****     /**DAC GPIO Configuration
+ 189              		.loc 1 78 5 view .LVU39
+  82:Core/Src/dac.c ****     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+ 190              		.loc 1 82 5 view .LVU40
+  82:Core/Src/dac.c ****     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+ 191              		.loc 1 82 25 is_stmt 0 view .LVU41
+ 192 004c 1023     		movs	r3, #16
+ 193 004e 0393     		str	r3, [sp, #12]
+  83:Core/Src/dac.c ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 194              		.loc 1 83 5 is_stmt 1 view .LVU42
+  83:Core/Src/dac.c ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 195              		.loc 1 83 26 is_stmt 0 view .LVU43
+ 196 0050 0323     		movs	r3, #3
+ 197 0052 0493     		str	r3, [sp, #16]
+  84:Core/Src/dac.c ****     HAL_GPIO_Init(SPEAKER_GPIO_Port, &GPIO_InitStruct);
+ 198              		.loc 1 84 5 is_stmt 1 view .LVU44
+  85:Core/Src/dac.c **** 
+ 199              		.loc 1 85 5 view .LVU45
+ 200 0054 03A9     		add	r1, sp, #12
+ 201 0056 1248     		ldr	r0, .L15+4
+ 202              	.LVL7:
+  85:Core/Src/dac.c **** 
+ 203              		.loc 1 85 5 is_stmt 0 view .LVU46
+ 204 0058 FFF7FEFF 		bl	HAL_GPIO_Init
+ 205              	.LVL8:
+  89:Core/Src/dac.c ****     hdma_dac1.Init.Channel = DMA_CHANNEL_7;
+ 206              		.loc 1 89 5 is_stmt 1 view .LVU47
+  89:Core/Src/dac.c ****     hdma_dac1.Init.Channel = DMA_CHANNEL_7;
+ 207              		.loc 1 89 24 is_stmt 0 view .LVU48
+ 208 005c 1148     		ldr	r0, .L15+8
+ 209 005e 124B     		ldr	r3, .L15+12
+ 210 0060 0360     		str	r3, [r0]
+  90:Core/Src/dac.c ****     hdma_dac1.Init.Direction = DMA_MEMORY_TO_PERIPH;
+ 211              		.loc 1 90 5 is_stmt 1 view .LVU49
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccQBevIg.s 			page 7
+
+
+  90:Core/Src/dac.c ****     hdma_dac1.Init.Direction = DMA_MEMORY_TO_PERIPH;
+ 212              		.loc 1 90 28 is_stmt 0 view .LVU50
+ 213 0062 4FF06063 		mov	r3, #234881024
+ 214 0066 4360     		str	r3, [r0, #4]
+  91:Core/Src/dac.c ****     hdma_dac1.Init.PeriphInc = DMA_PINC_DISABLE;
+ 215              		.loc 1 91 5 is_stmt 1 view .LVU51
+  91:Core/Src/dac.c ****     hdma_dac1.Init.PeriphInc = DMA_PINC_DISABLE;
+ 216              		.loc 1 91 30 is_stmt 0 view .LVU52
+ 217 0068 4023     		movs	r3, #64
+ 218 006a 8360     		str	r3, [r0, #8]
+  92:Core/Src/dac.c ****     hdma_dac1.Init.MemInc = DMA_MINC_ENABLE;
+ 219              		.loc 1 92 5 is_stmt 1 view .LVU53
+  92:Core/Src/dac.c ****     hdma_dac1.Init.MemInc = DMA_MINC_ENABLE;
+ 220              		.loc 1 92 30 is_stmt 0 view .LVU54
+ 221 006c C560     		str	r5, [r0, #12]
+  93:Core/Src/dac.c ****     hdma_dac1.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+ 222              		.loc 1 93 5 is_stmt 1 view .LVU55
+  93:Core/Src/dac.c ****     hdma_dac1.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+ 223              		.loc 1 93 27 is_stmt 0 view .LVU56
+ 224 006e 4FF48063 		mov	r3, #1024
+ 225 0072 0361     		str	r3, [r0, #16]
+  94:Core/Src/dac.c ****     hdma_dac1.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+ 226              		.loc 1 94 5 is_stmt 1 view .LVU57
+  94:Core/Src/dac.c ****     hdma_dac1.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+ 227              		.loc 1 94 40 is_stmt 0 view .LVU58
+ 228 0074 4FF40063 		mov	r3, #2048
+ 229 0078 4361     		str	r3, [r0, #20]
+  95:Core/Src/dac.c ****     hdma_dac1.Init.Mode = DMA_NORMAL;
+ 230              		.loc 1 95 5 is_stmt 1 view .LVU59
+  95:Core/Src/dac.c ****     hdma_dac1.Init.Mode = DMA_NORMAL;
+ 231              		.loc 1 95 37 is_stmt 0 view .LVU60
+ 232 007a 4FF40053 		mov	r3, #8192
+ 233 007e 8361     		str	r3, [r0, #24]
+  96:Core/Src/dac.c ****     hdma_dac1.Init.Priority = DMA_PRIORITY_LOW;
+ 234              		.loc 1 96 5 is_stmt 1 view .LVU61
+  96:Core/Src/dac.c ****     hdma_dac1.Init.Priority = DMA_PRIORITY_LOW;
+ 235              		.loc 1 96 25 is_stmt 0 view .LVU62
+ 236 0080 C561     		str	r5, [r0, #28]
+  97:Core/Src/dac.c ****     hdma_dac1.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+ 237              		.loc 1 97 5 is_stmt 1 view .LVU63
+  97:Core/Src/dac.c ****     hdma_dac1.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+ 238              		.loc 1 97 29 is_stmt 0 view .LVU64
+ 239 0082 0562     		str	r5, [r0, #32]
+  98:Core/Src/dac.c ****     if (HAL_DMA_Init(&hdma_dac1) != HAL_OK)
+ 240              		.loc 1 98 5 is_stmt 1 view .LVU65
+  98:Core/Src/dac.c ****     if (HAL_DMA_Init(&hdma_dac1) != HAL_OK)
+ 241              		.loc 1 98 29 is_stmt 0 view .LVU66
+ 242 0084 4562     		str	r5, [r0, #36]
+  99:Core/Src/dac.c ****     {
+ 243              		.loc 1 99 5 is_stmt 1 view .LVU67
+  99:Core/Src/dac.c ****     {
+ 244              		.loc 1 99 9 is_stmt 0 view .LVU68
+ 245 0086 FFF7FEFF 		bl	HAL_DMA_Init
+ 246              	.LVL9:
+  99:Core/Src/dac.c ****     {
+ 247              		.loc 1 99 8 discriminator 1 view .LVU69
+ 248 008a 18B9     		cbnz	r0, .L14
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccQBevIg.s 			page 8
+
+
+ 249              	.L11:
+ 104:Core/Src/dac.c **** 
+ 250              		.loc 1 104 5 is_stmt 1 view .LVU70
+ 104:Core/Src/dac.c **** 
+ 251              		.loc 1 104 5 view .LVU71
+ 252 008c 054B     		ldr	r3, .L15+8
+ 253 008e A360     		str	r3, [r4, #8]
+ 104:Core/Src/dac.c **** 
+ 254              		.loc 1 104 5 view .LVU72
+ 255 0090 9C63     		str	r4, [r3, #56]
+ 104:Core/Src/dac.c **** 
+ 256              		.loc 1 104 5 discriminator 1 view .LVU73
+ 257              		.loc 1 110 1 is_stmt 0 view .LVU74
+ 258 0092 C1E7     		b	.L9
+ 259              	.L14:
+ 101:Core/Src/dac.c ****     }
+ 260              		.loc 1 101 7 is_stmt 1 view .LVU75
+ 261 0094 FFF7FEFF 		bl	Error_Handler
+ 262              	.LVL10:
+ 263 0098 F8E7     		b	.L11
+ 264              	.L16:
+ 265 009a 00BF     		.align	2
+ 266              	.L15:
+ 267 009c 00740040 		.word	1073771520
+ 268 00a0 00000240 		.word	1073872896
+ 269 00a4 00000000 		.word	hdma_dac1
+ 270 00a8 88600240 		.word	1073897608
+ 271              		.cfi_endproc
+ 272              	.LFE240:
+ 274              		.section	.text.HAL_DAC_MspDeInit,"ax",%progbits
+ 275              		.align	1
+ 276              		.global	HAL_DAC_MspDeInit
+ 277              		.syntax unified
+ 278              		.thumb
+ 279              		.thumb_func
+ 281              	HAL_DAC_MspDeInit:
+ 282              	.LVL11:
+ 283              	.LFB241:
+ 111:Core/Src/dac.c **** 
+ 112:Core/Src/dac.c **** void HAL_DAC_MspDeInit(DAC_HandleTypeDef* dacHandle)
+ 113:Core/Src/dac.c **** {
+ 284              		.loc 1 113 1 view -0
+ 285              		.cfi_startproc
+ 286              		@ args = 0, pretend = 0, frame = 0
+ 287              		@ frame_needed = 0, uses_anonymous_args = 0
+ 114:Core/Src/dac.c **** 
+ 115:Core/Src/dac.c ****   if(dacHandle->Instance==DAC)
+ 288              		.loc 1 115 3 view .LVU77
+ 289              		.loc 1 115 15 is_stmt 0 view .LVU78
+ 290 0000 0268     		ldr	r2, [r0]
+ 291              		.loc 1 115 5 view .LVU79
+ 292 0002 094B     		ldr	r3, .L24
+ 293 0004 9A42     		cmp	r2, r3
+ 294 0006 00D0     		beq	.L23
+ 295 0008 7047     		bx	lr
+ 296              	.L23:
+ 113:Core/Src/dac.c **** 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccQBevIg.s 			page 9
+
+
+ 297              		.loc 1 113 1 view .LVU80
+ 298 000a 10B5     		push	{r4, lr}
+ 299              	.LCFI8:
+ 300              		.cfi_def_cfa_offset 8
+ 301              		.cfi_offset 4, -8
+ 302              		.cfi_offset 14, -4
+ 303 000c 0446     		mov	r4, r0
+ 116:Core/Src/dac.c ****   {
+ 117:Core/Src/dac.c ****   /* USER CODE BEGIN DAC_MspDeInit 0 */
+ 118:Core/Src/dac.c **** 
+ 119:Core/Src/dac.c ****   /* USER CODE END DAC_MspDeInit 0 */
+ 120:Core/Src/dac.c ****     /* Peripheral clock disable */
+ 121:Core/Src/dac.c ****     __HAL_RCC_DAC_CLK_DISABLE();
+ 304              		.loc 1 121 5 is_stmt 1 view .LVU81
+ 305 000e 074A     		ldr	r2, .L24+4
+ 306 0010 136C     		ldr	r3, [r2, #64]
+ 307 0012 23F00053 		bic	r3, r3, #536870912
+ 308 0016 1364     		str	r3, [r2, #64]
+ 122:Core/Src/dac.c **** 
+ 123:Core/Src/dac.c ****     /**DAC GPIO Configuration
+ 124:Core/Src/dac.c ****     PA4     ------> DAC_OUT1
+ 125:Core/Src/dac.c ****     */
+ 126:Core/Src/dac.c ****     HAL_GPIO_DeInit(SPEAKER_GPIO_Port, SPEAKER_Pin);
+ 309              		.loc 1 126 5 view .LVU82
+ 310 0018 1021     		movs	r1, #16
+ 311 001a 0548     		ldr	r0, .L24+8
+ 312              	.LVL12:
+ 313              		.loc 1 126 5 is_stmt 0 view .LVU83
+ 314 001c FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 315              	.LVL13:
+ 127:Core/Src/dac.c **** 
+ 128:Core/Src/dac.c ****     /* DAC DMA DeInit */
+ 129:Core/Src/dac.c ****     HAL_DMA_DeInit(dacHandle->DMA_Handle1);
+ 316              		.loc 1 129 5 is_stmt 1 view .LVU84
+ 317 0020 A068     		ldr	r0, [r4, #8]
+ 318 0022 FFF7FEFF 		bl	HAL_DMA_DeInit
+ 319              	.LVL14:
+ 130:Core/Src/dac.c ****   /* USER CODE BEGIN DAC_MspDeInit 1 */
+ 131:Core/Src/dac.c **** 
+ 132:Core/Src/dac.c ****   /* USER CODE END DAC_MspDeInit 1 */
+ 133:Core/Src/dac.c ****   }
+ 134:Core/Src/dac.c **** }
+ 320              		.loc 1 134 1 is_stmt 0 view .LVU85
+ 321 0026 10BD     		pop	{r4, pc}
+ 322              	.LVL15:
+ 323              	.L25:
+ 324              		.loc 1 134 1 view .LVU86
+ 325              		.align	2
+ 326              	.L24:
+ 327 0028 00740040 		.word	1073771520
+ 328 002c 00380240 		.word	1073887232
+ 329 0030 00000240 		.word	1073872896
+ 330              		.cfi_endproc
+ 331              	.LFE241:
+ 333              		.global	hdma_dac1
+ 334              		.section	.bss.hdma_dac1,"aw",%nobits
+ 335              		.align	2
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccQBevIg.s 			page 10
+
+
+ 338              	hdma_dac1:
+ 339 0000 00000000 		.space	96
+ 339      00000000 
+ 339      00000000 
+ 339      00000000 
+ 339      00000000 
+ 340              		.global	hdac
+ 341              		.section	.bss.hdac,"aw",%nobits
+ 342              		.align	2
+ 345              	hdac:
+ 346 0000 00000000 		.space	20
+ 346      00000000 
+ 346      00000000 
+ 346      00000000 
+ 346      00000000 
+ 347              		.text
+ 348              	.Letext0:
+ 349              		.file 2 "E:/STM32/Tools/arm-none-eabi-gcc/14.2.1-1.1.1/.content/arm-none-eabi/include/machine/_def
+ 350              		.file 3 "E:/STM32/Tools/arm-none-eabi-gcc/14.2.1-1.1.1/.content/arm-none-eabi/include/sys/_stdint.
+ 351              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 352              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 353              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 354              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 355              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dac.h"
+ 356              		.file 9 "Core/Inc/dac.h"
+ 357              		.file 10 "Core/Inc/main.h"
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccQBevIg.s 			page 11
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 dac.c
+C:\Users\24120\AppData\Local\Temp\ccQBevIg.s:21     .text.MX_DAC_Init:00000000 $t
+C:\Users\24120\AppData\Local\Temp\ccQBevIg.s:27     .text.MX_DAC_Init:00000000 MX_DAC_Init
+C:\Users\24120\AppData\Local\Temp\ccQBevIg.s:97     .text.MX_DAC_Init:0000003c $d
+C:\Users\24120\AppData\Local\Temp\ccQBevIg.s:345    .bss.hdac:00000000 hdac
+C:\Users\24120\AppData\Local\Temp\ccQBevIg.s:103    .text.HAL_DAC_MspInit:00000000 $t
+C:\Users\24120\AppData\Local\Temp\ccQBevIg.s:109    .text.HAL_DAC_MspInit:00000000 HAL_DAC_MspInit
+C:\Users\24120\AppData\Local\Temp\ccQBevIg.s:267    .text.HAL_DAC_MspInit:0000009c $d
+C:\Users\24120\AppData\Local\Temp\ccQBevIg.s:338    .bss.hdma_dac1:00000000 hdma_dac1
+C:\Users\24120\AppData\Local\Temp\ccQBevIg.s:275    .text.HAL_DAC_MspDeInit:00000000 $t
+C:\Users\24120\AppData\Local\Temp\ccQBevIg.s:281    .text.HAL_DAC_MspDeInit:00000000 HAL_DAC_MspDeInit
+C:\Users\24120\AppData\Local\Temp\ccQBevIg.s:327    .text.HAL_DAC_MspDeInit:00000028 $d
+C:\Users\24120\AppData\Local\Temp\ccQBevIg.s:335    .bss.hdma_dac1:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccQBevIg.s:342    .bss.hdac:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_DAC_Init
+HAL_DAC_ConfigChannel
+Error_Handler
+HAL_GPIO_Init
+HAL_DMA_Init
+HAL_GPIO_DeInit
+HAL_DMA_DeInit

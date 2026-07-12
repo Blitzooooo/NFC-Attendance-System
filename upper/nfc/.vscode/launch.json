@@ -1,0 +1,69 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "NFC 考勤系统 (Debug)",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/debug",
+      "environment": [],
+      "externalConsole": true,
+      "program": "${workspaceFolder}/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/debug/NfcAttendanceHost.exe",
+      "MIMode": "gdb",
+      "miDebuggerPath": "D:/Qt/Tools/mingw1310_64/bin/gdb.exe",
+      "setupCommands": [
+        {
+          "description": "为 gdb 启用整齐打印",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        },
+        {
+          "description": "跳过 Qt 源码",
+          "text": "skip -gfi D:/Qt/6.11.1/**/*.cpp",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "NFC 考勤系统 (Release)",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/release",
+      "environment": [],
+      "externalConsole": true,
+      "program": "${workspaceFolder}/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/release/NfcAttendanceHost.exe",
+      "MIMode": "gdb",
+      "miDebuggerPath": "D:/Qt/Tools/mingw1310_64/bin/gdb.exe",
+      "setupCommands": [
+        {
+          "description": "为 gdb 启用整齐打印",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": true,
+      "cwd": "d:/Project/NFC_SyS/upper/nfc",
+      "program": "d:/Project/NFC_SyS/upper/nfc/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "D:/Qt/Tools/mingw1310_64/bin/gdb.exe",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}

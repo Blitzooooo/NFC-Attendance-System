@@ -1,0 +1,55 @@
+{
+  "C_Cpp_Runner.cCompilerPath": "D:/Qt/Tools/mingw1310_64/bin/gcc.exe",
+  "C_Cpp_Runner.cppCompilerPath": "D:/Qt/Tools/mingw1310_64/bin/g++.exe",
+  "C_Cpp_Runner.debuggerPath": "D:/Qt/Tools/mingw1310_64/bin/gdb.exe",
+  "C_Cpp_Runner.cStandard": "c17",
+  "C_Cpp_Runner.cppStandard": "c++17",
+  "C_Cpp_Runner.msvcBatchPath": "",
+  "C_Cpp_Runner.useMsvc": false,
+  "C_Cpp_Runner.warnings": [
+    "-Wall",
+    "-Wextra",
+    "-Wshadow",
+    "-Wformat=2",
+    "-Wconversion",
+    "-Wnull-dereference"
+  ],
+  "C_Cpp_Runner.enableWarnings": true,
+  "C_Cpp_Runner.warningsAsError": false,
+  "C_Cpp_Runner.compilerArgs": [
+    "-std=gnu++1z"
+  ],
+  "C_Cpp_Runner.linkerArgs": [],
+  "C_Cpp_Runner.includePaths": [
+    "${workspaceFolder}/**",
+    "D:/Qt/6.11.1/mingw_64/include",
+    "D:/Qt/6.11.1/mingw_64/include/QtCore",
+    "D:/Qt/6.11.1/mingw_64/include/QtGui",
+    "D:/Qt/6.11.1/mingw_64/include/QtWidgets",
+    "D:/Qt/6.11.1/mingw_64/include/QtSerialPort",
+    "D:/Qt/6.11.1/mingw_64/include/QtSql"
+  ],
+  "C_Cpp_Runner.includeSearch": [
+    "*",
+    "**/*"
+  ],
+  "C_Cpp_Runner.excludeSearch": [
+    "**/build",
+    "**/build/**",
+    "**/.*",
+    "**/.*/**",
+    "**/.vscode",
+    "**/.vscode/**"
+  ],
+  "C_Cpp_Runner.useAddressSanitizer": false,
+  "C_Cpp_Runner.useUndefinedSanitizer": false,
+  "C_Cpp_Runner.useLeakSanitizer": false,
+  "C_Cpp_Runner.showCompilationTime": false,
+  "C_Cpp_Runner.useLinkTimeOptimization": false,
+  "C_Cpp_Runner.msvcSecureNoWarnings": false,
+  "files.associations": {
+    "*.pro": "qmake",
+    "*.pri": "qmake"
+  },
+  "cmake.configureOnOpen": false
+}

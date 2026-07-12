@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: 0BSD
+# Author: Lasse Collin
+
+prefix=/__w/arm-none-eabi-gcc-xpack/arm-none-eabi-gcc-xpack/build-assets/build/win32-x64/x86_64-pc-linux-gnu/install
+exec_prefix=/__w/arm-none-eabi-gcc-xpack/arm-none-eabi-gcc-xpack/build-assets/build/win32-x64/x86_64-pc-linux-gnu/install
+libdir=/__w/arm-none-eabi-gcc-xpack/arm-none-eabi-gcc-xpack/build-assets/build/win32-x64/x86_64-pc-linux-gnu/install/lib
+includedir=/__w/arm-none-eabi-gcc-xpack/arm-none-eabi-gcc-xpack/build-assets/build/win32-x64/x86_64-pc-linux-gnu/install/include
+
+Name: liblzma
+Description: General purpose data compression library
+URL: https://tukaani.org/xz/
+Version: 5.6.3
+Cflags: -I${includedir}
+Cflags.private: -DLZMA_API_STATIC
+Libs: -L${libdir} -llzma
+Libs.private: -pthread -lpthread 

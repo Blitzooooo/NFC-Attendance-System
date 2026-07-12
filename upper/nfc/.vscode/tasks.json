@@ -1,0 +1,95 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "qmake (Debug)",
+      "type": "shell",
+      "command": "D:/Qt/6.11.1/mingw_64/bin/qmake.exe",
+      "args": [
+        "${workspaceFolder}/NfcAttendanceHost.pro",
+        "-spec", "win32-g++",
+        "CONFIG+=debug",
+        "CONFIG+=qml_debug"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug"
+      },
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "qmake (Release)",
+      "type": "shell",
+      "command": "D:/Qt/6.11.1/mingw_64/bin/qmake.exe",
+      "args": [
+        "${workspaceFolder}/NfcAttendanceHost.pro",
+        "-spec", "win32-g++",
+        "CONFIG+=release"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug"
+      },
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "make (Debug)",
+      "type": "shell",
+      "command": "D:/Qt/Tools/mingw1310_64/bin/mingw32-make.exe",
+      "args": [
+        "-f", "Makefile.Debug"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": "build",
+      "dependsOn": ["qmake (Debug)"]
+    },
+    {
+      "label": "make (Release)",
+      "type": "shell",
+      "command": "D:/Qt/Tools/mingw1310_64/bin/mingw32-make.exe",
+      "args": [
+        "-f", "Makefile.Release"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": "build",
+      "dependsOn": ["qmake (Release)"]
+    },
+    {
+      "label": "完整构建 (Debug)",
+      "dependsOrder": "sequence",
+      "dependsOn": ["qmake (Debug)", "make (Debug)"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "完整构建 (Release)",
+      "dependsOrder": "sequence",
+      "dependsOn": ["qmake (Release)", "make (Release)"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "清理构建",
+      "type": "shell",
+      "command": "D:/Qt/Tools/mingw1310_64/bin/mingw32-make.exe",
+      "args": ["-f", "Makefile", "distclean"],
+      "options": {
+        "cwd": "${workspaceFolder}/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

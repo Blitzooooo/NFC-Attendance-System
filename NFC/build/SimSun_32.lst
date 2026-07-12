@@ -1,0 +1,3638 @@
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"SimSun_32.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "BSP/SimSun_32.c"
+  20              		.global	GUI_FontHZ_SimSun_32
+  21              		.section	.rodata.GUI_FontHZ_SimSun_32,"a"
+  22              		.align	2
+  25              	GUI_FontHZ_SimSun_32:
+  26 0000 00000000 		.word	GUIPROP_DispChar
+  27 0004 00000000 		.word	GUIPROP_GetCharDistX
+  28 0008 00000000 		.word	GUIPROP_GetFontInfo
+  29 000c 00000000 		.word	GUIPROP_IsInFont
+  30 0010 00000000 		.word	0
+  31 0014 20       		.byte	32
+  32 0015 20       		.byte	32
+  33 0016 01       		.byte	1
+  34 0017 01       		.byte	1
+  35 0018 00000000 		.word	GUI_FontHZSimSun_32_Prop0020
+  36 001c 00       		.byte	0
+  37 001d 00       		.byte	0
+  38 001e 00       		.byte	0
+  39 001f 00       		.space	1
+  40 0020 00000000 		.word	GUI_FontHZSimSun_32_GBKMap
+  41 0024 0A000000 		.word	10
+  42              		.global	GUI_FontHZSimSun_32_Prop0020
+  43              		.section	.rodata.GUI_FontHZSimSun_32_Prop0020,"a"
+  44              		.align	2
+  47              	GUI_FontHZSimSun_32_Prop0020:
+  48 0000 2000     		.short	32
+  49 0002 7F00     		.short	127
+  50 0004 00000000 		.word	GUI_FontHZSimSun_32_CharInfo
+  51 0008 00000000 		.word	GUI_FontHZSimSun_32_Propb4f3
+  52              		.global	GUI_FontHZSimSun_32_Propb4f3
+  53              		.section	.rodata.GUI_FontHZSimSun_32_Propb4f3,"a"
+  54              		.align	2
+  57              	GUI_FontHZSimSun_32_Propb4f3:
+  58 0000 F3B4     		.short	-19213
+  59 0002 F3B4     		.short	-19213
+  60 0004 00030000 		.word	GUI_FontHZSimSun_32_CharInfo+768
+  61 0008 00000000 		.word	GUI_FontHZSimSun_32_Propb5e7
+  62              		.global	GUI_FontHZSimSun_32_Propb5e7
+  63              		.section	.rodata.GUI_FontHZSimSun_32_Propb5e7,"a"
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 2
+
+
+  64              		.align	2
+  67              	GUI_FontHZSimSun_32_Propb5e7:
+  68 0000 E7B5     		.short	-18969
+  69 0002 E7B5     		.short	-18969
+  70 0004 08030000 		.word	GUI_FontHZSimSun_32_CharInfo+776
+  71 0008 00000000 		.word	GUI_FontHZSimSun_32_Propbabc
+  72              		.global	GUI_FontHZSimSun_32_Propbabc
+  73              		.section	.rodata.GUI_FontHZSimSun_32_Propbabc,"a"
+  74              		.align	2
+  77              	GUI_FontHZSimSun_32_Propbabc:
+  78 0000 BCBA     		.short	-17732
+  79 0002 BCBA     		.short	-17732
+  80 0004 10030000 		.word	GUI_FontHZSimSun_32_CharInfo+784
+  81 0008 00000000 		.word	GUI_FontHZSimSun_32_Propbcbc
+  82              		.global	GUI_FontHZSimSun_32_Propbcbc
+  83              		.section	.rodata.GUI_FontHZSimSun_32_Propbcbc,"a"
+  84              		.align	2
+  87              	GUI_FontHZSimSun_32_Propbcbc:
+  88 0000 BCBC     		.short	-17220
+  89 0002 BCBC     		.short	-17220
+  90 0004 18030000 		.word	GUI_FontHZSimSun_32_CharInfo+792
+  91 0008 00000000 		.word	GUI_FontHZSimSun_32_Propbfc6
+  92              		.global	GUI_FontHZSimSun_32_Propbfc6
+  93              		.section	.rodata.GUI_FontHZSimSun_32_Propbfc6,"a"
+  94              		.align	2
+  97              	GUI_FontHZSimSun_32_Propbfc6:
+  98 0000 C6BF     		.short	-16442
+  99 0002 C6BF     		.short	-16442
+ 100 0004 20030000 		.word	GUI_FontHZSimSun_32_CharInfo+800
+ 101 0008 00000000 		.word	GUI_FontHZSimSun_32_Propd1a7
+ 102              		.global	GUI_FontHZSimSun_32_Propd1a7
+ 103              		.section	.rodata.GUI_FontHZSimSun_32_Propd1a7,"a"
+ 104              		.align	2
+ 107              	GUI_FontHZSimSun_32_Propd1a7:
+ 108 0000 A7D1     		.short	-11865
+ 109 0002 A7D1     		.short	-11865
+ 110 0004 28030000 		.word	GUI_FontHZSimSun_32_CharInfo+808
+ 111 0008 00000000 		.word	GUI_FontHZSimSun_32_Propd4f8
+ 112              		.global	GUI_FontHZSimSun_32_Propd4f8
+ 113              		.section	.rodata.GUI_FontHZSimSun_32_Propd4f8,"a"
+ 114              		.align	2
+ 117              	GUI_FontHZSimSun_32_Propd4f8:
+ 118 0000 F8D4     		.short	-11016
+ 119 0002 F8D4     		.short	-11016
+ 120 0004 30030000 		.word	GUI_FontHZSimSun_32_CharInfo+816
+ 121 0008 00000000 		.word	GUI_FontHZSimSun_32_Propd6dd
+ 122              		.global	GUI_FontHZSimSun_32_Propd6dd
+ 123              		.section	.rodata.GUI_FontHZSimSun_32_Propd6dd,"a"
+ 124              		.align	2
+ 127              	GUI_FontHZSimSun_32_Propd6dd:
+ 128 0000 DDD6     		.short	-10531
+ 129 0002 DDD6     		.short	-10531
+ 130 0004 38030000 		.word	GUI_FontHZSimSun_32_CharInfo+824
+ 131 0008 00000000 		.word	GUI_FontHZSimSun_32_Propd7d3
+ 132              		.global	GUI_FontHZSimSun_32_Propd7d3
+ 133              		.section	.rodata.GUI_FontHZSimSun_32_Propd7d3,"a"
+ 134              		.align	2
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 3
+
+
+ 137              	GUI_FontHZSimSun_32_Propd7d3:
+ 138 0000 D3D7     		.short	-10285
+ 139 0002 D3D7     		.short	-10285
+ 140 0004 40030000 		.word	GUI_FontHZSimSun_32_CharInfo+832
+ 141 0008 00000000 		.word	GUI_FontHZSimSun_32_Propd8b9
+ 142              		.global	GUI_FontHZSimSun_32_Propd8b9
+ 143              		.section	.rodata.GUI_FontHZSimSun_32_Propd8b9,"a"
+ 144              		.align	2
+ 147              	GUI_FontHZSimSun_32_Propd8b9:
+ 148 0000 B9D8     		.short	-10055
+ 149 0002 B9D8     		.short	-10055
+ 150 0004 48030000 		.word	GUI_FontHZSimSun_32_CharInfo+840
+ 151 0008 00000000 		.word	0
+ 152              		.global	GUI_FontHZSimSun_32_GBKMap
+ 153              		.section	.rodata.GUI_FontHZSimSun_32_GBKMap,"a"
+ 154              		.align	2
+ 157              	GUI_FontHZSimSun_32_GBKMap:
+ 158 0000 E5A4A700 		.ascii	"\345\244\247\000"
+ 159 0004 03       		.byte	3
+ 160 0005 B4F3     		.ascii	"\264\363"
+ 161 0007 02       		.byte	2
+ 162 0008 E5AD9000 		.ascii	"\345\255\220\000"
+ 163 000c 03       		.byte	3
+ 164 000d D7D3     		.ascii	"\327\323"
+ 165 000f 02       		.byte	2
+ 166 0010 E5ADA600 		.ascii	"\345\255\246\000"
+ 167 0014 03       		.byte	3
+ 168 0015 D1A7     		.ascii	"\321\247"
+ 169 0017 02       		.byte	2
+ 170 0018 E5B79E00 		.ascii	"\345\267\236\000"
+ 171 001c 03       		.byte	3
+ 172 001d D6DD     		.ascii	"\326\335"
+ 173 001f 02       		.byte	2
+ 174 0020 E68A8000 		.ascii	"\346\212\200\000"
+ 175 0024 03       		.byte	3
+ 176 0025 BCBC     		.ascii	"\274\274"
+ 177 0027 02       		.byte	2
+ 178 0028 E69BBE00 		.ascii	"\346\233\276\000"
+ 179 002c 03       		.byte	3
+ 180 002d D4F8     		.ascii	"\324\370"
+ 181 002f 02       		.byte	2
+ 182 0030 E69DAD00 		.ascii	"\346\235\255\000"
+ 183 0034 03       		.byte	3
+ 184 0035 BABC     		.ascii	"\272\274"
+ 185 0037 02       		.byte	2
+ 186 0038 E6AF9300 		.ascii	"\346\257\223\000"
+ 187 003c 03       		.byte	3
+ 188 003d D8B9     		.ascii	"\330\271"
+ 189 003f 02       		.byte	2
+ 190 0040 E794B500 		.ascii	"\347\224\265\000"
+ 191 0044 03       		.byte	3
+ 192 0045 B5E7     		.ascii	"\265\347"
+ 193 0047 02       		.byte	2
+ 194 0048 E7A79100 		.ascii	"\347\247\221\000"
+ 195 004c 03       		.byte	3
+ 196 004d BFC6     		.ascii	"\277\306"
+ 197 004f 02       		.byte	2
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 4
+
+
+ 198              		.global	GUI_FontHZSimSun_32_CharInfo
+ 199              		.section	.rodata.GUI_FontHZSimSun_32_CharInfo,"a"
+ 200              		.align	2
+ 203              	GUI_FontHZSimSun_32_CharInfo:
+ 204 0000 10       		.byte	16
+ 205 0001 10       		.byte	16
+ 206 0002 02       		.byte	2
+ 207 0003 00       		.space	1
+ 208 0004 00000000 		.word	acFontHZSimSun_32_0020
+ 209 0008 10       		.byte	16
+ 210 0009 10       		.byte	16
+ 211 000a 02       		.byte	2
+ 212 000b 00       		.space	1
+ 213 000c 00000000 		.word	acFontHZSimSun_32_0021
+ 214 0010 10       		.byte	16
+ 215 0011 10       		.byte	16
+ 216 0012 02       		.byte	2
+ 217 0013 00       		.space	1
+ 218 0014 00000000 		.word	acFontHZSimSun_32_0022
+ 219 0018 10       		.byte	16
+ 220 0019 10       		.byte	16
+ 221 001a 02       		.byte	2
+ 222 001b 00       		.space	1
+ 223 001c 00000000 		.word	acFontHZSimSun_32_0023
+ 224 0020 10       		.byte	16
+ 225 0021 10       		.byte	16
+ 226 0022 02       		.byte	2
+ 227 0023 00       		.space	1
+ 228 0024 00000000 		.word	acFontHZSimSun_32_0024
+ 229 0028 10       		.byte	16
+ 230 0029 10       		.byte	16
+ 231 002a 02       		.byte	2
+ 232 002b 00       		.space	1
+ 233 002c 00000000 		.word	acFontHZSimSun_32_0025
+ 234 0030 10       		.byte	16
+ 235 0031 10       		.byte	16
+ 236 0032 02       		.byte	2
+ 237 0033 00       		.space	1
+ 238 0034 00000000 		.word	acFontHZSimSun_32_0026
+ 239 0038 10       		.byte	16
+ 240 0039 10       		.byte	16
+ 241 003a 02       		.byte	2
+ 242 003b 00       		.space	1
+ 243 003c 00000000 		.word	acFontHZSimSun_32_0027
+ 244 0040 10       		.byte	16
+ 245 0041 10       		.byte	16
+ 246 0042 02       		.byte	2
+ 247 0043 00       		.space	1
+ 248 0044 00000000 		.word	acFontHZSimSun_32_0028
+ 249 0048 10       		.byte	16
+ 250 0049 10       		.byte	16
+ 251 004a 02       		.byte	2
+ 252 004b 00       		.space	1
+ 253 004c 00000000 		.word	acFontHZSimSun_32_0029
+ 254 0050 10       		.byte	16
+ 255 0051 10       		.byte	16
+ 256 0052 02       		.byte	2
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 5
+
+
+ 257 0053 00       		.space	1
+ 258 0054 00000000 		.word	acFontHZSimSun_32_002a
+ 259 0058 10       		.byte	16
+ 260 0059 10       		.byte	16
+ 261 005a 02       		.byte	2
+ 262 005b 00       		.space	1
+ 263 005c 00000000 		.word	acFontHZSimSun_32_002b
+ 264 0060 10       		.byte	16
+ 265 0061 10       		.byte	16
+ 266 0062 02       		.byte	2
+ 267 0063 00       		.space	1
+ 268 0064 00000000 		.word	acFontHZSimSun_32_002c
+ 269 0068 10       		.byte	16
+ 270 0069 10       		.byte	16
+ 271 006a 02       		.byte	2
+ 272 006b 00       		.space	1
+ 273 006c 00000000 		.word	acFontHZSimSun_32_002d
+ 274 0070 10       		.byte	16
+ 275 0071 10       		.byte	16
+ 276 0072 02       		.byte	2
+ 277 0073 00       		.space	1
+ 278 0074 00000000 		.word	acFontHZSimSun_32_002e
+ 279 0078 10       		.byte	16
+ 280 0079 10       		.byte	16
+ 281 007a 02       		.byte	2
+ 282 007b 00       		.space	1
+ 283 007c 00000000 		.word	acFontHZSimSun_32_002f
+ 284 0080 10       		.byte	16
+ 285 0081 10       		.byte	16
+ 286 0082 02       		.byte	2
+ 287 0083 00       		.space	1
+ 288 0084 00000000 		.word	acFontHZSimSun_32_0030
+ 289 0088 10       		.byte	16
+ 290 0089 10       		.byte	16
+ 291 008a 02       		.byte	2
+ 292 008b 00       		.space	1
+ 293 008c 00000000 		.word	acFontHZSimSun_32_0031
+ 294 0090 10       		.byte	16
+ 295 0091 10       		.byte	16
+ 296 0092 02       		.byte	2
+ 297 0093 00       		.space	1
+ 298 0094 00000000 		.word	acFontHZSimSun_32_0032
+ 299 0098 10       		.byte	16
+ 300 0099 10       		.byte	16
+ 301 009a 02       		.byte	2
+ 302 009b 00       		.space	1
+ 303 009c 00000000 		.word	acFontHZSimSun_32_0033
+ 304 00a0 10       		.byte	16
+ 305 00a1 10       		.byte	16
+ 306 00a2 02       		.byte	2
+ 307 00a3 00       		.space	1
+ 308 00a4 00000000 		.word	acFontHZSimSun_32_0034
+ 309 00a8 10       		.byte	16
+ 310 00a9 10       		.byte	16
+ 311 00aa 02       		.byte	2
+ 312 00ab 00       		.space	1
+ 313 00ac 00000000 		.word	acFontHZSimSun_32_0035
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 6
+
+
+ 314 00b0 10       		.byte	16
+ 315 00b1 10       		.byte	16
+ 316 00b2 02       		.byte	2
+ 317 00b3 00       		.space	1
+ 318 00b4 00000000 		.word	acFontHZSimSun_32_0036
+ 319 00b8 10       		.byte	16
+ 320 00b9 10       		.byte	16
+ 321 00ba 02       		.byte	2
+ 322 00bb 00       		.space	1
+ 323 00bc 00000000 		.word	acFontHZSimSun_32_0037
+ 324 00c0 10       		.byte	16
+ 325 00c1 10       		.byte	16
+ 326 00c2 02       		.byte	2
+ 327 00c3 00       		.space	1
+ 328 00c4 00000000 		.word	acFontHZSimSun_32_0038
+ 329 00c8 10       		.byte	16
+ 330 00c9 10       		.byte	16
+ 331 00ca 02       		.byte	2
+ 332 00cb 00       		.space	1
+ 333 00cc 00000000 		.word	acFontHZSimSun_32_0039
+ 334 00d0 10       		.byte	16
+ 335 00d1 10       		.byte	16
+ 336 00d2 02       		.byte	2
+ 337 00d3 00       		.space	1
+ 338 00d4 00000000 		.word	acFontHZSimSun_32_003a
+ 339 00d8 10       		.byte	16
+ 340 00d9 10       		.byte	16
+ 341 00da 02       		.byte	2
+ 342 00db 00       		.space	1
+ 343 00dc 00000000 		.word	acFontHZSimSun_32_003b
+ 344 00e0 10       		.byte	16
+ 345 00e1 10       		.byte	16
+ 346 00e2 02       		.byte	2
+ 347 00e3 00       		.space	1
+ 348 00e4 00000000 		.word	acFontHZSimSun_32_003c
+ 349 00e8 10       		.byte	16
+ 350 00e9 10       		.byte	16
+ 351 00ea 02       		.byte	2
+ 352 00eb 00       		.space	1
+ 353 00ec 00000000 		.word	acFontHZSimSun_32_003d
+ 354 00f0 10       		.byte	16
+ 355 00f1 10       		.byte	16
+ 356 00f2 02       		.byte	2
+ 357 00f3 00       		.space	1
+ 358 00f4 00000000 		.word	acFontHZSimSun_32_003e
+ 359 00f8 10       		.byte	16
+ 360 00f9 10       		.byte	16
+ 361 00fa 02       		.byte	2
+ 362 00fb 00       		.space	1
+ 363 00fc 00000000 		.word	acFontHZSimSun_32_003f
+ 364 0100 10       		.byte	16
+ 365 0101 10       		.byte	16
+ 366 0102 02       		.byte	2
+ 367 0103 00       		.space	1
+ 368 0104 00000000 		.word	acFontHZSimSun_32_0040
+ 369 0108 10       		.byte	16
+ 370 0109 10       		.byte	16
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 7
+
+
+ 371 010a 02       		.byte	2
+ 372 010b 00       		.space	1
+ 373 010c 00000000 		.word	acFontHZSimSun_32_0041
+ 374 0110 10       		.byte	16
+ 375 0111 10       		.byte	16
+ 376 0112 02       		.byte	2
+ 377 0113 00       		.space	1
+ 378 0114 00000000 		.word	acFontHZSimSun_32_0042
+ 379 0118 10       		.byte	16
+ 380 0119 10       		.byte	16
+ 381 011a 02       		.byte	2
+ 382 011b 00       		.space	1
+ 383 011c 00000000 		.word	acFontHZSimSun_32_0043
+ 384 0120 10       		.byte	16
+ 385 0121 10       		.byte	16
+ 386 0122 02       		.byte	2
+ 387 0123 00       		.space	1
+ 388 0124 00000000 		.word	acFontHZSimSun_32_0044
+ 389 0128 10       		.byte	16
+ 390 0129 10       		.byte	16
+ 391 012a 02       		.byte	2
+ 392 012b 00       		.space	1
+ 393 012c 00000000 		.word	acFontHZSimSun_32_0045
+ 394 0130 10       		.byte	16
+ 395 0131 10       		.byte	16
+ 396 0132 02       		.byte	2
+ 397 0133 00       		.space	1
+ 398 0134 00000000 		.word	acFontHZSimSun_32_0046
+ 399 0138 10       		.byte	16
+ 400 0139 10       		.byte	16
+ 401 013a 02       		.byte	2
+ 402 013b 00       		.space	1
+ 403 013c 00000000 		.word	acFontHZSimSun_32_0047
+ 404 0140 10       		.byte	16
+ 405 0141 10       		.byte	16
+ 406 0142 02       		.byte	2
+ 407 0143 00       		.space	1
+ 408 0144 00000000 		.word	acFontHZSimSun_32_0048
+ 409 0148 10       		.byte	16
+ 410 0149 10       		.byte	16
+ 411 014a 02       		.byte	2
+ 412 014b 00       		.space	1
+ 413 014c 00000000 		.word	acFontHZSimSun_32_0049
+ 414 0150 10       		.byte	16
+ 415 0151 10       		.byte	16
+ 416 0152 02       		.byte	2
+ 417 0153 00       		.space	1
+ 418 0154 00000000 		.word	acFontHZSimSun_32_004a
+ 419 0158 10       		.byte	16
+ 420 0159 10       		.byte	16
+ 421 015a 02       		.byte	2
+ 422 015b 00       		.space	1
+ 423 015c 00000000 		.word	acFontHZSimSun_32_004b
+ 424 0160 10       		.byte	16
+ 425 0161 10       		.byte	16
+ 426 0162 02       		.byte	2
+ 427 0163 00       		.space	1
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 8
+
+
+ 428 0164 00000000 		.word	acFontHZSimSun_32_004c
+ 429 0168 10       		.byte	16
+ 430 0169 10       		.byte	16
+ 431 016a 02       		.byte	2
+ 432 016b 00       		.space	1
+ 433 016c 00000000 		.word	acFontHZSimSun_32_004d
+ 434 0170 10       		.byte	16
+ 435 0171 10       		.byte	16
+ 436 0172 02       		.byte	2
+ 437 0173 00       		.space	1
+ 438 0174 00000000 		.word	acFontHZSimSun_32_004e
+ 439 0178 10       		.byte	16
+ 440 0179 10       		.byte	16
+ 441 017a 02       		.byte	2
+ 442 017b 00       		.space	1
+ 443 017c 00000000 		.word	acFontHZSimSun_32_004f
+ 444 0180 10       		.byte	16
+ 445 0181 10       		.byte	16
+ 446 0182 02       		.byte	2
+ 447 0183 00       		.space	1
+ 448 0184 00000000 		.word	acFontHZSimSun_32_0050
+ 449 0188 10       		.byte	16
+ 450 0189 10       		.byte	16
+ 451 018a 02       		.byte	2
+ 452 018b 00       		.space	1
+ 453 018c 00000000 		.word	acFontHZSimSun_32_0051
+ 454 0190 10       		.byte	16
+ 455 0191 10       		.byte	16
+ 456 0192 02       		.byte	2
+ 457 0193 00       		.space	1
+ 458 0194 00000000 		.word	acFontHZSimSun_32_0052
+ 459 0198 10       		.byte	16
+ 460 0199 10       		.byte	16
+ 461 019a 02       		.byte	2
+ 462 019b 00       		.space	1
+ 463 019c 00000000 		.word	acFontHZSimSun_32_0053
+ 464 01a0 10       		.byte	16
+ 465 01a1 10       		.byte	16
+ 466 01a2 02       		.byte	2
+ 467 01a3 00       		.space	1
+ 468 01a4 00000000 		.word	acFontHZSimSun_32_0054
+ 469 01a8 10       		.byte	16
+ 470 01a9 10       		.byte	16
+ 471 01aa 02       		.byte	2
+ 472 01ab 00       		.space	1
+ 473 01ac 00000000 		.word	acFontHZSimSun_32_0055
+ 474 01b0 10       		.byte	16
+ 475 01b1 10       		.byte	16
+ 476 01b2 02       		.byte	2
+ 477 01b3 00       		.space	1
+ 478 01b4 00000000 		.word	acFontHZSimSun_32_0056
+ 479 01b8 10       		.byte	16
+ 480 01b9 10       		.byte	16
+ 481 01ba 02       		.byte	2
+ 482 01bb 00       		.space	1
+ 483 01bc 00000000 		.word	acFontHZSimSun_32_0057
+ 484 01c0 10       		.byte	16
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 9
+
+
+ 485 01c1 10       		.byte	16
+ 486 01c2 02       		.byte	2
+ 487 01c3 00       		.space	1
+ 488 01c4 00000000 		.word	acFontHZSimSun_32_0058
+ 489 01c8 10       		.byte	16
+ 490 01c9 10       		.byte	16
+ 491 01ca 02       		.byte	2
+ 492 01cb 00       		.space	1
+ 493 01cc 00000000 		.word	acFontHZSimSun_32_0059
+ 494 01d0 10       		.byte	16
+ 495 01d1 10       		.byte	16
+ 496 01d2 02       		.byte	2
+ 497 01d3 00       		.space	1
+ 498 01d4 00000000 		.word	acFontHZSimSun_32_005a
+ 499 01d8 10       		.byte	16
+ 500 01d9 10       		.byte	16
+ 501 01da 02       		.byte	2
+ 502 01db 00       		.space	1
+ 503 01dc 00000000 		.word	acFontHZSimSun_32_005b
+ 504 01e0 10       		.byte	16
+ 505 01e1 10       		.byte	16
+ 506 01e2 02       		.byte	2
+ 507 01e3 00       		.space	1
+ 508 01e4 00000000 		.word	acFontHZSimSun_32_005c
+ 509 01e8 10       		.byte	16
+ 510 01e9 10       		.byte	16
+ 511 01ea 02       		.byte	2
+ 512 01eb 00       		.space	1
+ 513 01ec 00000000 		.word	acFontHZSimSun_32_005d
+ 514 01f0 10       		.byte	16
+ 515 01f1 10       		.byte	16
+ 516 01f2 02       		.byte	2
+ 517 01f3 00       		.space	1
+ 518 01f4 00000000 		.word	acFontHZSimSun_32_005e
+ 519 01f8 10       		.byte	16
+ 520 01f9 10       		.byte	16
+ 521 01fa 02       		.byte	2
+ 522 01fb 00       		.space	1
+ 523 01fc 00000000 		.word	acFontHZSimSun_32_005f
+ 524 0200 10       		.byte	16
+ 525 0201 10       		.byte	16
+ 526 0202 02       		.byte	2
+ 527 0203 00       		.space	1
+ 528 0204 00000000 		.word	acFontHZSimSun_32_0060
+ 529 0208 10       		.byte	16
+ 530 0209 10       		.byte	16
+ 531 020a 02       		.byte	2
+ 532 020b 00       		.space	1
+ 533 020c 00000000 		.word	acFontHZSimSun_32_0061
+ 534 0210 10       		.byte	16
+ 535 0211 10       		.byte	16
+ 536 0212 02       		.byte	2
+ 537 0213 00       		.space	1
+ 538 0214 00000000 		.word	acFontHZSimSun_32_0062
+ 539 0218 10       		.byte	16
+ 540 0219 10       		.byte	16
+ 541 021a 02       		.byte	2
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 10
+
+
+ 542 021b 00       		.space	1
+ 543 021c 00000000 		.word	acFontHZSimSun_32_0063
+ 544 0220 10       		.byte	16
+ 545 0221 10       		.byte	16
+ 546 0222 02       		.byte	2
+ 547 0223 00       		.space	1
+ 548 0224 00000000 		.word	acFontHZSimSun_32_0064
+ 549 0228 10       		.byte	16
+ 550 0229 10       		.byte	16
+ 551 022a 02       		.byte	2
+ 552 022b 00       		.space	1
+ 553 022c 00000000 		.word	acFontHZSimSun_32_0065
+ 554 0230 10       		.byte	16
+ 555 0231 10       		.byte	16
+ 556 0232 02       		.byte	2
+ 557 0233 00       		.space	1
+ 558 0234 00000000 		.word	acFontHZSimSun_32_0066
+ 559 0238 10       		.byte	16
+ 560 0239 10       		.byte	16
+ 561 023a 02       		.byte	2
+ 562 023b 00       		.space	1
+ 563 023c 00000000 		.word	acFontHZSimSun_32_0067
+ 564 0240 10       		.byte	16
+ 565 0241 10       		.byte	16
+ 566 0242 02       		.byte	2
+ 567 0243 00       		.space	1
+ 568 0244 00000000 		.word	acFontHZSimSun_32_0068
+ 569 0248 10       		.byte	16
+ 570 0249 10       		.byte	16
+ 571 024a 02       		.byte	2
+ 572 024b 00       		.space	1
+ 573 024c 00000000 		.word	acFontHZSimSun_32_0069
+ 574 0250 10       		.byte	16
+ 575 0251 10       		.byte	16
+ 576 0252 02       		.byte	2
+ 577 0253 00       		.space	1
+ 578 0254 00000000 		.word	acFontHZSimSun_32_006a
+ 579 0258 10       		.byte	16
+ 580 0259 10       		.byte	16
+ 581 025a 02       		.byte	2
+ 582 025b 00       		.space	1
+ 583 025c 00000000 		.word	acFontHZSimSun_32_006b
+ 584 0260 10       		.byte	16
+ 585 0261 10       		.byte	16
+ 586 0262 02       		.byte	2
+ 587 0263 00       		.space	1
+ 588 0264 00000000 		.word	acFontHZSimSun_32_006c
+ 589 0268 10       		.byte	16
+ 590 0269 10       		.byte	16
+ 591 026a 02       		.byte	2
+ 592 026b 00       		.space	1
+ 593 026c 00000000 		.word	acFontHZSimSun_32_006d
+ 594 0270 10       		.byte	16
+ 595 0271 10       		.byte	16
+ 596 0272 02       		.byte	2
+ 597 0273 00       		.space	1
+ 598 0274 00000000 		.word	acFontHZSimSun_32_006e
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 11
+
+
+ 599 0278 10       		.byte	16
+ 600 0279 10       		.byte	16
+ 601 027a 02       		.byte	2
+ 602 027b 00       		.space	1
+ 603 027c 00000000 		.word	acFontHZSimSun_32_006f
+ 604 0280 10       		.byte	16
+ 605 0281 10       		.byte	16
+ 606 0282 02       		.byte	2
+ 607 0283 00       		.space	1
+ 608 0284 00000000 		.word	acFontHZSimSun_32_0070
+ 609 0288 10       		.byte	16
+ 610 0289 10       		.byte	16
+ 611 028a 02       		.byte	2
+ 612 028b 00       		.space	1
+ 613 028c 00000000 		.word	acFontHZSimSun_32_0071
+ 614 0290 10       		.byte	16
+ 615 0291 10       		.byte	16
+ 616 0292 02       		.byte	2
+ 617 0293 00       		.space	1
+ 618 0294 00000000 		.word	acFontHZSimSun_32_0072
+ 619 0298 10       		.byte	16
+ 620 0299 10       		.byte	16
+ 621 029a 02       		.byte	2
+ 622 029b 00       		.space	1
+ 623 029c 00000000 		.word	acFontHZSimSun_32_0073
+ 624 02a0 10       		.byte	16
+ 625 02a1 10       		.byte	16
+ 626 02a2 02       		.byte	2
+ 627 02a3 00       		.space	1
+ 628 02a4 00000000 		.word	acFontHZSimSun_32_0074
+ 629 02a8 10       		.byte	16
+ 630 02a9 10       		.byte	16
+ 631 02aa 02       		.byte	2
+ 632 02ab 00       		.space	1
+ 633 02ac 00000000 		.word	acFontHZSimSun_32_0075
+ 634 02b0 10       		.byte	16
+ 635 02b1 10       		.byte	16
+ 636 02b2 02       		.byte	2
+ 637 02b3 00       		.space	1
+ 638 02b4 00000000 		.word	acFontHZSimSun_32_0076
+ 639 02b8 10       		.byte	16
+ 640 02b9 10       		.byte	16
+ 641 02ba 02       		.byte	2
+ 642 02bb 00       		.space	1
+ 643 02bc 00000000 		.word	acFontHZSimSun_32_0077
+ 644 02c0 10       		.byte	16
+ 645 02c1 10       		.byte	16
+ 646 02c2 02       		.byte	2
+ 647 02c3 00       		.space	1
+ 648 02c4 00000000 		.word	acFontHZSimSun_32_0078
+ 649 02c8 10       		.byte	16
+ 650 02c9 10       		.byte	16
+ 651 02ca 02       		.byte	2
+ 652 02cb 00       		.space	1
+ 653 02cc 00000000 		.word	acFontHZSimSun_32_0079
+ 654 02d0 10       		.byte	16
+ 655 02d1 10       		.byte	16
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 12
+
+
+ 656 02d2 02       		.byte	2
+ 657 02d3 00       		.space	1
+ 658 02d4 00000000 		.word	acFontHZSimSun_32_007a
+ 659 02d8 10       		.byte	16
+ 660 02d9 10       		.byte	16
+ 661 02da 02       		.byte	2
+ 662 02db 00       		.space	1
+ 663 02dc 00000000 		.word	acFontHZSimSun_32_007b
+ 664 02e0 10       		.byte	16
+ 665 02e1 10       		.byte	16
+ 666 02e2 02       		.byte	2
+ 667 02e3 00       		.space	1
+ 668 02e4 00000000 		.word	acFontHZSimSun_32_007c
+ 669 02e8 10       		.byte	16
+ 670 02e9 10       		.byte	16
+ 671 02ea 02       		.byte	2
+ 672 02eb 00       		.space	1
+ 673 02ec 00000000 		.word	acFontHZSimSun_32_007d
+ 674 02f0 10       		.byte	16
+ 675 02f1 10       		.byte	16
+ 676 02f2 02       		.byte	2
+ 677 02f3 00       		.space	1
+ 678 02f4 00000000 		.word	acFontHZSimSun_32_007e
+ 679 02f8 10       		.byte	16
+ 680 02f9 10       		.byte	16
+ 681 02fa 02       		.byte	2
+ 682 02fb 00       		.space	1
+ 683 02fc 00000000 		.word	acFontHZSimSun_32_007f
+ 684 0300 20       		.byte	32
+ 685 0301 20       		.byte	32
+ 686 0302 04       		.byte	4
+ 687 0303 00       		.space	1
+ 688 0304 00000000 		.word	acFontHZSimSun_32_b4f3
+ 689 0308 20       		.byte	32
+ 690 0309 20       		.byte	32
+ 691 030a 04       		.byte	4
+ 692 030b 00       		.space	1
+ 693 030c 00000000 		.word	acFontHZSimSun_32_b5e7
+ 694 0310 20       		.byte	32
+ 695 0311 20       		.byte	32
+ 696 0312 04       		.byte	4
+ 697 0313 00       		.space	1
+ 698 0314 00000000 		.word	acFontHZSimSun_32_babc
+ 699 0318 20       		.byte	32
+ 700 0319 20       		.byte	32
+ 701 031a 04       		.byte	4
+ 702 031b 00       		.space	1
+ 703 031c 00000000 		.word	acFontHZSimSun_32_bcbc
+ 704 0320 20       		.byte	32
+ 705 0321 20       		.byte	32
+ 706 0322 04       		.byte	4
+ 707 0323 00       		.space	1
+ 708 0324 00000000 		.word	acFontHZSimSun_32_bfc6
+ 709 0328 20       		.byte	32
+ 710 0329 20       		.byte	32
+ 711 032a 04       		.byte	4
+ 712 032b 00       		.space	1
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 13
+
+
+ 713 032c 00000000 		.word	acFontHZSimSun_32_d1a7
+ 714 0330 20       		.byte	32
+ 715 0331 20       		.byte	32
+ 716 0332 04       		.byte	4
+ 717 0333 00       		.space	1
+ 718 0334 00000000 		.word	acFontHZSimSun_32_d4f8
+ 719 0338 20       		.byte	32
+ 720 0339 20       		.byte	32
+ 721 033a 04       		.byte	4
+ 722 033b 00       		.space	1
+ 723 033c 00000000 		.word	acFontHZSimSun_32_d6dd
+ 724 0340 20       		.byte	32
+ 725 0341 20       		.byte	32
+ 726 0342 04       		.byte	4
+ 727 0343 00       		.space	1
+ 728 0344 00000000 		.word	acFontHZSimSun_32_d7d3
+ 729 0348 20       		.byte	32
+ 730 0349 20       		.byte	32
+ 731 034a 04       		.byte	4
+ 732 034b 00       		.space	1
+ 733 034c 00000000 		.word	acFontHZSimSun_32_d8b9
+ 734              		.global	acFontHZSimSun_32_d8b9
+ 735              		.section	.rodata.acFontHZSimSun_32_d8b9,"a"
+ 736              		.align	2
+ 739              	acFontHZSimSun_32_d8b9:
+ 740 0000 00000000 		.ascii	"\000\000\000\000\002\000\030\000\007\000\016\000\006"
+ 740      02001800 
+ 740      07000E00 
+ 740      06
+ 741 000d 00070006 		.ascii	"\000\007\000\006\030\006\030\017\377\377\374\014\000"
+ 741      1806180F 
+ 741      FFFFFC0C 
+ 741      00
+ 742 001a 0C001800 		.ascii	"\014\000\030\000\036\0008\030\030\200/\3740`L\030`0"
+ 742      1E003818 
+ 742      18802FFC 
+ 742      30604C18 
+ 742      6030
+ 743 002c 0D18C038 		.ascii	"\015\030\3008\015\231\377\374\015\330\340\030\014\330"
+ 743      0D99FFFC 
+ 743      0DD8E018 
+ 743      0CD8
+ 744 003a 00080C9E 		.ascii	"\000\010\014\236l@\177\377n`\0348n`\0338n`\031\260n"
+ 744      6C407FFF 
+ 744      6E601C38 
+ 744      6E601B38 
+ 744      6E6019B0 
+ 745 004f 6019B0EE 		.ascii	"`\031\260\356`\031\260\316`\0304\316`?\376\316d\020"
+ 745      6019B0CE 
+ 745      601834CE 
+ 745      603FFECE 
+ 745      6410
+ 746 0061 31CE6400 		.ascii	"1\316d\0001\216d\000s\016d\003\346\016n\000\354\014"
+ 746      318E6400 
+ 746      730E6403 
+ 746      E60E6E00 
+ 746      EC0C
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 14
+
+
+ 747 0073 7C00D800 		.ascii	"|\000\330\000\000\000\000\000\000\000\000\000\000"
+ 747      00000000 
+ 747      00000000 
+ 747      00
+ 748              		.global	acFontHZSimSun_32_d7d3
+ 749              		.section	.rodata.acFontHZSimSun_32_d7d3,"a"
+ 750              		.align	2
+ 753              	acFontHZSimSun_32_d7d3:
+ 754 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\300\007"
+ 754      00000000 
+ 754      000000C0 
+ 754      07
+ 755 000d FFFFE000 		.ascii	"\377\377\340\000\000\001\360\000\000\003\200\000\000"
+ 755      0001F000 
+ 755      00038000 
+ 755      00
+ 756 001a 07000000 		.ascii	"\007\000\000\000\034\000\000\0000\000\000\001\340\000"
+ 756      1C000000 
+ 756      30000001 
+ 756      E000
+ 757 0028 0001C000 		.ascii	"\000\001\300\000\000\001\300\000\000\001\200\020\000"
+ 757      0001C000 
+ 757      00018010 
+ 757      00
+ 758 0035 0180387F 		.ascii	"\001\2008\177\377\377\374\000\001\200\000\000\001\200"
+ 758      FFFFFC00 
+ 758      01800000 
+ 758      0180
+ 759 0043 00000180 		.ascii	"\000\000\001\200\000\000\001\200\000\000\001\200\000"
+ 759      00000180 
+ 759      00000180 
+ 759      00
+ 760 0050 00018000 		.ascii	"\000\001\200\000\000\001\200\000\000\001\200\000\000"
+ 760      00018000 
+ 760      00018000 
+ 760      00
+ 761 005d 01800000 		.ascii	"\001\200\000\000\001\200\000\000\001\200\000\0001\200"
+ 761      01800000 
+ 761      01800000 
+ 761      3180
+ 762 006b 00001F80 		.ascii	"\000\000\037\200\000\000\007\200\000\000\002\000\000"
+ 762      00000780 
+ 762      00000200 
+ 762      00
+ 763 0078 00000000 		.ascii	"\000\000\000\000\000\000\000\000"
+ 763      00000000 
+ 764              		.global	acFontHZSimSun_32_d6dd
+ 765              		.section	.rodata.acFontHZSimSun_32_d6dd,"a"
+ 766              		.align	2
+ 769              	acFontHZSimSun_32_d6dd:
+ 770 0000 00000000 		.ascii	"\000\000\000\000\000\000\000`\000\300\000p\000\340`"
+ 770      00000060 
+ 770      00C00070 
+ 770      00E060
+ 771 000f 7000C060 		.ascii	"p\000\300`p\000\300`p\000\300`p\000\300`p\000\300`p"
+ 771      7000C060 
+ 771      7000C060 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 15
+
+
+ 771      7000C060 
+ 771      7000C060 
+ 772 0024 00C06070 		.ascii	"\000\300`p\004\310hp\014\314lp\014\314fp\014\316gp\034"
+ 772      04C86870 
+ 772      0CCC6C70 
+ 772      0CCC6670 
+ 772      0CCE6770 
+ 773 0039 C667701C 		.ascii	"\306gp\034\306cp9\304`p\001\200`p\001\200`p\001\200"
+ 773      C6637039 
+ 773      C4607001 
+ 773      80607001 
+ 773      80607001 
+ 774 004e 60700180 		.ascii	"`p\001\200`p\003\200`p\003\000`p\003\000`p\006\000`"
+ 774      60700380 
+ 774      60700300 
+ 774      60700300 
+ 774      60700600 
+ 775 0063 700E0060 		.ascii	"p\016\000`p\014\000\000p\030\000\000p0\000\000p`\000"
+ 775      700C0000 
+ 775      70180000 
+ 775      70300000 
+ 775      706000
+ 776 0076 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000"
+ 776      00000000 
+ 776      0000
+ 777              		.global	acFontHZSimSun_32_d4f8
+ 778              		.section	.rodata.acFontHZSimSun_32_d4f8,"a"
+ 779              		.align	2
+ 782              	acFontHZSimSun_32_d4f8:
+ 783 0000 00000000 		.ascii	"\000\000\000\000\000 \004\000\0008\017\000\000\034\014"
+ 783      00200400 
+ 783      00380F00 
+ 783      001C0C
+ 784 000f 00001C18 		.ascii	"\000\000\034\030\000\004\0100`\007\377\377\360\007\001"
+ 784      00040830 
+ 784      6007FFFF 
+ 784      F00701
+ 785 001e 80600741 		.ascii	"\200`\007A\204`\007a\207`\0071\216`\0079\214`\007\031"
+ 785      84600761 
+ 785      87600731 
+ 785      8E600739 
+ 785      8C600719 
+ 786 0032 98600719 		.ascii	"\230`\007\031\220`\007\001\200`\007\377\377\340\007"
+ 786      90600701 
+ 786      806007FF 
+ 786      FFE007
+ 787 0041 00006004 		.ascii	"\000\000`\004\000\001\000\000\377\377\200\000\300\003"
+ 787      00010000 
+ 787      FFFF8000 
+ 787      C003
+ 788 004f 0000C003 		.ascii	"\000\000\300\003\000\000\300\003\000\000\300\003\000"
+ 788      0000C003 
+ 788      0000C003 
+ 788      00
+ 789 005c 00FFFF00 		.ascii	"\000\377\377\000\000\300\003\000\000\300\003\000\000"
+ 789      00C00300 
+ 789      00C00300 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 16
+
+
+ 789      00
+ 790 0069 C0030000 		.ascii	"\300\003\000\000\377\377\000\000\300\003\000\000\200"
+ 790      FFFF0000 
+ 790      C0030000 
+ 790      80
+ 791 0076 03000000 		.ascii	"\003\000\000\000\000\000\000\000\000\000"
+ 791      00000000 
+ 791      0000
+ 792              		.global	acFontHZSimSun_32_d1a7
+ 793              		.section	.rodata.acFontHZSimSun_32_d1a7,"a"
+ 794              		.align	2
+ 797              	acFontHZSimSun_32_d1a7:
+ 798 0000 00000000 		.ascii	"\000\000\000\000\000\004\001\000\003\006\003\300\001"
+ 798      00040100 
+ 798      030603C0 
+ 798      01
+ 799 000d 83038000 		.ascii	"\203\003\200\000\343\203\000\000\341\306\000\000a\206"
+ 799      E3830000 
+ 799      E1C60000 
+ 799      6186
+ 800 001b 0000618C 		.ascii	"\000\000a\214\000\014\000\010\030\017\377\377\374\014"
+ 800      000C0008 
+ 800      180FFFFF 
+ 800      FC0C
+ 801 0029 00003C0C 		.ascii	"\000\000<\014\000\0000\034\000\002`=\377\377@\000\000"
+ 801      0000301C 
+ 801      0002603D 
+ 801      FFFF4000 
+ 801      00
+ 802 003a 0F000000 		.ascii	"\017\000\000\000\034\000\000\0000\000\000\001`\000\000"
+ 802      1C000000 
+ 802      30000001 
+ 802      600000
+ 803 0049 01C01000 		.ascii	"\001\300\020\000\001\3008?\377\377\374\000\001\300\000"
+ 803      01C0383F 
+ 803      FFFFFC00 
+ 803      01C000
+ 804 0058 0001C000 		.ascii	"\000\001\300\000\000\001\300\000\000\001\300\000\000"
+ 804      0001C000 
+ 804      0001C000 
+ 804      00
+ 805 0065 01C00000 		.ascii	"\001\300\000\000\001\300\000\000\037\200\000\000\007"
+ 805      01C00000 
+ 805      1F800000 
+ 805      07
+ 806 0072 80000003 		.ascii	"\200\000\000\003\000\000\000\000\000\000\000\000\000"
+ 806      00000000 
+ 806      00000000 
+ 806      00
+ 807 007f 00       		.ascii	"\000"
+ 808              		.global	acFontHZSimSun_32_bfc6
+ 809              		.section	.rodata.acFontHZSimSun_32_bfc6,"a"
+ 810              		.align	2
+ 813              	acFontHZSimSun_32_bfc6:
+ 814 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\200\000\034\000\340\000"
+ 814      00000080 
+ 814      001C00E0 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 17
+
+
+ 814      00
+ 815 000d 7E00C007 		.ascii	"~\000\300\007\360\000\300<\300@\300\000\300`\300\000"
+ 815      F000C03C 
+ 815      C040C000 
+ 815      C060C000 
+ 816 001d C038C000 		.ascii	"\3008\300\000\3008\300\000\300\030\300\000\306\000\300"
+ 816      C038C000 
+ 816      C018C000 
+ 816      C600C0
+ 817 002c 3FFF00C0 		.ascii	"?\377\000\300\000\300\000\300\001\300\300\300\001\300"
+ 817      00C000C0 
+ 817      01C0C0C0 
+ 817      01C0
+ 818 003a 70C001F8 		.ascii	"p\300\001\3708\300\003\3348\300\003\316\000\334\006"
+ 818      38C003DC 
+ 818      38C003CE 
+ 818      00DC06
+ 819 0049 C600FC0C 		.ascii	"\306\000\374\014\304\017\300\010\303\360\300\030\306"
+ 819      C40FC008 
+ 819      C3F0C018 
+ 819      C6
+ 820 0056 00C030C0 		.ascii	"\000\3000\300\000\300@\300\000\300\000\300\000\300\000"
+ 820      00C040C0 
+ 820      00C000C0 
+ 820      00C000
+ 821 0065 C000C000 		.ascii	"\300\000\300\000\300\000\300\000\300\000\300\000\300"
+ 821      C000C000 
+ 821      C000C000 
+ 821      C0
+ 822 0072 00C00080 		.ascii	"\000\300\000\200\000\200\000\000\000\000\000\000\000"
+ 822      00800000 
+ 822      00000000 
+ 822      00
+ 823 007f 00       		.ascii	"\000"
+ 824              		.global	acFontHZSimSun_32_bcbc
+ 825              		.section	.rodata.acFontHZSimSun_32_bcbc,"a"
+ 826              		.align	2
+ 829              	acFontHZSimSun_32_bcbc:
+ 830 0000 00000000 		.ascii	"\000\000\000\000\001\200\010\000\001\300\016\000\001"
+ 830      01800800 
+ 830      01C00E00 
+ 830      01
+ 831 000d 800C0001 		.ascii	"\200\014\000\001\200\014\000\001\200\014\000\001\200"
+ 831      800C0001 
+ 831      800C0001 
+ 831      80
+ 832 001a 0C000198 		.ascii	"\014\000\001\230\014\030\177\377\377\374\001\200\014"
+ 832      0C187FFF 
+ 832      FFFC0180 
+ 832      0C
+ 833 0027 0001800C 		.ascii	"\000\001\200\014\000\001\200\014\000\001\200\014\000"
+ 833      0001800C 
+ 833      0001800C 
+ 833      00
+ 834 0034 018C0C20 		.ascii	"\001\214\014 \001\373\377\360\003\340\200`\017\200\300"
+ 834      01FBFFF0 
+ 834      03E08060 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 18
+
+
+ 834      0F80C0
+ 835 0043 E07F80C0 		.ascii	"\340\177\200\300\3009\200@\300\001\200a\300\001\200"
+ 835      C0398040 
+ 835      C0018061 
+ 835      C00180
+ 836 0052 21800180 		.ascii	"!\200\001\2003\000\001\200\037\000\001\200\036\000\001"
+ 836      33000180 
+ 836      1F000180 
+ 836      1E0001
+ 837 0061 801E0001 		.ascii	"\200\036\000\001\200\177\000\001\200\343\300\037\203"
+ 837      807F0001 
+ 837      80E3C01F 
+ 837      83
+ 838 006e 80FC078E 		.ascii	"\200\374\007\216\000|\0030\000\030\000\000\000\000\000"
+ 838      007C0330 
+ 838      00180000 
+ 838      000000
+ 839 007d 000000   		.ascii	"\000\000\000"
+ 840              		.global	acFontHZSimSun_32_babc
+ 841              		.section	.rodata.acFontHZSimSun_32_babc,"a"
+ 842              		.align	2
+ 845              	acFontHZSimSun_32_babc:
+ 846 0000 00000000 		.ascii	"\000\000\000\000\003\000@\000\003\2000\000\003\200\030"
+ 846      03004000 
+ 846      03803000 
+ 846      038018
+ 847 000f 0003801C 		.ascii	"\000\003\200\034\000\003\200\034\000\003\200\0100\003"
+ 847      0003801C 
+ 847      00038008 
+ 847      3003
+ 848 001d 87FFF803 		.ascii	"\207\377\370\003\260\000\000\177\370\000\000\003\200"
+ 848      B000007F 
+ 848      F8000003 
+ 848      80
+ 849 002a 00000380 		.ascii	"\000\000\003\200\001\000\003\201\377\200\007\201\303"
+ 849      01000381 
+ 849      FF800781 
+ 849      C3
+ 850 0037 0007E1C3 		.ascii	"\000\007\341\303\000\007\361\303\000\017\271\303\000"
+ 850      0007F1C3 
+ 850      000FB9C3 
+ 850      00
+ 851 0044 0FB9C300 		.ascii	"\017\271\303\000\033\221\303\000\033\201\303\000\023"
+ 851      1B91C300 
+ 851      1B81C300 
+ 851      13
+ 852 0051 81C30033 		.ascii	"\201\303\0003\201\303\000c\201\203\010C\201\203\010"
+ 852      81C30063 
+ 852      81830843 
+ 852      818308
+ 853 0060 03830308 		.ascii	"\003\203\003\010\003\203\003\014\003\206\003\374\003"
+ 853      0383030C 
+ 853      038603FC 
+ 853      03
+ 854 006d 8C01FC03 		.ascii	"\214\001\374\003\270\000\000\003`\000\000\000\000\000"
+ 854      B8000003 
+ 854      60000000 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 19
+
+
+ 854      0000
+ 855 007b 00000000 		.ascii	"\000\000\000\000\000"
+ 855      00
+ 856              		.global	acFontHZSimSun_32_b5e7
+ 857              		.section	.rodata.acFontHZSimSun_32_b5e7,"a"
+ 858              		.align	2
+ 861              	acFontHZSimSun_32_b5e7:
+ 862 0000 00000000 		.ascii	"\000\000\000\000\000\003\000\000\000\003\200\000\000"
+ 862      00030000 
+ 862      00038000 
+ 862      00
+ 863 000d 03000000 		.ascii	"\003\000\000\000\003\000\000\000\003\000\000\004\003"
+ 863      03000000 
+ 863      03000004 
+ 863      03
+ 864 001a 00C007FF 		.ascii	"\000\300\007\377\377\340\006\003\000\300\006\003\000"
+ 864      FFE00603 
+ 864      00C00603 
+ 864      00
+ 865 0027 C0060300 		.ascii	"\300\006\003\000\300\006\003\000\300\006\003\000\300"
+ 865      C0060300 
+ 865      C0060300 
+ 865      C0
+ 866 0034 07FFFFC0 		.ascii	"\007\377\377\300\006\003\000\300\006\003\000\300\006"
+ 866      060300C0 
+ 866      060300C0 
+ 866      06
+ 867 0041 0300C006 		.ascii	"\003\000\300\006\003\000\300\006\003\000\300\006\003"
+ 867      0300C006 
+ 867      0300C006 
+ 867      03
+ 868 004e 00C007FF 		.ascii	"\000\300\007\377\377\300\006\003\000\300\006\003\000"
+ 868      FFC00603 
+ 868      00C00603 
+ 868      00
+ 869 005b 18040300 		.ascii	"\030\004\003\000\030\000\003\000\030\000\003\000\030"
+ 869      18000300 
+ 869      18000300 
+ 869      18
+ 870 0068 0003001C 		.ascii	"\000\003\000\034\000\003\377\374\000\001\377\370\000"
+ 870      0003FFFC 
+ 870      0001FFF8 
+ 870      00
+ 871 0075 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000"
+ 871      00000000 
+ 871      000000
+ 872              		.global	acFontHZSimSun_32_b4f3
+ 873              		.section	.rodata.acFontHZSimSun_32_b4f3,"a"
+ 874              		.align	2
+ 877              	acFontHZSimSun_32_b4f3:
+ 878 0000 00000000 		.ascii	"\000\000\000\000\000\003\000\000\000\003\200\000\000"
+ 878      00030000 
+ 878      00038000 
+ 878      00
+ 879 000d 03800000 		.ascii	"\003\200\000\000\003\200\000\000\003\200\000\000\003"
+ 879      03800000 
+ 879      03800000 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 20
+
+
+ 879      03
+ 880 001a 80000003 		.ascii	"\200\000\000\003\200\020\000\003\2008?\377\377\374\000"
+ 880      80100003 
+ 880      80383FFF 
+ 880      FFFC00
+ 881 0029 03800000 		.ascii	"\003\200\000\000\003\200\000\000\003\200\000\000\003"
+ 881      03800000 
+ 881      03800000 
+ 881      03
+ 882 0036 C0000003 		.ascii	"\300\000\000\003\300\000\000\003@\000\000\007`\000\000"
+ 882      C0000003 
+ 882      40000007 
+ 882      600000
+ 883 0045 06200000 		.ascii	"\006 \000\000\0060\000\000\016\030\000\000\014\030\000"
+ 883      06300000 
+ 883      0E180000 
+ 883      0C1800
+ 884 0054 001C0C00 		.ascii	"\000\034\014\000\000\030\006\000\0000\007\000\000`\003"
+ 884      00180600 
+ 884      00300700 
+ 884      006003
+ 885 0063 C000C001 		.ascii	"\300\000\300\001\340\001\200\000\374\007\000\000|\034"
+ 885      E0018000 
+ 885      FC070000 
+ 885      7C1C
+ 886 0071 00001030 		.ascii	"\000\000\0200\000\000\000\000\000\000\000\000\000\000"
+ 886      00000000 
+ 886      00000000 
+ 886      0000
+ 887 007f 00       		.ascii	"\000"
+ 888              		.global	acFontHZSimSun_32_007f
+ 889              		.section	.rodata.acFontHZSimSun_32_007f,"a"
+ 890              		.align	2
+ 893              	acFontHZSimSun_32_007f:
+ 894 0000 00000000 		.space	64
+ 894      00000000 
+ 894      00000000 
+ 894      00000000 
+ 894      00000000 
+ 895              		.global	acFontHZSimSun_32_007e
+ 896              		.section	.rodata.acFontHZSimSun_32_007e,"a"
+ 897              		.align	2
+ 900              	acFontHZSimSun_32_007e:
+ 901 0000 1E003700 		.ascii	"\036\0007\000c\202A\302\000\354\000x\000\000\000\000"
+ 901      638241C2 
+ 901      00EC0078 
+ 901      00000000 
+ 902 0010 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 902      00000000 
+ 902      00000000 
+ 902      00
+ 903 001d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 903      00000000 
+ 903      00000000 
+ 903      00
+ 904 002a 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 904      00000000 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 21
+
+
+ 904      00000000 
+ 904      00
+ 905 0037 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000"
+ 905      00000000 
+ 905      00
+ 906              		.global	acFontHZSimSun_32_007d
+ 907              		.section	.rodata.acFontHZSimSun_32_007d,"a"
+ 908              		.align	2
+ 911              	acFontHZSimSun_32_007d:
+ 912 0000 00003800 		.ascii	"\000\0008\000\014\000\004\000\006\000\006\000\006\000"
+ 912      0C000400 
+ 912      06000600 
+ 912      0600
+ 913 000e 06000600 		.ascii	"\006\000\006\000\006\000\006\000\006\000\006\000\006"
+ 913      06000600 
+ 913      06000600 
+ 913      06
+ 914 001b 00030001 		.ascii	"\000\003\000\001\300\003\000\006\000\006\000\006\000"
+ 914      C0030006 
+ 914      00060006 
+ 914      00
+ 915 0028 06000600 		.ascii	"\006\000\006\000\006\000\006\000\006\000\006\000\006"
+ 915      06000600 
+ 915      06000600 
+ 915      06
+ 916 0035 0004000C 		.ascii	"\000\004\000\014\0008\000\000\000\000\000"
+ 916      00380000 
+ 916      000000
+ 917              		.global	acFontHZSimSun_32_007c
+ 918              		.section	.rodata.acFontHZSimSun_32_007c,"a"
+ 919              		.align	2
+ 922              	acFontHZSimSun_32_007c:
+ 923 0000 01800180 		.ascii	"\001\200\001\200\001\200\001\200\001\200\001\200\001"
+ 923      01800180 
+ 923      01800180 
+ 923      01
+ 924 000d 80018001 		.ascii	"\200\001\200\001\200\001\200\001\200\001\200\001\200"
+ 924      80018001 
+ 924      80018001 
+ 924      80
+ 925 001a 01800180 		.ascii	"\001\200\001\200\001\200\001\200\001\200\001\200\001"
+ 925      01800180 
+ 925      01800180 
+ 925      01
+ 926 0027 80018001 		.ascii	"\200\001\200\001\200\001\200\001\200\001\200\001\200"
+ 926      80018001 
+ 926      80018001 
+ 926      80
+ 927 0034 01800180 		.ascii	"\001\200\001\200\001\200\001\200\001\200\000\000"
+ 927      01800180 
+ 927      01800000 
+ 928              		.global	acFontHZSimSun_32_007b
+ 929              		.section	.rodata.acFontHZSimSun_32_007b,"a"
+ 930              		.align	2
+ 933              	acFontHZSimSun_32_007b:
+ 934 0000 0000001C 		.ascii	"\000\000\000\034\0000\000 \000`\000`\000`\000`\000`"
+ 934      00300020 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 22
+
+
+ 934      00600060 
+ 934      00600060 
+ 934      0060
+ 935 0012 00600060 		.ascii	"\000`\000`\000`\000`\000`\000\300\003\200\000\300\000"
+ 935      00600060 
+ 935      006000C0 
+ 935      038000C0 
+ 935      00
+ 936 0023 60006000 		.ascii	"`\000`\000`\000`\000`\000`\000`\000`\000`\000`\000 "
+ 936      60006000 
+ 936      60006000 
+ 936      60006000 
+ 936      60006000 
+ 937 0038 0030001C 		.ascii	"\0000\000\034\000\000\000\000"
+ 937      00000000 
+ 938              		.global	acFontHZSimSun_32_007a
+ 939              		.section	.rodata.acFontHZSimSun_32_007a,"a"
+ 940              		.align	2
+ 943              	acFontHZSimSun_32_007a:
+ 944 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 944      00000000 
+ 944      00000000 
+ 944      00
+ 945 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000?\37088"
+ 945      00000000 
+ 945      0000003F 
+ 945      F83838
+ 946 001c 30303070 		.ascii	"000p \340\000\300\001\300\003\200\003\000\007\000\016"
+ 946      20E000C0 
+ 946      01C00380 
+ 946      03000700 
+ 946      0E
+ 947 002d 040C0C1C 		.ascii	"\004\014\014\034\01488?\370\000\000\000\000\000\000"
+ 947      0C38383F 
+ 947      F8000000 
+ 947      000000
+ 948 003c 00000000 		.ascii	"\000\000\000\000"
+ 949              		.global	acFontHZSimSun_32_0079
+ 950              		.section	.rodata.acFontHZSimSun_32_0079,"a"
+ 951              		.align	2
+ 954              	acFontHZSimSun_32_0079:
+ 955 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 955      00000000 
+ 955      00000000 
+ 955      00
+ 956 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000~~\034\030"
+ 956      00000000 
+ 956      0000007E 
+ 956      7E1C18
+ 957 001c 1C180C10 		.ascii	"\034\030\014\020\0140\0160\006 \006`\003`\003@\003\300"
+ 957      0C300E30 
+ 957      06200660 
+ 957      03600340 
+ 957      03C0
+ 958 002e 01C00180 		.ascii	"\001\300\001\200\001\200\001\200\001\000\023\000>\000"
+ 958      01800180 
+ 958      01001300 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 23
+
+
+ 958      3E00
+ 959 003c 3C000000 		.ascii	"<\000\000\000"
+ 960              		.global	acFontHZSimSun_32_0078
+ 961              		.section	.rodata.acFontHZSimSun_32_0078,"a"
+ 962              		.align	2
+ 965              	acFontHZSimSun_32_0078:
+ 966 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 966      00000000 
+ 966      00000000 
+ 966      00
+ 967 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000?|\034\030"
+ 967      00000000 
+ 967      0000003F 
+ 967      7C1C18
+ 968 001c 0E300620 		.ascii	"\0160\006 \007`\003\300\003\200\001\300\003\300\002"
+ 968      076003C0 
+ 968      038001C0 
+ 968      03C002
+ 969 002b E006600C 		.ascii	"\340\006`\0140\0108\0308|~\000\000\000\000\000\000\000"
+ 969      30083818 
+ 969      387C7E00 
+ 969      00000000 
+ 969      0000
+ 970 003d 000000   		.ascii	"\000\000\000"
+ 971              		.global	acFontHZSimSun_32_0077
+ 972              		.section	.rodata.acFontHZSimSun_32_0077,"a"
+ 973              		.align	2
+ 976              	acFontHZSimSun_32_0077:
+ 977 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 977      00000000 
+ 977      00000000 
+ 977      00
+ 978 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\377\337"
+ 978      00000000 
+ 978      000000FF 
+ 978      DF
+ 979 001a 71863184 		.ascii	"q\2061\2041\2041\3141\310;\310\033\310\032\370\036p"
+ 979      318431CC 
+ 979      31C83BC8 
+ 979      1BC81AF8 
+ 979      1E70
+ 980 002c 1E700E70 		.ascii	"\036p\016p\014p\014 \014 \000\000\000\000\000\000\000"
+ 980      0C700C20 
+ 980      0C200000 
+ 980      00000000 
+ 980      00
+ 981 003d 000000   		.ascii	"\000\000\000"
+ 982              		.global	acFontHZSimSun_32_0076
+ 983              		.section	.rodata.acFontHZSimSun_32_0076,"a"
+ 984              		.align	2
+ 987              	acFontHZSimSun_32_0076:
+ 988 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 988      00000000 
+ 988      00000000 
+ 988      00
+ 989 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000~>\030\030"
+ 989      00000000 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 24
+
+
+ 989      0000007E 
+ 989      3E1818
+ 990 001c 18181C10 		.ascii	"\030\030\034\020\014\020\0140\016 \006`\006`\007@\003"
+ 990      0C100C30 
+ 990      0E200660 
+ 990      06600740 
+ 990      03
+ 991 002d C003C003 		.ascii	"\300\003\300\003\200\001\200\001\200\000\000\000\000"
+ 991      80018001 
+ 991      80000000 
+ 991      00
+ 992 003a 00000000 		.ascii	"\000\000\000\000\000\000"
+ 992      0000
+ 993              		.global	acFontHZSimSun_32_0075
+ 994              		.section	.rodata.acFontHZSimSun_32_0075,"a"
+ 995              		.align	2
+ 998              	acFontHZSimSun_32_0075:
+ 999 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 999      00000000 
+ 999      00000000 
+ 999      00
+ 1000 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\030\010\370x8\030"
+ 1000      00000000 
+ 1000      001808F8 
+ 1000      783818
+ 1001 001c 38183818 		.ascii	"8\0308\0308\0308\0308\0308\0308\0308\0308\0308\030\030"
+ 1001      38183818 
+ 1001      38183818 
+ 1001      38183818 
+ 1001      38183818 
+ 1002 0031 381C7E0F 		.ascii	"8\034~\017\330\000\000\000\000\000\000\000\000\000\000"
+ 1002      D8000000 
+ 1002      00000000 
+ 1002      000000
+ 1003              		.global	acFontHZSimSun_32_0074
+ 1004              		.section	.rodata.acFontHZSimSun_32_0074,"a"
+ 1005              		.align	2
+ 1008              	acFontHZSimSun_32_0074:
+ 1009 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1009      00000000 
+ 1009      00000000 
+ 1009      00
+ 1010 000d 00030003 		.ascii	"\000\003\000\003\000\003\000\003\000\017\000?\370\007"
+ 1010      00030003 
+ 1010      000F003F 
+ 1010      F807
+ 1011 001b 00070007 		.ascii	"\000\007\000\007\000\007\000\007\000\007\000\007\000"
+ 1011      00070007 
+ 1011      00070007 
+ 1011      00
+ 1012 0028 07000700 		.ascii	"\007\000\007\000\003\000\003\004\003\010\003\230\001"
+ 1012      03000304 
+ 1012      03080398 
+ 1012      01
+ 1013 0035 F0000000 		.ascii	"\360\000\000\000\000\000\000\000\000\000\000"
+ 1013      00000000 
+ 1013      000000
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 25
+
+
+ 1014              		.global	acFontHZSimSun_32_0073
+ 1015              		.section	.rodata.acFontHZSimSun_32_0073,"a"
+ 1016              		.align	2
+ 1019              	acFontHZSimSun_32_0073:
+ 1020 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1020      00000000 
+ 1020      00000000 
+ 1020      00
+ 1021 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\007\370"
+ 1021      00000000 
+ 1021      00000007 
+ 1021      F8
+ 1022 001a 0C381818 		.ascii	"\0148\030\030\030\010\030\010\034\000\017\200\003\360"
+ 1022      18081808 
+ 1022      1C000F80 
+ 1022      03F0
+ 1023 0028 00F8001C 		.ascii	"\000\370\000\0340\0140\014\030\014\034\030\037\360\000"
+ 1023      300C300C 
+ 1023      180C1C18 
+ 1023      1FF000
+ 1024 0037 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000"
+ 1024      00000000 
+ 1024      00
+ 1025              		.global	acFontHZSimSun_32_0072
+ 1026              		.section	.rodata.acFontHZSimSun_32_0072,"a"
+ 1027              		.align	2
+ 1030              	acFontHZSimSun_32_0072:
+ 1031 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1031      00000000 
+ 1031      00000000 
+ 1031      00
+ 1032 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000~<~\316"
+ 1032      00000000 
+ 1032      0000007E 
+ 1032      3C7ECE
+ 1033 001c 0F8E0F04 		.ascii	"\017\216\017\004\016\000\016\000\016\000\016\000\016"
+ 1033      0E000E00 
+ 1033      0E000E00 
+ 1033      0E
+ 1034 0029 000E000E 		.ascii	"\000\016\000\016\000\016\000\016\000\016\000\177\340"
+ 1034      000E000E 
+ 1034      000E007F 
+ 1034      E0
+ 1035 0036 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000"
+ 1035      00000000 
+ 1035      0000
+ 1036              		.global	acFontHZSimSun_32_0071
+ 1037              		.section	.rodata.acFontHZSimSun_32_0071,"a"
+ 1038              		.align	2
+ 1041              	acFontHZSimSun_32_0071:
+ 1042 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1042      00000000 
+ 1042      00000000 
+ 1042      00
+ 1043 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\007\310"
+ 1043      00000000 
+ 1043      00000007 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 26
+
+
+ 1043      C8
+ 1044 001a 0E781838 		.ascii	"\016x\03088\0300\0300\030p\030p\030p\0300\0300\0300"
+ 1044      38183018 
+ 1044      30187018 
+ 1044      70187018 
+ 1044      30183018 
+ 1045 002f 1818381C 		.ascii	"\030\0308\034x\007\330\000\030\000\030\000\034\000~"
+ 1045      7807D800 
+ 1045      18001800 
+ 1045      1C007E
+ 1046 003e 0000     		.ascii	"\000\000"
+ 1047              		.global	acFontHZSimSun_32_0070
+ 1048              		.section	.rodata.acFontHZSimSun_32_0070,"a"
+ 1049              		.align	2
+ 1052              	acFontHZSimSun_32_0070:
+ 1053 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1053      00000000 
+ 1053      00000000 
+ 1053      00
+ 1054 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000{\360~8"
+ 1054      00000000 
+ 1054      0000007B 
+ 1054      F07E38
+ 1055 001c 3C1C380C 		.ascii	"<\0348\0148\0148\0168\0168\0168\0168\0168\0148\0148"
+ 1055      380C380E 
+ 1055      380E380E 
+ 1055      380E380E 
+ 1055      380C380C 
+ 1056 0031 183E383B 		.ascii	"\030>8;\3408\0008\0008\000~\000\000\000"
+ 1056      E0380038 
+ 1056      0038007E 
+ 1056      000000
+ 1057              		.global	acFontHZSimSun_32_006f
+ 1058              		.section	.rodata.acFontHZSimSun_32_006f,"a"
+ 1059              		.align	2
+ 1062              	acFontHZSimSun_32_006f:
+ 1063 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1063      00000000 
+ 1063      00000000 
+ 1063      00
+ 1064 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\007\340"
+ 1064      00000000 
+ 1064      00000007 
+ 1064      E0
+ 1065 001a 0E701818 		.ascii	"\016p\030\0308\0340\014p\016p\016p\016p\016p\0160\014"
+ 1065      381C300C 
+ 1065      700E700E 
+ 1065      700E700E 
+ 1065      700E300C 
+ 1066 002e 300C1818 		.ascii	"0\014\030\030\0140\007\340\000\000\000\000\000\000\000"
+ 1066      0C3007E0 
+ 1066      00000000 
+ 1066      000000
+ 1067 003d 000000   		.ascii	"\000\000\000"
+ 1068              		.global	acFontHZSimSun_32_006e
+ 1069              		.section	.rodata.acFontHZSimSun_32_006e,"a"
+ 1070              		.align	2
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 27
+
+
+ 1073              	acFontHZSimSun_32_006e:
+ 1074 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1074      00000000 
+ 1074      00000000 
+ 1074      00
+ 1075 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000y\360\177"
+ 1075      00000000 
+ 1075      00000079 
+ 1075      F07F
+ 1076 001b 383C1838 		.ascii	"8<\0308\0308\0308\0348\0348\0348\0348\0348\0348\034"
+ 1076      18381838 
+ 1076      1C381C38 
+ 1076      1C381C38 
+ 1076      1C381C38 
+ 1077 0030 381C381C 		.ascii	"8\0348\034~~\000\000\000\000\000\000\000\000\000\000"
+ 1077      7E7E0000 
+ 1077      00000000 
+ 1077      00000000 
+ 1078              		.global	acFontHZSimSun_32_006d
+ 1079              		.section	.rodata.acFontHZSimSun_32_006d,"a"
+ 1080              		.align	2
+ 1083              	acFontHZSimSun_32_006d:
+ 1084 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1084      00000000 
+ 1084      00000000 
+ 1084      00
+ 1085 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\377<y\356"
+ 1085      00000000 
+ 1085      000000FF 
+ 1085      3C79EE
+ 1086 001c 71C67186 		.ascii	"q\306q\206q\206q\206q\206q\206q\206q\206q\206q\206q"
+ 1086      71867186 
+ 1086      71867186 
+ 1086      71867186 
+ 1086      71867186 
+ 1087 0031 867186FB 		.ascii	"\206q\206\373\377\000\000\000\000\000\000\000\000\000"
+ 1087      FF000000 
+ 1087      00000000 
+ 1087      0000
+ 1088 003f 00       		.ascii	"\000"
+ 1089              		.global	acFontHZSimSun_32_006c
+ 1090              		.section	.rodata.acFontHZSimSun_32_006c,"a"
+ 1091              		.align	2
+ 1094              	acFontHZSimSun_32_006c:
+ 1095 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\001\200\037\200\001"
+ 1095      00000000 
+ 1095      01801F80 
+ 1095      01
+ 1096 000d 80018001 		.ascii	"\200\001\200\001\200\001\200\001\200\001\200\001\200"
+ 1096      80018001 
+ 1096      80018001 
+ 1096      80
+ 1097 001a 01800180 		.ascii	"\001\200\001\200\001\200\001\200\001\200\001\200\001"
+ 1097      01800180 
+ 1097      01800180 
+ 1097      01
+ 1098 0027 80018001 		.ascii	"\200\001\200\001\200\001\200\001\200\001\200\001\200"
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 28
+
+
+ 1098      80018001 
+ 1098      80018001 
+ 1098      80
+ 1099 0034 1FF80000 		.ascii	"\037\370\000\000\000\000\000\000\000\000\000\000"
+ 1099      00000000 
+ 1099      00000000 
+ 1100              		.global	acFontHZSimSun_32_006b
+ 1101              		.section	.rodata.acFontHZSimSun_32_006b,"a"
+ 1102              		.align	2
+ 1105              	acFontHZSimSun_32_006b:
+ 1106 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\030\000x\0008\000\030"
+ 1106      00000000 
+ 1106      18007800 
+ 1106      380018
+ 1107 000f 00180018 		.ascii	"\000\030\000\030\000\030\000\030\000\030\374\0300\030"
+ 1107      00180018 
+ 1107      0018FC18 
+ 1107      3018
+ 1108 001d 6018C018 		.ascii	"`\030\300\030\200\031\200\033\200\037\300\034\340\030"
+ 1108      8019801B 
+ 1108      801FC01C 
+ 1108      E018
+ 1109 002b 60187018 		.ascii	"`\030p\0300\03088\034~>\000\000\000\000\000\000\000"
+ 1109      30183838 
+ 1109      1C7E3E00 
+ 1109      00000000 
+ 1109      0000
+ 1110 003d 000000   		.ascii	"\000\000\000"
+ 1111              		.global	acFontHZSimSun_32_006a
+ 1112              		.section	.rodata.acFontHZSimSun_32_006a,"a"
+ 1113              		.align	2
+ 1116              	acFontHZSimSun_32_006a:
+ 1117 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\0008\0008\000"
+ 1117      00000000 
+ 1117      00000038 
+ 1117      003800
+ 1118 000f 38000000 		.ascii	"8\000\000\000\000\000\000\000\030\001\370\0008\0008"
+ 1118      00000000 
+ 1118      1801F800 
+ 1118      380038
+ 1119 001e 00380038 		.ascii	"\0008\0008\0008\0008\0008\0008\0008\0008\0008\0008\000"
+ 1119      00380038 
+ 1119      00380038 
+ 1119      00380038 
+ 1119      00380038 
+ 1120 0033 38003010 		.ascii	"8\0000\0200808`\037\200\000\000"
+ 1120      30383038 
+ 1120      601F8000 
+ 1120      00
+ 1121              		.global	acFontHZSimSun_32_0069
+ 1122              		.section	.rodata.acFontHZSimSun_32_0069,"a"
+ 1123              		.align	2
+ 1126              	acFontHZSimSun_32_0069:
+ 1127 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\001\300\003"
+ 1127      00000000 
+ 1127      000001C0 
+ 1127      03
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 29
+
+
+ 1128 000d C0018000 		.ascii	"\300\001\200\000\000\000\000\000\000\001\200\037\200"
+ 1128      00000000 
+ 1128      0001801F 
+ 1128      80
+ 1129 001a 01800180 		.ascii	"\001\200\001\200\001\200\001\200\001\200\001\200\001"
+ 1129      01800180 
+ 1129      01800180 
+ 1129      01
+ 1130 0027 80018001 		.ascii	"\200\001\200\001\200\001\200\001\200\001\200\001\200"
+ 1130      80018001 
+ 1130      80018001 
+ 1130      80
+ 1131 0034 1FF80000 		.ascii	"\037\370\000\000\000\000\000\000\000\000\000\000"
+ 1131      00000000 
+ 1131      00000000 
+ 1132              		.global	acFontHZSimSun_32_0068
+ 1133              		.section	.rodata.acFontHZSimSun_32_0068,"a"
+ 1134              		.align	2
+ 1137              	acFontHZSimSun_32_0068:
+ 1138 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\030\000x\0008\0008"
+ 1138      00000000 
+ 1138      18007800 
+ 1138      380038
+ 1139 000f 00380038 		.ascii	"\0008\0008\0008\0008\0009\360?8<\0308\0308\0308\034"
+ 1139      00380038 
+ 1139      0039F03F 
+ 1139      383C1838 
+ 1139      18381838 
+ 1140 0024 381C381C 		.ascii	"8\0348\0348\0348\0348\0348\0348\0348\034~~\000\000\000"
+ 1140      381C381C 
+ 1140      381C381C 
+ 1140      381C381C 
+ 1140      7E7E0000 
+ 1141 0039 00000000 		.ascii	"\000\000\000\000\000\000\000"
+ 1141      000000
+ 1142              		.global	acFontHZSimSun_32_0067
+ 1143              		.section	.rodata.acFontHZSimSun_32_0067,"a"
+ 1144              		.align	2
+ 1147              	acFontHZSimSun_32_0067:
+ 1148 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1148      00000000 
+ 1148      00000000 
+ 1148      00
+ 1149 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\007\356"
+ 1149      00000000 
+ 1149      00000007 
+ 1149      EE
+ 1150 001a 0C7E1830 		.ascii	"\014~\0300\030\0308\0308\030\0300\014p\017\340\030\000"
+ 1150      18183818 
+ 1150      38181830 
+ 1150      0C700FE0 
+ 1150      1800
+ 1151 002c 18001FE0 		.ascii	"\030\000\037\340\037\3700\0340\0140\0140\014\0348\017"
+ 1151      1FF8301C 
+ 1151      300C300C 
+ 1151      300C1C38 
+ 1151      0F
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 30
+
+
+ 1152 003d F00000   		.ascii	"\360\000\000"
+ 1153              		.global	acFontHZSimSun_32_0066
+ 1154              		.section	.rodata.acFontHZSimSun_32_0066,"a"
+ 1155              		.align	2
+ 1158              	acFontHZSimSun_32_0066:
+ 1159 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\374\001"
+ 1159      00000000 
+ 1159      000000FC 
+ 1159      01
+ 1160 000d 8E030603 		.ascii	"\216\003\006\003\006\007\000\007\000\007\000\177\370"
+ 1160      06070007 
+ 1160      0007007F 
+ 1160      F8
+ 1161 001a 07000700 		.ascii	"\007\000\007\000\007\000\007\000\007\000\007\000\007"
+ 1161      07000700 
+ 1161      07000700 
+ 1161      07
+ 1162 0027 00070007 		.ascii	"\000\007\000\007\000\007\000\007\000\007\000\007\000"
+ 1162      00070007 
+ 1162      00070007 
+ 1162      00
+ 1163 0034 3FF00000 		.ascii	"?\360\000\000\000\000\000\000\000\000\000\000"
+ 1163      00000000 
+ 1163      00000000 
+ 1164              		.global	acFontHZSimSun_32_0065
+ 1165              		.section	.rodata.acFontHZSimSun_32_0065,"a"
+ 1166              		.align	2
+ 1169              	acFontHZSimSun_32_0065:
+ 1170 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1170      00000000 
+ 1170      00000000 
+ 1170      00
+ 1171 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\007\340"
+ 1171      00000000 
+ 1171      00000007 
+ 1171      E0
+ 1172 001a 0E301C18 		.ascii	"\0160\034\030\030\0348\0140\0140\014?\3740\0000\000"
+ 1172      181C380C 
+ 1172      300C300C 
+ 1172      3FFC3000 
+ 1172      3000
+ 1173 002c 38001804 		.ascii	"8\000\030\004\030\010\0168\007\340\000\000\000\000\000"
+ 1173      18080E38 
+ 1173      07E00000 
+ 1173      000000
+ 1174 003b 00000000 		.ascii	"\000\000\000\000\000"
+ 1174      00
+ 1175              		.global	acFontHZSimSun_32_0064
+ 1176              		.section	.rodata.acFontHZSimSun_32_0064,"a"
+ 1177              		.align	2
+ 1180              	acFontHZSimSun_32_0064:
+ 1181 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\014\000|\000\034"
+ 1181      00000000 
+ 1181      000C007C 
+ 1181      001C
+ 1182 000e 001C001C 		.ascii	"\000\034\000\034\000\034\000\034\000\034\007\334\016"
+ 1182      001C001C 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 31
+
+
+ 1182      001C07DC 
+ 1182      0E
+ 1183 001b 7C181C38 		.ascii	"|\030\0348\0348\0340\0340\0340\0340\0340\0340\0348\034"
+ 1183      1C381C30 
+ 1183      1C301C30 
+ 1183      1C301C30 
+ 1183      1C301C38 
+ 1184 0030 183C0C7E 		.ascii	"\030<\014~\007\330\000\000\000\000\000\000\000\000\000"
+ 1184      07D80000 
+ 1184      00000000 
+ 1184      000000
+ 1185 003f 00       		.ascii	"\000"
+ 1186              		.global	acFontHZSimSun_32_0063
+ 1187              		.section	.rodata.acFontHZSimSun_32_0063,"a"
+ 1188              		.align	2
+ 1191              	acFontHZSimSun_32_0063:
+ 1192 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1192      00000000 
+ 1192      00000000 
+ 1192      00
+ 1193 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\003\340"
+ 1193      00000000 
+ 1193      00000003 
+ 1193      E0
+ 1194 001a 0E301C18 		.ascii	"\0160\034\030\030\0308\0300\0000\0000\0000\0000\000"
+ 1194      18183818 
+ 1194      30003000 
+ 1194      30003000 
+ 1194      3000
+ 1195 002c 30043804 		.ascii	"0\0048\004\030\010\0168\007\340\000\000\000\000\000"
+ 1195      18080E38 
+ 1195      07E00000 
+ 1195      000000
+ 1196 003b 00000000 		.ascii	"\000\000\000\000\000"
+ 1196      00
+ 1197              		.global	acFontHZSimSun_32_0062
+ 1198              		.section	.rodata.acFontHZSimSun_32_0062,"a"
+ 1199              		.align	2
+ 1202              	acFontHZSimSun_32_0062:
+ 1203 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\030\000\370\0008\000"
+ 1203      00000000 
+ 1203      1800F800 
+ 1203      3800
+ 1204 000e 38003800 		.ascii	"8\0008\0008\0008\0008\0009\360>8<\0348\0148\0148\014"
+ 1204      38003800 
+ 1204      380039F0 
+ 1204      3E383C1C 
+ 1204      380C380C 
+ 1205 0024 380C380C 		.ascii	"8\0148\0148\0148\0148\0148\0348\030<03\340\000\000\000"
+ 1205      380C380C 
+ 1205      380C381C 
+ 1205      38183C30 
+ 1205      33E00000 
+ 1206 0039 00000000 		.ascii	"\000\000\000\000\000\000\000"
+ 1206      000000
+ 1207              		.global	acFontHZSimSun_32_0061
+ 1208              		.section	.rodata.acFontHZSimSun_32_0061,"a"
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 32
+
+
+ 1209              		.align	2
+ 1212              	acFontHZSimSun_32_0061:
+ 1213 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1213      00000000 
+ 1213      00000000 
+ 1213      00
+ 1214 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\017\340"
+ 1214      00000000 
+ 1214      0000000F 
+ 1214      E0
+ 1215 001a 1C303818 		.ascii	"\03408\0308\030\020\030\000x\007\370\034\0308\030p\030"
+ 1215      38181018 
+ 1215      007807F8 
+ 1215      1C183818 
+ 1215      7018
+ 1216 002c 70187018 		.ascii	"p\030p\030p;8\372\037\236\000\000\000\000\000\000\000"
+ 1216      703B38FA 
+ 1216      1F9E0000 
+ 1216      00000000 
+ 1216      00
+ 1217 003d 000000   		.ascii	"\000\000\000"
+ 1218              		.global	acFontHZSimSun_32_0060
+ 1219              		.section	.rodata.acFontHZSimSun_32_0060,"a"
+ 1220              		.align	2
+ 1223              	acFontHZSimSun_32_0060:
+ 1224 0000 00001E00 		.ascii	"\000\000\036\000\007\000\001\200\000\000\000\000\000"
+ 1224      07000180 
+ 1224      00000000 
+ 1224      00
+ 1225 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1225      00000000 
+ 1225      00000000 
+ 1225      00
+ 1226 001a 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1226      00000000 
+ 1226      00000000 
+ 1226      00
+ 1227 0027 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1227      00000000 
+ 1227      00000000 
+ 1227      00
+ 1228 0034 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1228      00000000 
+ 1228      00000000 
+ 1229              		.global	acFontHZSimSun_32_005f
+ 1230              		.section	.rodata.acFontHZSimSun_32_005f,"a"
+ 1231              		.align	2
+ 1234              	acFontHZSimSun_32_005f:
+ 1235 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1235      00000000 
+ 1235      00000000 
+ 1235      00
+ 1236 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1236      00000000 
+ 1236      00000000 
+ 1236      00
+ 1237 001a 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 33
+
+
+ 1237      00000000 
+ 1237      00000000 
+ 1237      00
+ 1238 0027 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1238      00000000 
+ 1238      00000000 
+ 1238      00
+ 1239 0034 00000000 		.ascii	"\000\000\000\000\000\000\000\000\377\377\000\000"
+ 1239      00000000 
+ 1239      FFFF0000 
+ 1240              		.global	acFontHZSimSun_32_005e
+ 1241              		.section	.rodata.acFontHZSimSun_32_005e,"a"
+ 1242              		.align	2
+ 1245              	acFontHZSimSun_32_005e:
+ 1246 0000 000003C0 		.ascii	"\000\000\003\300\007\340\016p\010\020\000\000\000\000"
+ 1246      07E00E70 
+ 1246      08100000 
+ 1246      0000
+ 1247 000e 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1247      00000000 
+ 1247      00000000 
+ 1247      00
+ 1248 001b 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1248      00000000 
+ 1248      00000000 
+ 1248      00
+ 1249 0028 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1249      00000000 
+ 1249      00000000 
+ 1249      00
+ 1250 0035 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000"
+ 1250      00000000 
+ 1250      000000
+ 1251              		.global	acFontHZSimSun_32_005d
+ 1252              		.section	.rodata.acFontHZSimSun_32_005d,"a"
+ 1253              		.align	2
+ 1256              	acFontHZSimSun_32_005d:
+ 1257 0000 00000000 		.ascii	"\000\000\000\000?\300\000\300\000\300\000\300\000\300"
+ 1257      3FC000C0 
+ 1257      00C000C0 
+ 1257      00C0
+ 1258 000e 00C000C0 		.ascii	"\000\300\000\300\000\300\000\300\000\300\000\300\000"
+ 1258      00C000C0 
+ 1258      00C000C0 
+ 1258      00
+ 1259 001b C000C000 		.ascii	"\300\000\300\000\300\000\300\000\300\000\300\000\300"
+ 1259      C000C000 
+ 1259      C000C000 
+ 1259      C0
+ 1260 0028 00C000C0 		.ascii	"\000\300\000\300\000\300\000\300\000\300\000\300\000"
+ 1260      00C000C0 
+ 1260      00C000C0 
+ 1260      00
+ 1261 0035 C000C03F 		.ascii	"\300\000\300?\300\000\000\000\000\000\000"
+ 1261      C0000000 
+ 1261      000000
+ 1262              		.global	acFontHZSimSun_32_005c
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 34
+
+
+ 1263              		.section	.rodata.acFontHZSimSun_32_005c,"a"
+ 1264              		.align	2
+ 1267              	acFontHZSimSun_32_005c:
+ 1268 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\0000\000\030\000\030\000"
+ 1268      00000000 
+ 1268      30001800 
+ 1268      1800
+ 1269 000e 0C000C00 		.ascii	"\014\000\014\000\014\000\006\000\006\000\003\000\003"
+ 1269      0C000600 
+ 1269      06000300 
+ 1269      03
+ 1270 001b 00030001 		.ascii	"\000\003\000\001\200\001\200\000\300\000\300\000\300"
+ 1270      80018000 
+ 1270      C000C000 
+ 1270      C0
+ 1271 0028 00600060 		.ascii	"\000`\000`\0000\0000\000\030\000\030\000\030\000\014"
+ 1271      00300030 
+ 1271      00180018 
+ 1271      0018000C 
+ 1272 0038 000C0006 		.ascii	"\000\014\000\006\000\000\000\000"
+ 1272      00000000 
+ 1273              		.global	acFontHZSimSun_32_005b
+ 1274              		.section	.rodata.acFontHZSimSun_32_005b,"a"
+ 1275              		.align	2
+ 1278              	acFontHZSimSun_32_005b:
+ 1279 0000 00000000 		.ascii	"\000\000\000\000\003\374\003\000\003\000\003\000\003"
+ 1279      03FC0300 
+ 1279      03000300 
+ 1279      03
+ 1280 000d 00030003 		.ascii	"\000\003\000\003\000\003\000\003\000\003\000\003\000"
+ 1280      00030003 
+ 1280      00030003 
+ 1280      00
+ 1281 001a 03000300 		.ascii	"\003\000\003\000\003\000\003\000\003\000\003\000\003"
+ 1281      03000300 
+ 1281      03000300 
+ 1281      03
+ 1282 0027 00030003 		.ascii	"\000\003\000\003\000\003\000\003\000\003\000\003\000"
+ 1282      00030003 
+ 1282      00030003 
+ 1282      00
+ 1283 0034 03000300 		.ascii	"\003\000\003\000\003\374\000\000\000\000\000\000"
+ 1283      03FC0000 
+ 1283      00000000 
+ 1284              		.global	acFontHZSimSun_32_005a
+ 1285              		.section	.rodata.acFontHZSimSun_32_005a,"a"
+ 1286              		.align	2
+ 1289              	acFontHZSimSun_32_005a:
+ 1290 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\037\376\034"
+ 1290      00000000 
+ 1290      00001FFE 
+ 1290      1C
+ 1291 000d 0C301C30 		.ascii	"\0140\0340\030 8\0000\000`\000\340\000\300\001\300\001"
+ 1291      18203800 
+ 1291      30006000 
+ 1291      E000C001 
+ 1291      C001
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 35
+
+
+ 1292 001f 80038003 		.ascii	"\200\003\200\003\000\007\000\006\000\016\000\014\000"
+ 1292      00070006 
+ 1292      000E000C 
+ 1292      00
+ 1293 002c 1C061804 		.ascii	"\034\006\030\0048\0140\034\177\374\000\000\000\000\000"
+ 1293      380C301C 
+ 1293      7FFC0000 
+ 1293      000000
+ 1294 003b 00000000 		.ascii	"\000\000\000\000\000"
+ 1294      00
+ 1295              		.global	acFontHZSimSun_32_0059
+ 1296              		.section	.rodata.acFontHZSimSun_32_0059,"a"
+ 1297              		.align	2
+ 1300              	acFontHZSimSun_32_0059:
+ 1301 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\376>8\0348"
+ 1301      00000000 
+ 1301      0000FE3E 
+ 1301      381C38
+ 1302 000f 0818181C 		.ascii	"\010\030\030\034\020\0140\0160\016 \006`\007@\007\300"
+ 1302      100C300E 
+ 1302      300E2006 
+ 1302      60074007 
+ 1302      C0
+ 1303 0020 03C00380 		.ascii	"\003\300\003\200\001\200\001\200\001\200\001\200\001"
+ 1303      01800180 
+ 1303      01800180 
+ 1303      01
+ 1304 002d 80018001 		.ascii	"\200\001\200\001\200\003\200\017\340\000\000\000\000"
+ 1304      8003800F 
+ 1304      E0000000 
+ 1304      00
+ 1305 003a 00000000 		.ascii	"\000\000\000\000\000\000"
+ 1305      0000
+ 1306              		.global	acFontHZSimSun_32_0058
+ 1307              		.section	.rodata.acFontHZSimSun_32_0058,"a"
+ 1308              		.align	2
+ 1311              	acFontHZSimSun_32_0058:
+ 1312 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000~>\030\030\030"
+ 1312      00000000 
+ 1312      00007E3E 
+ 1312      181818
+ 1313 000f 181C100C 		.ascii	"\030\034\020\0140\016 \006`\007@\003\300\003\200\001"
+ 1313      300E2006 
+ 1313      60074003 
+ 1313      C0038001 
+ 1314 001f 8001C003 		.ascii	"\200\001\300\003\300\003\340\006\340\006`\004p\0140"
+ 1314      C003E006 
+ 1314      E0066004 
+ 1314      700C30
+ 1315 002e 08381818 		.ascii	"\0108\030\0308\034|?\000\000\000\000\000\000\000\000"
+ 1315      381C7C3F 
+ 1315      00000000 
+ 1315      00000000 
+ 1316 003e 0000     		.ascii	"\000\000"
+ 1317              		.global	acFontHZSimSun_32_0057
+ 1318              		.section	.rodata.acFontHZSimSun_32_0057,"a"
+ 1319              		.align	2
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 36
+
+
+ 1322              	acFontHZSimSun_32_0057:
+ 1323 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\373\357q\206"
+ 1323      00000000 
+ 1323      0000FBEF 
+ 1323      7186
+ 1324 000e 71847184 		.ascii	"q\204q\2041\3041\3041\3141\3141\3109\310\033\310\033"
+ 1324      31C431C4 
+ 1324      31CC31CC 
+ 1324      31C839C8 
+ 1324      1BC81B
+ 1325 0021 E81AF81A 		.ascii	"\350\032\370\032x\036p\036p\036p\014p\014p\0140\014"
+ 1325      781E701E 
+ 1325      701E700C 
+ 1325      700C700C 
+ 1325      300C
+ 1326 0033 200C2000 		.ascii	" \014 \000\000\000\000\000\000\000\000\000\000"
+ 1326      00000000 
+ 1326      00000000 
+ 1326      00
+ 1327              		.global	acFontHZSimSun_32_0056
+ 1328              		.section	.rodata.acFontHZSimSun_32_0056,"a"
+ 1329              		.align	2
+ 1332              	acFontHZSimSun_32_0056:
+ 1333 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\374>8\0148"
+ 1333      00000000 
+ 1333      0000FC3E 
+ 1333      380C38
+ 1334 000f 08380818 		.ascii	"\0108\010\030\030\030\030\034\020\034\020\0140\014 "
+ 1334      1818181C 
+ 1334      101C100C 
+ 1334      300C20
+ 1335 001e 0E200E60 		.ascii	"\016 \016`\006`\006@\007@\007\300\003\300\003\200\003"
+ 1335      06600640 
+ 1335      074007C0 
+ 1335      03C00380 
+ 1335      03
+ 1336 002f 80038001 		.ascii	"\200\003\200\001\200\001\000\000\000\000\000\000\000"
+ 1336      80010000 
+ 1336      00000000 
+ 1336      00
+ 1337 003c 00000000 		.ascii	"\000\000\000\000"
+ 1338              		.global	acFontHZSimSun_32_0055
+ 1339              		.section	.rodata.acFontHZSimSun_32_0055,"a"
+ 1340              		.align	2
+ 1343              	acFontHZSimSun_32_0055:
+ 1344 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\374?8\0148"
+ 1344      00000000 
+ 1344      0000FC3F 
+ 1344      380C38
+ 1345 000f 0C380C38 		.ascii	"\0148\0148\0148\0148\0148\0148\0148\0148\0148\0148\014"
+ 1345      0C380C38 
+ 1345      0C380C38 
+ 1345      0C380C38 
+ 1345      0C380C38 
+ 1346 0024 380C380C 		.ascii	"8\0148\0148\0148\0148\0148\010\030\030\0340\007\340"
+ 1346      380C380C 
+ 1346      380C3808 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 37
+
+
+ 1346      18181C30 
+ 1346      07E0
+ 1347 0036 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000"
+ 1347      00000000 
+ 1347      0000
+ 1348              		.global	acFontHZSimSun_32_0054
+ 1349              		.section	.rodata.acFontHZSimSun_32_0054,"a"
+ 1350              		.align	2
+ 1353              	acFontHZSimSun_32_0054:
+ 1354 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000?\374q\214a"
+ 1354      00000000 
+ 1354      00003FFC 
+ 1354      718C61
+ 1355 000f 86418641 		.ascii	"\206A\206A\202\001\200\001\200\001\200\001\200\001\200"
+ 1355      82018001 
+ 1355      80018001 
+ 1355      800180
+ 1356 001e 01800180 		.ascii	"\001\200\001\200\001\200\001\200\001\200\001\200\001"
+ 1356      01800180 
+ 1356      01800180 
+ 1356      01
+ 1357 002b 80018001 		.ascii	"\200\001\200\001\200\001\200\003\200\017\340\000\000"
+ 1357      80018003 
+ 1357      800FE000 
+ 1357      00
+ 1358 0038 00000000 		.ascii	"\000\000\000\000\000\000\000\000"
+ 1358      00000000 
+ 1359              		.global	acFontHZSimSun_32_0053
+ 1360              		.section	.rodata.acFontHZSimSun_32_0053,"a"
+ 1361              		.align	2
+ 1364              	acFontHZSimSun_32_0053:
+ 1365 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\017\350\030"
+ 1365      00000000 
+ 1365      00000FE8 
+ 1365      18
+ 1366 000d 78301830 		.ascii	"x0\0300\030p\014p\000p\0008\000<\000\037\000\007\340"
+ 1366      18700C70 
+ 1366      00700038 
+ 1366      003C001F 
+ 1366      0007E0
+ 1367 0020 01F00078 		.ascii	"\001\360\000x\000\034\000\014@\014`\014`\0140\0140\030"
+ 1367      001C000C 
+ 1367      400C600C 
+ 1367      600C300C 
+ 1367      3018
+ 1368 0032 3C3837E0 		.ascii	"<87\340\000\000\000\000\000\000\000\000\000\000"
+ 1368      00000000 
+ 1368      00000000 
+ 1368      0000
+ 1369              		.global	acFontHZSimSun_32_0052
+ 1370              		.section	.rodata.acFontHZSimSun_32_0052,"a"
+ 1371              		.align	2
+ 1374              	acFontHZSimSun_32_0052:
+ 1375 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\177\36088\030"
+ 1375      00000000 
+ 1375      00007FF0 
+ 1375      383818
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 38
+
+
+ 1376 000f 1C181C18 		.ascii	"\034\030\034\030\014\030\014\030\014\030\034\030\034"
+ 1376      0C180C18 
+ 1376      0C181C18 
+ 1376      1C
+ 1377 001c 18781FE0 		.ascii	"\030x\037\340\030\300\030\340\030\340\030`\030p\030"
+ 1377      18C018E0 
+ 1377      18E01860 
+ 1377      187018
+ 1378 002b 30183818 		.ascii	"0\0308\0308\030\0308\034~\037\000\000\000\000\000\000"
+ 1378      38181838 
+ 1378      1C7E1F00 
+ 1378      00000000 
+ 1378      00
+ 1379 003c 00000000 		.ascii	"\000\000\000\000"
+ 1380              		.global	acFontHZSimSun_32_0051
+ 1381              		.section	.rodata.acFontHZSimSun_32_0051,"a"
+ 1382              		.align	2
+ 1385              	acFontHZSimSun_32_0051:
+ 1386 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\007\340\016"
+ 1386      00000000 
+ 1386      000007E0 
+ 1386      0E
+ 1387 000d 701C1838 		.ascii	"p\034\0308\0340\014p\016p\016p\016p\016p\016p\016p\016"
+ 1387      1C300C70 
+ 1387      0E700E70 
+ 1387      0E700E70 
+ 1387      0E700E70 
+ 1388 0022 700E700E 		.ascii	"p\016p\016p\016p\016w\216<\3148\374\030x\016p\007\360"
+ 1388      700E700E 
+ 1388      778E3CCC 
+ 1388      38FC1878 
+ 1388      0E7007F0 
+ 1389 0036 0032003C 		.ascii	"\0002\000<\000\034\000\000\000\000"
+ 1389      001C0000 
+ 1389      0000
+ 1390              		.global	acFontHZSimSun_32_0050
+ 1391              		.section	.rodata.acFontHZSimSun_32_0050,"a"
+ 1392              		.align	2
+ 1395              	acFontHZSimSun_32_0050:
+ 1396 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\177\360888"
+ 1396      00000000 
+ 1396      00007FF0 
+ 1396      383838
+ 1397 000f 1C380E38 		.ascii	"\0348\0168\0168\0168\0168\0168\0168\03488?\3608\000"
+ 1397      0E380E38 
+ 1397      0E380E38 
+ 1397      0E381C38 
+ 1397      383FF038 
+ 1398 0024 38003800 		.ascii	"8\0008\0008\0008\0008\0008\0008\0008\000\376\000\000"
+ 1398      38003800 
+ 1398      38003800 
+ 1398      38003800 
+ 1398      FE0000
+ 1399 0037 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000"
+ 1399      00000000 
+ 1399      00
+ 1400              		.global	acFontHZSimSun_32_004f
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 39
+
+
+ 1401              		.section	.rodata.acFontHZSimSun_32_004f,"a"
+ 1402              		.align	2
+ 1405              	acFontHZSimSun_32_004f:
+ 1406 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\007\340\016"
+ 1406      00000000 
+ 1406      000007E0 
+ 1406      0E
+ 1407 000d 301C1818 		.ascii	"0\034\030\030\0348\0140\016p\016p\016p\016p\016p\016"
+ 1407      1C380C30 
+ 1407      0E700E70 
+ 1407      0E700E70 
+ 1407      0E700E
+ 1408 0020 700E700E 		.ascii	"p\016p\016p\016p\016p\0160\0168\014\030\034\034\030"
+ 1408      700E700E 
+ 1408      700E300E 
+ 1408      380C181C 
+ 1408      1C18
+ 1409 0032 0E7003E0 		.ascii	"\016p\003\340\000\000\000\000\000\000\000\000\000\000"
+ 1409      00000000 
+ 1409      00000000 
+ 1409      0000
+ 1410              		.global	acFontHZSimSun_32_004e
+ 1411              		.section	.rodata.acFontHZSimSun_32_004e,"a"
+ 1412              		.align	2
+ 1415              	acFontHZSimSun_32_004e:
+ 1416 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\370?8\014<"
+ 1416      00000000 
+ 1416      0000F83F 
+ 1416      380C3C
+ 1417 000f 043C043E 		.ascii	"\004<\004>\004.\004'\004'\004#\204#\204!\304!\304 \344"
+ 1417      042E0427 
+ 1417      04270423 
+ 1417      84238421 
+ 1417      C421C420 
+ 1418 0024 20E42074 		.ascii	" \344 t | < < \034 \0340\014\374\014\000\000\000\000"
+ 1418      207C203C 
+ 1418      203C201C 
+ 1418      201C300C 
+ 1418      FC0C0000 
+ 1419 003a 00000000 		.ascii	"\000\000\000\000\000\000"
+ 1419      0000
+ 1420              		.global	acFontHZSimSun_32_004d
+ 1421              		.section	.rodata.acFontHZSimSun_32_004d,"a"
+ 1422              		.align	2
+ 1425              	acFontHZSimSun_32_004d:
+ 1426 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\360\037p\034"
+ 1426      00000000 
+ 1426      0000F01F 
+ 1426      701C
+ 1427 000e 381C381C 		.ascii	"8\0348\0348<8<<<<,<l,l,l.L.\314&\314&\314'\214'\214"
+ 1427      383C383C 
+ 1427      3C3C3C2C 
+ 1427      3C6C2C6C 
+ 1427      2C6C2E4C 
+ 1428 002c 278C238C 		.ascii	"'\214#\214#\014c\014\363?\000\000\000\000\000\000\000"
+ 1428      230C630C 
+ 1428      F33F0000 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 40
+
+
+ 1428      00000000 
+ 1428      00
+ 1429 003d 000000   		.ascii	"\000\000\000"
+ 1430              		.global	acFontHZSimSun_32_004c
+ 1431              		.section	.rodata.acFontHZSimSun_32_004c,"a"
+ 1432              		.align	2
+ 1435              	acFontHZSimSun_32_004c:
+ 1436 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000~\000\030\000"
+ 1436      00000000 
+ 1436      00007E00 
+ 1436      1800
+ 1437 000e 18001800 		.ascii	"\030\000\030\000\030\000\030\000\030\000\030\000\030"
+ 1437      18001800 
+ 1437      18001800 
+ 1437      18
+ 1438 001b 00180018 		.ascii	"\000\030\000\030\000\030\000\030\000\030\000\030\000"
+ 1438      00180018 
+ 1438      00180018 
+ 1438      00
+ 1439 0028 18001800 		.ascii	"\030\000\030\000\030\002\030\006\030\006\030\034\177"
+ 1439      18021806 
+ 1439      1806181C 
+ 1439      7F
+ 1440 0035 FC000000 		.ascii	"\374\000\000\000\000\000\000\000\000\000\000"
+ 1440      00000000 
+ 1440      000000
+ 1441              		.global	acFontHZSimSun_32_004b
+ 1442              		.section	.rodata.acFontHZSimSun_32_004b,"a"
+ 1443              		.align	2
+ 1446              	acFontHZSimSun_32_004b:
+ 1447 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\376~8\0308"
+ 1447      00000000 
+ 1447      0000FE7E 
+ 1447      381838
+ 1448 000f 30382038 		.ascii	"08 8`8\3009\2009\000;\000?\200?\200=\3008\3008\3408"
+ 1448      6038C039 
+ 1448      8039003B 
+ 1448      003F803F 
+ 1448      803DC038 
+ 1449 0027 60387038 		.ascii	"`8p8p88888\0308\034\376?\000\000\000\000\000\000\000"
+ 1449      70383838 
+ 1449      38381838 
+ 1449      1CFE3F00 
+ 1449      00000000 
+ 1450 003d 000000   		.ascii	"\000\000\000"
+ 1451              		.global	acFontHZSimSun_32_004a
+ 1452              		.section	.rodata.acFontHZSimSun_32_004a,"a"
+ 1453              		.align	2
+ 1456              	acFontHZSimSun_32_004a:
+ 1457 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\007\377\000"
+ 1457      00000000 
+ 1457      000007FF 
+ 1457      00
+ 1458 000d 70006000 		.ascii	"p\000`\000`\000`\000`\000`\000`\000`\000`\000`\000`"
+ 1458      60006000 
+ 1458      60006000 
+ 1458      60006000 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 41
+
+
+ 1458      60006000 
+ 1459 0022 00600060 		.ascii	"\000`\000`\000`\000`\000`\000`\000`\000`\000`\000`p"
+ 1459      00600060 
+ 1459      00600060 
+ 1459      00600060 
+ 1459      00600060 
+ 1460 0037 6070C071 		.ascii	"`p\300q\300?\000\000\000"
+ 1460      C03F0000 
+ 1460      00
+ 1461              		.global	acFontHZSimSun_32_0049
+ 1462              		.section	.rodata.acFontHZSimSun_32_0049,"a"
+ 1463              		.align	2
+ 1466              	acFontHZSimSun_32_0049:
+ 1467 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\037\370\001"
+ 1467      00000000 
+ 1467      00001FF8 
+ 1467      01
+ 1468 000d 80018001 		.ascii	"\200\001\200\001\200\001\200\001\200\001\200\001\200"
+ 1468      80018001 
+ 1468      80018001 
+ 1468      80
+ 1469 001a 01800180 		.ascii	"\001\200\001\200\001\200\001\200\001\200\001\200\001"
+ 1469      01800180 
+ 1469      01800180 
+ 1469      01
+ 1470 0027 80018001 		.ascii	"\200\001\200\001\200\001\200\001\200\001\200\001\200"
+ 1470      80018001 
+ 1470      80018001 
+ 1470      80
+ 1471 0034 1FF80000 		.ascii	"\037\370\000\000\000\000\000\000\000\000\000\000"
+ 1471      00000000 
+ 1471      00000000 
+ 1472              		.global	acFontHZSimSun_32_0048
+ 1473              		.section	.rodata.acFontHZSimSun_32_0048,"a"
+ 1474              		.align	2
+ 1477              	acFontHZSimSun_32_0048:
+ 1478 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\374?8\0348"
+ 1478      00000000 
+ 1478      0000FC3F 
+ 1478      381C38
+ 1479 000f 1C381C38 		.ascii	"\0348\0348\0348\0348\0348\0348\0348\034?\3748\0348\034"
+ 1479      1C381C38 
+ 1479      1C381C38 
+ 1479      1C381C3F 
+ 1479      FC381C38 
+ 1480 0024 381C381C 		.ascii	"8\0348\0348\0348\0348\0348\0348\0348\034\374?\000\000"
+ 1480      381C381C 
+ 1480      381C381C 
+ 1480      381C381C 
+ 1480      FC3F0000 
+ 1481 0038 00000000 		.ascii	"\000\000\000\000\000\000\000\000"
+ 1481      00000000 
+ 1482              		.global	acFontHZSimSun_32_0047
+ 1483              		.section	.rodata.acFontHZSimSun_32_0047,"a"
+ 1484              		.align	2
+ 1487              	acFontHZSimSun_32_0047:
+ 1488 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\007\350\016"
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 42
+
+
+ 1488      00000000 
+ 1488      000007E8 
+ 1488      0E
+ 1489 000d 381C1818 		.ascii	"8\034\030\030\0100\0140\014p\000p\000p\000`\000`\000"
+ 1489      08300C30 
+ 1489      0C700070 
+ 1489      00700060 
+ 1489      006000
+ 1490 0020 6000607E 		.ascii	"`\000`~`~p\034p\034p\0340\0348\034\030\034\0168\007"
+ 1490      607E701C 
+ 1490      701C701C 
+ 1490      301C381C 
+ 1490      181C0E38 
+ 1491 0035 E0000000 		.ascii	"\340\000\000\000\000\000\000\000\000\000\000"
+ 1491      00000000 
+ 1491      000000
+ 1492              		.global	acFontHZSimSun_32_0046
+ 1493              		.section	.rodata.acFontHZSimSun_32_0046,"a"
+ 1494              		.align	2
+ 1497              	acFontHZSimSun_32_0046:
+ 1498 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\177\3748\036"
+ 1498      00000000 
+ 1498      00007FFC 
+ 1498      381E
+ 1499 000e 38063802 		.ascii	"8\0068\0028\0028\0008\0008\0208\02080?\360808\0208\020"
+ 1499      38023800 
+ 1499      38003810 
+ 1499      38103830 
+ 1499      3FF03830 
+ 1500 0026 38103800 		.ascii	"8\0208\0008\0008\0008\0008\0008\000\376\000\000\000"
+ 1500      38003800 
+ 1500      38003800 
+ 1500      3800FE00 
+ 1500      0000
+ 1501 0038 00000000 		.ascii	"\000\000\000\000\000\000\000\000"
+ 1501      00000000 
+ 1502              		.global	acFontHZSimSun_32_0045
+ 1503              		.section	.rodata.acFontHZSimSun_32_0045,"a"
+ 1504              		.align	2
+ 1507              	acFontHZSimSun_32_0045:
+ 1508 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\177\3748\034"
+ 1508      00000000 
+ 1508      00007FFC 
+ 1508      381C
+ 1509 000e 380C3806 		.ascii	"8\0148\0068\0028\0008\000808080?\3608080808\0008\000"
+ 1509      38023800 
+ 1509      38003830 
+ 1509      38303830 
+ 1509      3FF03830 
+ 1510 002a 38003802 		.ascii	"8\0008\0028\0068\0068\034\177\374\000\000\000\000\000"
+ 1510      38063806 
+ 1510      381C7FFC 
+ 1510      00000000 
+ 1510      00
+ 1511 003b 00000000 		.ascii	"\000\000\000\000\000"
+ 1511      00
+ 1512              		.global	acFontHZSimSun_32_0044
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 43
+
+
+ 1513              		.section	.rodata.acFontHZSimSun_32_0044,"a"
+ 1514              		.align	2
+ 1517              	acFontHZSimSun_32_0044:
+ 1518 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\377\3008\360"
+ 1518      00000000 
+ 1518      0000FFC0 
+ 1518      38F0
+ 1519 000e 3838381C 		.ascii	"888\0348\0348\0148\0168\0168\0168\0168\0168\0168\016"
+ 1519      381C380C 
+ 1519      380E380E 
+ 1519      380E380E 
+ 1519      380E380E 
+ 1520 0024 380E380E 		.ascii	"8\0168\0168\0168\0148\0348\030888\360\377\300\000\000"
+ 1520      380E380C 
+ 1520      381C3818 
+ 1520      383838F0 
+ 1520      FFC00000 
+ 1521 0038 00000000 		.ascii	"\000\000\000\000\000\000\000\000"
+ 1521      00000000 
+ 1522              		.global	acFontHZSimSun_32_0043
+ 1523              		.section	.rodata.acFontHZSimSun_32_0043,"a"
+ 1524              		.align	2
+ 1527              	acFontHZSimSun_32_0043:
+ 1528 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\003\374\016"
+ 1528      00000000 
+ 1528      000003FC 
+ 1528      0E
+ 1529 000d 1C1C0E18 		.ascii	"\034\034\016\030\0068\0060\002p\000p\000p\000p\000p"
+ 1529      06380630 
+ 1529      02700070 
+ 1529      00700070 
+ 1529      0070
+ 1530 001f 00700070 		.ascii	"\000p\000p\000p\000p\000p\000p\0028\0068\004\034\014"
+ 1530      00700070 
+ 1530      00700070 
+ 1530      02380638 
+ 1530      041C0C
+ 1531 0032 0F3807E0 		.ascii	"\0178\007\340\000\000\000\000\000\000\000\000\000\000"
+ 1531      00000000 
+ 1531      00000000 
+ 1531      0000
+ 1532              		.global	acFontHZSimSun_32_0042
+ 1533              		.section	.rodata.acFontHZSimSun_32_0042,"a"
+ 1534              		.align	2
+ 1537              	acFontHZSimSun_32_0042:
+ 1538 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\377\3608x8"
+ 1538      00000000 
+ 1538      0000FFF0 
+ 1538      387838
+ 1539 000f 1C381C38 		.ascii	"\0348\0348\0348\0348\0348\0348\0308p?\340888\0348\014"
+ 1539      1C381C38 
+ 1539      1C381C38 
+ 1539      1838703F 
+ 1539      E0383838 
+ 1540 0026 380E380E 		.ascii	"8\0168\0168\0168\0168\0168\03488\377\360\000\000\000"
+ 1540      380E380E 
+ 1540      380E381C 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 44
+
+
+ 1540      3838FFF0 
+ 1540      000000
+ 1541 0039 00000000 		.ascii	"\000\000\000\000\000\000\000"
+ 1541      000000
+ 1542              		.global	acFontHZSimSun_32_0041
+ 1543              		.section	.rodata.acFontHZSimSun_32_0041,"a"
+ 1544              		.align	2
+ 1547              	acFontHZSimSun_32_0041:
+ 1548 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\001\200\003"
+ 1548      00000000 
+ 1548      00000180 
+ 1548      03
+ 1549 000d 8003C003 		.ascii	"\200\003\300\003\300\002\300\006\300\006\340\004\340"
+ 1549      C002C006 
+ 1549      C006E004 
+ 1549      E0
+ 1550 001a 04600C60 		.ascii	"\004`\014`\014p\010p\0100\037\360\0308\0208\02080\030"
+ 1550      0C700870 
+ 1550      08301FF0 
+ 1550      18381038 
+ 1550      10383018 
+ 1551 002e 3018301C 		.ascii	"0\0300\034p\034\370?\000\000\000\000\000\000\000\000"
+ 1551      701CF83F 
+ 1551      00000000 
+ 1551      00000000 
+ 1552 003e 0000     		.ascii	"\000\000"
+ 1553              		.global	acFontHZSimSun_32_0040
+ 1554              		.section	.rodata.acFontHZSimSun_32_0040,"a"
+ 1555              		.align	2
+ 1558              	acFontHZSimSun_32_0040:
+ 1559 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\003\360\006"
+ 1559      00000000 
+ 1559      000003F0 
+ 1559      06
+ 1560 000d 380C0C18 		.ascii	"8\014\014\030\0060\3761\27232c2f2f2f2f2frfffd6\3743"
+ 1560      0630FE31 
+ 1560      BA333263 
+ 1560      32663266 
+ 1560      32663266 
+ 1561 002b B8300218 		.ascii	"\2700\002\030\006\034\014\0168\003\360\000\000\000\000"
+ 1561      061C0C0E 
+ 1561      3803F000 
+ 1561      000000
+ 1562 003a 00000000 		.ascii	"\000\000\000\000\000\000"
+ 1562      0000
+ 1563              		.global	acFontHZSimSun_32_003f
+ 1564              		.section	.rodata.acFontHZSimSun_32_003f,"a"
+ 1565              		.align	2
+ 1568              	acFontHZSimSun_32_003f:
+ 1569 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\007\340\016"
+ 1569      00000000 
+ 1569      000007E0 
+ 1569      0E
+ 1570 000d 78101C30 		.ascii	"x\020\0340\014 \016p\016x\0168\014\000\034\0008\000"
+ 1570      0C200E70 
+ 1570      0E780E38 
+ 1570      0C001C00 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 45
+
+
+ 1570      3800
+ 1571 001f E001C001 		.ascii	"\340\001\300\001\200\001\000\001\000\001\000\000\000"
+ 1571      80010001 
+ 1571      00010000 
+ 1571      00
+ 1572 002c 00000380 		.ascii	"\000\000\003\200\003\300\003\300\003\200\000\000\000"
+ 1572      03C003C0 
+ 1572      03800000 
+ 1572      00
+ 1573 0039 00000000 		.ascii	"\000\000\000\000\000\000\000"
+ 1573      000000
+ 1574              		.global	acFontHZSimSun_32_003e
+ 1575              		.section	.rodata.acFontHZSimSun_32_003e,"a"
+ 1576              		.align	2
+ 1579              	acFontHZSimSun_32_003e:
+ 1580 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\0000\000\030\000"
+ 1580      00000000 
+ 1580      00003000 
+ 1580      1800
+ 1581 000e 0C000600 		.ascii	"\014\000\006\000\003\000\001\200\000\300\000`\0000\000"
+ 1581      03000180 
+ 1581      00C00060 
+ 1581      003000
+ 1582 001d 18000C00 		.ascii	"\030\000\014\000\014\000\030\0000\000`\000\300\001\200"
+ 1582      0C001800 
+ 1582      30006000 
+ 1582      C00180
+ 1583 002c 03000600 		.ascii	"\003\000\006\000\014\000\030\0000\000\000\000\000\000"
+ 1583      0C001800 
+ 1583      30000000 
+ 1583      0000
+ 1584 003a 00000000 		.ascii	"\000\000\000\000\000\000"
+ 1584      0000
+ 1585              		.global	acFontHZSimSun_32_003d
+ 1586              		.section	.rodata.acFontHZSimSun_32_003d,"a"
+ 1587              		.align	2
+ 1590              	acFontHZSimSun_32_003d:
+ 1591 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1591      00000000 
+ 1591      00000000 
+ 1591      00
+ 1592 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\177\376"
+ 1592      00000000 
+ 1592      0000007F 
+ 1592      FE
+ 1593 001a 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\177\376\000"
+ 1593      00000000 
+ 1593      00007FFE 
+ 1593      00
+ 1594 0027 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1594      00000000 
+ 1594      00000000 
+ 1594      00
+ 1595 0034 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1595      00000000 
+ 1595      00000000 
+ 1596              		.global	acFontHZSimSun_32_003c
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 46
+
+
+ 1597              		.section	.rodata.acFontHZSimSun_32_003c,"a"
+ 1598              		.align	2
+ 1601              	acFontHZSimSun_32_003c:
+ 1602 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\014\000"
+ 1602      00000000 
+ 1602      0000000C 
+ 1602      00
+ 1603 000d 18003000 		.ascii	"\030\0000\000`\000\300\001\200\003\000\006\000\014\000"
+ 1603      6000C001 
+ 1603      80030006 
+ 1603      000C00
+ 1604 001c 18003000 		.ascii	"\030\0000\0000\000\030\000\014\000\006\000\003\000\001"
+ 1604      30001800 
+ 1604      0C000600 
+ 1604      030001
+ 1605 002b 8000C000 		.ascii	"\200\000\300\000`\0000\000\030\000\014\000\000\000\000"
+ 1605      60003000 
+ 1605      18000C00 
+ 1605      000000
+ 1606 003a 00000000 		.ascii	"\000\000\000\000\000\000"
+ 1606      0000
+ 1607              		.global	acFontHZSimSun_32_003b
+ 1608              		.section	.rodata.acFontHZSimSun_32_003b,"a"
+ 1609              		.align	2
+ 1612              	acFontHZSimSun_32_003b:
+ 1613 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1613      00000000 
+ 1613      00000000 
+ 1613      00
+ 1614 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1614      00000000 
+ 1614      00000000 
+ 1614      00
+ 1615 001a 03C003C0 		.ascii	"\003\300\003\300\003\200\000\000\000\000\000\000\000"
+ 1615      03800000 
+ 1615      00000000 
+ 1615      00
+ 1616 0027 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\003\200\003\300"
+ 1616      00000000 
+ 1616      00038003 
+ 1616      C0
+ 1617 0034 03C00180 		.ascii	"\003\300\001\200\001\200\003\000\000\000\000\000"
+ 1617      01800300 
+ 1617      00000000 
+ 1618              		.global	acFontHZSimSun_32_003a
+ 1619              		.section	.rodata.acFontHZSimSun_32_003a,"a"
+ 1620              		.align	2
+ 1623              	acFontHZSimSun_32_003a:
+ 1624 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1624      00000000 
+ 1624      00000000 
+ 1624      00
+ 1625 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\003\200"
+ 1625      00000000 
+ 1625      00000003 
+ 1625      80
+ 1626 001a 03C003C0 		.ascii	"\003\300\003\300\003\200\000\000\000\000\000\000\000"
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 47
+
+
+ 1626      03800000 
+ 1626      00000000 
+ 1626      00
+ 1627 0027 00000000 		.ascii	"\000\000\000\000\000\000\000\003\200\003\300\003\300"
+ 1627      00000003 
+ 1627      8003C003 
+ 1627      C0
+ 1628 0034 03800000 		.ascii	"\003\200\000\000\000\000\000\000\000\000\000\000"
+ 1628      00000000 
+ 1628      00000000 
+ 1629              		.global	acFontHZSimSun_32_0039
+ 1630              		.section	.rodata.acFontHZSimSun_32_0039,"a"
+ 1631              		.align	2
+ 1634              	acFontHZSimSun_32_0039:
+ 1635 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\007\340\034"
+ 1635      00000000 
+ 1635      000007E0 
+ 1635      1C
+ 1636 000d 70383830 		.ascii	"p880\030p\034p\034p\014p\014p\014p\0340\0348<\034\374"
+ 1636      18701C70 
+ 1636      1C700C70 
+ 1636      0C700C70 
+ 1636      1C301C38 
+ 1637 0024 0FDC001C 		.ascii	"\017\334\000\034\000\034\000\030\0008808p\034\340\017"
+ 1637      001C0018 
+ 1637      00383830 
+ 1637      38701CE0 
+ 1637      0F
+ 1638 0035 80000000 		.ascii	"\200\000\000\000\000\000\000\000\000\000\000"
+ 1638      00000000 
+ 1638      000000
+ 1639              		.global	acFontHZSimSun_32_0038
+ 1640              		.section	.rodata.acFontHZSimSun_32_0038,"a"
+ 1641              		.align	2
+ 1644              	acFontHZSimSun_32_0038:
+ 1645 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\007\340\034"
+ 1645      00000000 
+ 1645      000007E0 
+ 1645      1C
+ 1646 000d 30381830 		.ascii	"08\0300\0140\0140\0140\0148\034\036\030\017\360\007"
+ 1646      0C300C30 
+ 1646      0C300C38 
+ 1646      1C1E180F 
+ 1646      F007
+ 1647 001f E00DF018 		.ascii	"\340\015\360\030x0<p\034`\014`\014`\0140\0140\030\034"
+ 1647      78303C70 
+ 1647      1C600C60 
+ 1647      0C600C30 
+ 1647      0C30181C 
+ 1648 0033 3007E000 		.ascii	"0\007\340\000\000\000\000\000\000\000\000\000\000"
+ 1648      00000000 
+ 1648      00000000 
+ 1648      00
+ 1649              		.global	acFontHZSimSun_32_0037
+ 1650              		.section	.rodata.acFontHZSimSun_32_0037,"a"
+ 1651              		.align	2
+ 1654              	acFontHZSimSun_32_0037:
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 48
+
+
+ 1655 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\037\374?\374"
+ 1655      00000000 
+ 1655      00001FFC 
+ 1655      3FFC
+ 1656 000e 30083018 		.ascii	"0\0100\030 \020\0000\000 \000`\000`\000\300\000\300"
+ 1656      20100030 
+ 1656      00200060 
+ 1656      006000C0 
+ 1656      00C0
+ 1657 0020 01800180 		.ascii	"\001\200\001\200\001\200\003\200\003\200\003\200\003"
+ 1657      01800380 
+ 1657      03800380 
+ 1657      03
+ 1658 002d 80078007 		.ascii	"\200\007\200\007\200\007\200\003\200\000\000\000\000"
+ 1658      80078003 
+ 1658      80000000 
+ 1658      00
+ 1659 003a 00000000 		.ascii	"\000\000\000\000\000\000"
+ 1659      0000
+ 1660              		.global	acFontHZSimSun_32_0036
+ 1661              		.section	.rodata.acFontHZSimSun_32_0036,"a"
+ 1662              		.align	2
+ 1665              	acFontHZSimSun_32_0036:
+ 1666 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\003\360\006"
+ 1666      00000000 
+ 1666      000003F0 
+ 1666      06
+ 1667 000d 380C3818 		.ascii	"8\0148\0308\030\0008\0000\0000\000s\360wx|\034x\034"
+ 1667      38180038 
+ 1667      00300030 
+ 1667      0073F077 
+ 1667      787C1C78 
+ 1668 0022 700C700E 		.ascii	"p\014p\016p\0160\0160\0148\0148\014\034\030\0160\007"
+ 1668      700E300E 
+ 1668      300C380C 
+ 1668      380C1C18 
+ 1668      0E3007
+ 1669 0035 E0000000 		.ascii	"\340\000\000\000\000\000\000\000\000\000\000"
+ 1669      00000000 
+ 1669      000000
+ 1670              		.global	acFontHZSimSun_32_0035
+ 1671              		.section	.rodata.acFontHZSimSun_32_0035,"a"
+ 1672              		.align	2
+ 1675              	acFontHZSimSun_32_0035:
+ 1676 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\037\374\037"
+ 1676      00000000 
+ 1676      00001FFC 
+ 1676      1F
+ 1677 000d FC100010 		.ascii	"\374\020\000\020\000\020\000\020\000\020\000\020\000"
+ 1677      00100010 
+ 1677      00100010 
+ 1677      00
+ 1678 001a 17F01C78 		.ascii	"\027\360\034x\030\030\020\034\000\034\000\014\000\014"
+ 1678      1818101C 
+ 1678      001C000C 
+ 1678      000C
+ 1679 0028 100C380C 		.ascii	"\020\0148\0148\0340\03408\034p\007\340\000\000\000\000"
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 49
+
+
+ 1679      381C301C 
+ 1679      30381C70 
+ 1679      07E00000 
+ 1679      0000
+ 1680 003a 00000000 		.ascii	"\000\000\000\000\000\000"
+ 1680      0000
+ 1681              		.global	acFontHZSimSun_32_0034
+ 1682              		.section	.rodata.acFontHZSimSun_32_0034,"a"
+ 1683              		.align	2
+ 1686              	acFontHZSimSun_32_0034:
+ 1687 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\0000\000p\000"
+ 1687      00000000 
+ 1687      00000030 
+ 1687      007000
+ 1688 000f F000F001 		.ascii	"\360\000\360\001\360\001p\003p\006p\004p\014p\010p\030"
+ 1688      F0017003 
+ 1688      70067004 
+ 1688      700C7008 
+ 1688      7018
+ 1689 0021 70307020 		.ascii	"p0p p`p\177\376\000p\000p\000p\000p\000p\003\376\000"
+ 1689      7060707F 
+ 1689      FE007000 
+ 1689      70007000 
+ 1689      70007003 
+ 1690 0037 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000"
+ 1690      00000000 
+ 1690      00
+ 1691              		.global	acFontHZSimSun_32_0033
+ 1692              		.section	.rodata.acFontHZSimSun_32_0033,"a"
+ 1693              		.align	2
+ 1696              	acFontHZSimSun_32_0033:
+ 1697 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\007\340\034"
+ 1697      00000000 
+ 1697      000007E0 
+ 1697      1C
+ 1698 000d 70383838 		.ascii	"p88888\0308\030\000\030\0008\0000\000\340\003\300\000"
+ 1698      38381838 
+ 1698      18001800 
+ 1698      38003000 
+ 1698      E003C000 
+ 1699 0021 70003800 		.ascii	"p\0008\000\034\000\034\000\0348\0348\0348\0348\030\034"
+ 1699      1C001C00 
+ 1699      1C381C38 
+ 1699      1C381C38 
+ 1699      181C
+ 1700 0033 700FE000 		.ascii	"p\017\340\000\000\000\000\000\000\000\000\000\000"
+ 1700      00000000 
+ 1700      00000000 
+ 1700      00
+ 1701              		.global	acFontHZSimSun_32_0032
+ 1702              		.section	.rodata.acFontHZSimSun_32_0032,"a"
+ 1703              		.align	2
+ 1706              	acFontHZSimSun_32_0032:
+ 1707 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\007\340\014"
+ 1707      00000000 
+ 1707      000007E0 
+ 1707      0C
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 50
+
+
+ 1708 000d 78181830 		.ascii	"x\030\0300\0340\0348\0348\034\020\034\000\030\0008\000"
+ 1708      1C301C38 
+ 1708      1C381C10 
+ 1708      1C001800 
+ 1708      3800
+ 1709 001f 30006000 		.ascii	"0\000`\000\300\001\200\003\000\006\000\014\000\030\004"
+ 1709      C0018003 
+ 1709      0006000C 
+ 1709      001804
+ 1710 002e 100C300C 		.ascii	"\020\0140\014\177\374\177\374\000\000\000\000\000\000"
+ 1710      7FFC7FFC 
+ 1710      00000000 
+ 1710      0000
+ 1711 003c 00000000 		.ascii	"\000\000\000\000"
+ 1712              		.global	acFontHZSimSun_32_0031
+ 1713              		.section	.rodata.acFontHZSimSun_32_0031,"a"
+ 1714              		.align	2
+ 1717              	acFontHZSimSun_32_0031:
+ 1718 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\200\001"
+ 1718      00000000 
+ 1718      00000080 
+ 1718      01
+ 1719 000d 801F8001 		.ascii	"\200\037\200\001\200\001\200\001\200\001\200\001\200"
+ 1719      80018001 
+ 1719      80018001 
+ 1719      80
+ 1720 001a 01800180 		.ascii	"\001\200\001\200\001\200\001\200\001\200\001\200\001"
+ 1720      01800180 
+ 1720      01800180 
+ 1720      01
+ 1721 0027 80018001 		.ascii	"\200\001\200\001\200\001\200\001\200\001\200\003\300"
+ 1721      80018001 
+ 1721      80018003 
+ 1721      C0
+ 1722 0034 1FF80000 		.ascii	"\037\370\000\000\000\000\000\000\000\000\000\000"
+ 1722      00000000 
+ 1722      00000000 
+ 1723              		.global	acFontHZSimSun_32_0030
+ 1724              		.section	.rodata.acFontHZSimSun_32_0030,"a"
+ 1725              		.align	2
+ 1728              	acFontHZSimSun_32_0030:
+ 1729 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\007\340\016"
+ 1729      00000000 
+ 1729      000007E0 
+ 1729      0E
+ 1730 000d 701C3818 		.ascii	"p\0348\030\0308\0348\0340\0340\014p\016p\016p\016p\016"
+ 1730      18381C38 
+ 1730      1C301C30 
+ 1730      0C700E70 
+ 1730      0E700E70 
+ 1731 0022 700E700C 		.ascii	"p\016p\0140\0140\0348\0348\034\030\030\0348\016p\007"
+ 1731      300C301C 
+ 1731      381C381C 
+ 1731      18181C38 
+ 1731      0E7007
+ 1732 0035 C0000000 		.ascii	"\300\000\000\000\000\000\000\000\000\000\000"
+ 1732      00000000 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 51
+
+
+ 1732      000000
+ 1733              		.global	acFontHZSimSun_32_002f
+ 1734              		.section	.rodata.acFontHZSimSun_32_002f,"a"
+ 1735              		.align	2
+ 1738              	acFontHZSimSun_32_002f:
+ 1739 0000 00000000 		.ascii	"\000\000\000\000\000\006\000\006\000\014\000\014\000"
+ 1739      00060006 
+ 1739      000C000C 
+ 1739      00
+ 1740 000d 18001800 		.ascii	"\030\000\030\0000\0000\000 \000`\000@\000\300\000\200"
+ 1740      30003000 
+ 1740      20006000 
+ 1740      4000C000 
+ 1740      80
+ 1741 001e 01800100 		.ascii	"\001\200\001\000\003\000\002\000\006\000\004\000\014"
+ 1741      03000200 
+ 1741      06000400 
+ 1741      0C
+ 1742 002b 00080018 		.ascii	"\000\010\000\030\000\020\0000\000 \000`\000@\000\000"
+ 1742      00100030 
+ 1742      00200060 
+ 1742      00400000 
+ 1743 003b 00000000 		.ascii	"\000\000\000\000\000"
+ 1743      00
+ 1744              		.global	acFontHZSimSun_32_002e
+ 1745              		.section	.rodata.acFontHZSimSun_32_002e,"a"
+ 1746              		.align	2
+ 1749              	acFontHZSimSun_32_002e:
+ 1750 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1750      00000000 
+ 1750      00000000 
+ 1750      00
+ 1751 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1751      00000000 
+ 1751      00000000 
+ 1751      00
+ 1752 001a 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1752      00000000 
+ 1752      00000000 
+ 1752      00
+ 1753 0027 00000000 		.ascii	"\000\000\000\000\000\000\0008\000<\000<\000<\000\000"
+ 1753      00000038 
+ 1753      003C003C 
+ 1753      003C0000 
+ 1754 0037 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000"
+ 1754      00000000 
+ 1754      00
+ 1755              		.global	acFontHZSimSun_32_002d
+ 1756              		.section	.rodata.acFontHZSimSun_32_002d,"a"
+ 1757              		.align	2
+ 1760              	acFontHZSimSun_32_002d:
+ 1761 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1761      00000000 
+ 1761      00000000 
+ 1761      00
+ 1762 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1762      00000000 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 52
+
+
+ 1762      00000000 
+ 1762      00
+ 1763 001a 00000000 		.ascii	"\000\000\000\000\177\376\000\000\000\000\000\000\000"
+ 1763      7FFE0000 
+ 1763      00000000 
+ 1763      00
+ 1764 0027 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1764      00000000 
+ 1764      00000000 
+ 1764      00
+ 1765 0034 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1765      00000000 
+ 1765      00000000 
+ 1766              		.global	acFontHZSimSun_32_002c
+ 1767              		.section	.rodata.acFontHZSimSun_32_002c,"a"
+ 1768              		.align	2
+ 1771              	acFontHZSimSun_32_002c:
+ 1772 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1772      00000000 
+ 1772      00000000 
+ 1772      00
+ 1773 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1773      00000000 
+ 1773      00000000 
+ 1773      00
+ 1774 001a 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1774      00000000 
+ 1774      00000000 
+ 1774      00
+ 1775 0027 00000000 		.ascii	"\000\000\000\000\000\000\000<\000<\000<\000\014\000"
+ 1775      0000003C 
+ 1775      003C003C 
+ 1775      000C00
+ 1776 0036 0C000C00 		.ascii	"\014\000\014\000\030\0000\000\000\000"
+ 1776      18003000 
+ 1776      0000
+ 1777              		.global	acFontHZSimSun_32_002b
+ 1778              		.section	.rodata.acFontHZSimSun_32_002b,"a"
+ 1779              		.align	2
+ 1782              	acFontHZSimSun_32_002b:
+ 1783 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1783      00000000 
+ 1783      00000000 
+ 1783      00
+ 1784 000d 00000001 		.ascii	"\000\000\000\001\200\001\200\001\200\001\200\001\200"
+ 1784      80018001 
+ 1784      80018001 
+ 1784      80
+ 1785 001a 01800180 		.ascii	"\001\200\001\200\177\376\001\200\001\200\001\200\001"
+ 1785      7FFE0180 
+ 1785      01800180 
+ 1785      01
+ 1786 0027 80018001 		.ascii	"\200\001\200\001\200\001\200\000\000\000\000\000\000"
+ 1786      80018000 
+ 1786      00000000 
+ 1786      00
+ 1787 0034 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000"
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 53
+
+
+ 1787      00000000 
+ 1787      00000000 
+ 1788              		.global	acFontHZSimSun_32_002a
+ 1789              		.section	.rodata.acFontHZSimSun_32_002a,"a"
+ 1790              		.align	2
+ 1793              	acFontHZSimSun_32_002a:
+ 1794 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1794      00000000 
+ 1794      00000000 
+ 1794      00
+ 1795 000d 00018001 		.ascii	"\000\001\200\001\300\001\200q\216y\236}\274\037\360"
+ 1795      C0018071 
+ 1795      8E799E7D 
+ 1795      BC1FF0
+ 1796 001c 03C003C0 		.ascii	"\003\300\003\300\037\360}\274y\236q\216\001\200\003"
+ 1796      1FF07DBC 
+ 1796      799E718E 
+ 1796      018003
+ 1797 002b 80018000 		.ascii	"\200\001\200\000\000\000\000\000\000\000\000\000\000"
+ 1797      00000000 
+ 1797      00000000 
+ 1797      00
+ 1798 0038 00000000 		.ascii	"\000\000\000\000\000\000\000\000"
+ 1798      00000000 
+ 1799              		.global	acFontHZSimSun_32_0029
+ 1800              		.section	.rodata.acFontHZSimSun_32_0029,"a"
+ 1801              		.align	2
+ 1804              	acFontHZSimSun_32_0029:
+ 1805 0000 00006000 		.ascii	"\000\000`\0000\000\030\000\030\000\014\000\006\000\006"
+ 1805      30001800 
+ 1805      18000C00 
+ 1805      060006
+ 1806 000f 00030003 		.ascii	"\000\003\000\003\000\003\200\003\200\001\200\001\200"
+ 1806      00038003 
+ 1806      80018001 
+ 1806      80
+ 1807 001c 01800180 		.ascii	"\001\200\001\200\001\200\001\200\001\200\003\200\003"
+ 1807      01800180 
+ 1807      01800380 
+ 1807      03
+ 1808 0029 80030003 		.ascii	"\200\003\000\003\000\006\000\006\000\014\000\030\000"
+ 1808      00060006 
+ 1808      000C0018 
+ 1808      00
+ 1809 0036 18003000 		.ascii	"\030\0000\000`\000\000\000\000\000"
+ 1809      60000000 
+ 1809      0000
+ 1810              		.global	acFontHZSimSun_32_0028
+ 1811              		.section	.rodata.acFontHZSimSun_32_0028,"a"
+ 1812              		.align	2
+ 1815              	acFontHZSimSun_32_0028:
+ 1816 0000 00000006 		.ascii	"\000\000\000\006\000\014\000\030\0000\0000\000`\000"
+ 1816      000C0018 
+ 1816      00300030 
+ 1816      006000
+ 1817 000f 6000C000 		.ascii	"`\000\300\000\300\001\300\001\200\001\200\001\200\001"
+ 1817      C001C001 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 54
+
+
+ 1817      80018001 
+ 1817      8001
+ 1818 001d 80018001 		.ascii	"\200\001\200\001\200\001\200\001\200\001\200\001\300"
+ 1818      80018001 
+ 1818      80018001 
+ 1818      C0
+ 1819 002a 00C000C0 		.ascii	"\000\300\000\300\000`\000`\0000\0000\000\030\000\014"
+ 1819      00600060 
+ 1819      00300030 
+ 1819      0018000C 
+ 1820 003a 00060000 		.ascii	"\000\006\000\000\000\000"
+ 1820      0000
+ 1821              		.global	acFontHZSimSun_32_0027
+ 1822              		.section	.rodata.acFontHZSimSun_32_0027,"a"
+ 1823              		.align	2
+ 1826              	acFontHZSimSun_32_0027:
+ 1827 0000 00003C00 		.ascii	"\000\000<\000<\000<\000\014\000\014\000\014\000\030"
+ 1827      3C003C00 
+ 1827      0C000C00 
+ 1827      0C0018
+ 1828 000f 00300000 		.ascii	"\0000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1828      00000000 
+ 1828      00000000 
+ 1828      0000
+ 1829 001d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1829      00000000 
+ 1829      00000000 
+ 1829      00
+ 1830 002a 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1830      00000000 
+ 1830      00000000 
+ 1830      00
+ 1831 0037 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000"
+ 1831      00000000 
+ 1831      00
+ 1832              		.global	acFontHZSimSun_32_0026
+ 1833              		.section	.rodata.acFontHZSimSun_32_0026,"a"
+ 1834              		.align	2
+ 1837              	acFontHZSimSun_32_0026:
+ 1838 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\017\200\035"
+ 1838      00000000 
+ 1838      00000F80 
+ 1838      1D
+ 1839 000d 8018C018 		.ascii	"\200\030\300\030\300\030\300\030\300\031\200\031\200"
+ 1839      C018C018 
+ 1839      C0198019 
+ 1839      80
+ 1840 001a 1F001E00 		.ascii	"\037\000\036\000\034|>8n\020f\020\3470\343\260\343\240"
+ 1840      1C7C3E38 
+ 1840      6E106610 
+ 1840      E730E3B0 
+ 1840      E3A0
+ 1841 002c E1E0E0E0 		.ascii	"\341\340\340\340`\3639\376\037\034\000\000\000\000\000"
+ 1841      60F339FE 
+ 1841      1F1C0000 
+ 1841      000000
+ 1842 003b 00000000 		.ascii	"\000\000\000\000\000"
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 55
+
+
+ 1842      00
+ 1843              		.global	acFontHZSimSun_32_0025
+ 1844              		.section	.rodata.acFontHZSimSun_32_0025,"a"
+ 1845              		.align	2
+ 1848              	acFontHZSimSun_32_0025:
+ 1849 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\0008\030d\020f"
+ 1849      00000000 
+ 1849      00003818 
+ 1849      641066
+ 1850 000f 30C630C6 		.ascii	"0\3060\306 \306`\306@\306\300\306\200f\200m\274=d\003"
+ 1850      20C660C6 
+ 1850      40C6C0C6 
+ 1850      8066806D 
+ 1850      BC3D6403 
+ 1851 0023 66026602 		.ascii	"f\002f\002\306\006\306\004\306\014\306\010F\030f\020"
+ 1851      C606C604 
+ 1851      C60CC608 
+ 1851      46186610 
+ 1852 0033 66103C00 		.ascii	"f\020<\000\000\000\000\000\000\000\000\000\000"
+ 1852      00000000 
+ 1852      00000000 
+ 1852      00
+ 1853              		.global	acFontHZSimSun_32_0024
+ 1854              		.section	.rodata.acFontHZSimSun_32_0024,"a"
+ 1855              		.align	2
+ 1858              	acFontHZSimSun_32_0024:
+ 1859 0000 00000000 		.ascii	"\000\000\000\000\000\000\001\200\001\200\007\340\017"
+ 1859      00000180 
+ 1859      018007E0 
+ 1859      0F
+ 1860 000d B0199819 		.ascii	"\260\031\230\031\230\031\270\031\270\035\200\035\200"
+ 1860      9819B819 
+ 1860      B81D801D 
+ 1860      80
+ 1861 001a 0F800780 		.ascii	"\017\200\007\200\003\300\001\340\001\360\001\270\001"
+ 1861      03C001E0 
+ 1861      01F001B8 
+ 1861      01
+ 1862 0027 98019C39 		.ascii	"\230\001\2349\2349\2349\2309\230\035\260\007\340\001"
+ 1862      9C399C39 
+ 1862      9839981D 
+ 1862      B007E001 
+ 1863 0037 80018001 		.ascii	"\200\001\200\001\200\000\000\000\000"
+ 1863      80000000 
+ 1863      00
+ 1864              		.global	acFontHZSimSun_32_0023
+ 1865              		.section	.rodata.acFontHZSimSun_32_0023,"a"
+ 1866              		.align	2
+ 1869              	acFontHZSimSun_32_0023:
+ 1870 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\014\030\014"
+ 1870      00000000 
+ 1870      00000C18 
+ 1870      0C
+ 1871 000d 180C180C 		.ascii	"\030\014\030\014\030\014\030\177\376\177\376\177\376"
+ 1871      180C187F 
+ 1871      FE7FFE7F 
+ 1871      FE
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 56
+
+
+ 1872 001a 0C100810 		.ascii	"\014\020\010\020\010\020\0100\0100\0300\177\376\177"
+ 1872      08100830 
+ 1872      08301830 
+ 1872      7FFE7F
+ 1873 0029 FE7FFE18 		.ascii	"\376\177\376\0300\0300\0300\030 \030 \000\000\000\000"
+ 1873      30183018 
+ 1873      30182018 
+ 1873      20000000 
+ 1873      00
+ 1874 003a 00000000 		.ascii	"\000\000\000\000\000\000"
+ 1874      0000
+ 1875              		.global	acFontHZSimSun_32_0022
+ 1876              		.section	.rodata.acFontHZSimSun_32_0022,"a"
+ 1877              		.align	2
+ 1880              	acFontHZSimSun_32_0022:
+ 1881 0000 00000318 		.ascii	"\000\000\003\030\007\274\0078\016p\014`\030\300\020"
+ 1881      07BC0738 
+ 1881      0E700C60 
+ 1881      18C010
+ 1882 000f 80210000 		.ascii	"\200!\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1882      00000000 
+ 1882      00000000 
+ 1882      0000
+ 1883 001d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1883      00000000 
+ 1883      00000000 
+ 1883      00
+ 1884 002a 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 1884      00000000 
+ 1884      00000000 
+ 1884      00
+ 1885 0037 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000"
+ 1885      00000000 
+ 1885      00
+ 1886              		.global	acFontHZSimSun_32_0021
+ 1887              		.section	.rodata.acFontHZSimSun_32_0021,"a"
+ 1888              		.align	2
+ 1891              	acFontHZSimSun_32_0021:
+ 1892 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\001\200\003"
+ 1892      00000000 
+ 1892      00000180 
+ 1892      03
+ 1893 000d 80038003 		.ascii	"\200\003\200\003\200\003\200\001\200\001\200\001\200"
+ 1893      80038001 
+ 1893      80018001 
+ 1893      80
+ 1894 001a 01800180 		.ascii	"\001\200\001\200\001\200\001\200\001\200\001\200\001"
+ 1894      01800180 
+ 1894      01800180 
+ 1894      01
+ 1895 0027 80000000 		.ascii	"\200\000\000\000\000\000\000\003\200\003\300\003\300"
+ 1895      00000003 
+ 1895      8003C003 
+ 1895      C0
+ 1896 0034 03800000 		.ascii	"\003\200\000\000\000\000\000\000\000\000\000\000"
+ 1896      00000000 
+ 1896      00000000 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 57
+
+
+ 1897              		.global	acFontHZSimSun_32_0020
+ 1898              		.section	.rodata.acFontHZSimSun_32_0020,"a"
+ 1899              		.align	2
+ 1902              	acFontHZSimSun_32_0020:
+ 1903 0000 00000000 		.space	64
+ 1903      00000000 
+ 1903      00000000 
+ 1903      00000000 
+ 1903      00000000 
+ 1904              		.text
+ 1905              	.Letext0:
+ 1906              		.file 2 "BSP/GUI.H"
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 58
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 SimSun_32.c
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:25     .rodata.GUI_FontHZ_SimSun_32:00000000 GUI_FontHZ_SimSun_32
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:22     .rodata.GUI_FontHZ_SimSun_32:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:47     .rodata.GUI_FontHZSimSun_32_Prop0020:00000000 GUI_FontHZSimSun_32_Prop0020
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:157    .rodata.GUI_FontHZSimSun_32_GBKMap:00000000 GUI_FontHZSimSun_32_GBKMap
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:44     .rodata.GUI_FontHZSimSun_32_Prop0020:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:203    .rodata.GUI_FontHZSimSun_32_CharInfo:00000000 GUI_FontHZSimSun_32_CharInfo
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:57     .rodata.GUI_FontHZSimSun_32_Propb4f3:00000000 GUI_FontHZSimSun_32_Propb4f3
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:54     .rodata.GUI_FontHZSimSun_32_Propb4f3:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:67     .rodata.GUI_FontHZSimSun_32_Propb5e7:00000000 GUI_FontHZSimSun_32_Propb5e7
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:64     .rodata.GUI_FontHZSimSun_32_Propb5e7:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:77     .rodata.GUI_FontHZSimSun_32_Propbabc:00000000 GUI_FontHZSimSun_32_Propbabc
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:74     .rodata.GUI_FontHZSimSun_32_Propbabc:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:87     .rodata.GUI_FontHZSimSun_32_Propbcbc:00000000 GUI_FontHZSimSun_32_Propbcbc
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:84     .rodata.GUI_FontHZSimSun_32_Propbcbc:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:97     .rodata.GUI_FontHZSimSun_32_Propbfc6:00000000 GUI_FontHZSimSun_32_Propbfc6
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:94     .rodata.GUI_FontHZSimSun_32_Propbfc6:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:107    .rodata.GUI_FontHZSimSun_32_Propd1a7:00000000 GUI_FontHZSimSun_32_Propd1a7
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:104    .rodata.GUI_FontHZSimSun_32_Propd1a7:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:117    .rodata.GUI_FontHZSimSun_32_Propd4f8:00000000 GUI_FontHZSimSun_32_Propd4f8
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:114    .rodata.GUI_FontHZSimSun_32_Propd4f8:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:127    .rodata.GUI_FontHZSimSun_32_Propd6dd:00000000 GUI_FontHZSimSun_32_Propd6dd
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:124    .rodata.GUI_FontHZSimSun_32_Propd6dd:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:137    .rodata.GUI_FontHZSimSun_32_Propd7d3:00000000 GUI_FontHZSimSun_32_Propd7d3
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:134    .rodata.GUI_FontHZSimSun_32_Propd7d3:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:147    .rodata.GUI_FontHZSimSun_32_Propd8b9:00000000 GUI_FontHZSimSun_32_Propd8b9
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:144    .rodata.GUI_FontHZSimSun_32_Propd8b9:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:154    .rodata.GUI_FontHZSimSun_32_GBKMap:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:200    .rodata.GUI_FontHZSimSun_32_CharInfo:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1902   .rodata.acFontHZSimSun_32_0020:00000000 acFontHZSimSun_32_0020
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1891   .rodata.acFontHZSimSun_32_0021:00000000 acFontHZSimSun_32_0021
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1880   .rodata.acFontHZSimSun_32_0022:00000000 acFontHZSimSun_32_0022
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1869   .rodata.acFontHZSimSun_32_0023:00000000 acFontHZSimSun_32_0023
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1858   .rodata.acFontHZSimSun_32_0024:00000000 acFontHZSimSun_32_0024
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1848   .rodata.acFontHZSimSun_32_0025:00000000 acFontHZSimSun_32_0025
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1837   .rodata.acFontHZSimSun_32_0026:00000000 acFontHZSimSun_32_0026
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1826   .rodata.acFontHZSimSun_32_0027:00000000 acFontHZSimSun_32_0027
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1815   .rodata.acFontHZSimSun_32_0028:00000000 acFontHZSimSun_32_0028
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1804   .rodata.acFontHZSimSun_32_0029:00000000 acFontHZSimSun_32_0029
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1793   .rodata.acFontHZSimSun_32_002a:00000000 acFontHZSimSun_32_002a
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1782   .rodata.acFontHZSimSun_32_002b:00000000 acFontHZSimSun_32_002b
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1771   .rodata.acFontHZSimSun_32_002c:00000000 acFontHZSimSun_32_002c
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1760   .rodata.acFontHZSimSun_32_002d:00000000 acFontHZSimSun_32_002d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1749   .rodata.acFontHZSimSun_32_002e:00000000 acFontHZSimSun_32_002e
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1738   .rodata.acFontHZSimSun_32_002f:00000000 acFontHZSimSun_32_002f
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1728   .rodata.acFontHZSimSun_32_0030:00000000 acFontHZSimSun_32_0030
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1717   .rodata.acFontHZSimSun_32_0031:00000000 acFontHZSimSun_32_0031
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1706   .rodata.acFontHZSimSun_32_0032:00000000 acFontHZSimSun_32_0032
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1696   .rodata.acFontHZSimSun_32_0033:00000000 acFontHZSimSun_32_0033
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1686   .rodata.acFontHZSimSun_32_0034:00000000 acFontHZSimSun_32_0034
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1675   .rodata.acFontHZSimSun_32_0035:00000000 acFontHZSimSun_32_0035
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1665   .rodata.acFontHZSimSun_32_0036:00000000 acFontHZSimSun_32_0036
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1654   .rodata.acFontHZSimSun_32_0037:00000000 acFontHZSimSun_32_0037
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1644   .rodata.acFontHZSimSun_32_0038:00000000 acFontHZSimSun_32_0038
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1634   .rodata.acFontHZSimSun_32_0039:00000000 acFontHZSimSun_32_0039
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1623   .rodata.acFontHZSimSun_32_003a:00000000 acFontHZSimSun_32_003a
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 59
+
+
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1612   .rodata.acFontHZSimSun_32_003b:00000000 acFontHZSimSun_32_003b
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1601   .rodata.acFontHZSimSun_32_003c:00000000 acFontHZSimSun_32_003c
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1590   .rodata.acFontHZSimSun_32_003d:00000000 acFontHZSimSun_32_003d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1579   .rodata.acFontHZSimSun_32_003e:00000000 acFontHZSimSun_32_003e
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1568   .rodata.acFontHZSimSun_32_003f:00000000 acFontHZSimSun_32_003f
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1558   .rodata.acFontHZSimSun_32_0040:00000000 acFontHZSimSun_32_0040
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1547   .rodata.acFontHZSimSun_32_0041:00000000 acFontHZSimSun_32_0041
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1537   .rodata.acFontHZSimSun_32_0042:00000000 acFontHZSimSun_32_0042
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1527   .rodata.acFontHZSimSun_32_0043:00000000 acFontHZSimSun_32_0043
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1517   .rodata.acFontHZSimSun_32_0044:00000000 acFontHZSimSun_32_0044
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1507   .rodata.acFontHZSimSun_32_0045:00000000 acFontHZSimSun_32_0045
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1497   .rodata.acFontHZSimSun_32_0046:00000000 acFontHZSimSun_32_0046
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1487   .rodata.acFontHZSimSun_32_0047:00000000 acFontHZSimSun_32_0047
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1477   .rodata.acFontHZSimSun_32_0048:00000000 acFontHZSimSun_32_0048
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1466   .rodata.acFontHZSimSun_32_0049:00000000 acFontHZSimSun_32_0049
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1456   .rodata.acFontHZSimSun_32_004a:00000000 acFontHZSimSun_32_004a
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1446   .rodata.acFontHZSimSun_32_004b:00000000 acFontHZSimSun_32_004b
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1435   .rodata.acFontHZSimSun_32_004c:00000000 acFontHZSimSun_32_004c
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1425   .rodata.acFontHZSimSun_32_004d:00000000 acFontHZSimSun_32_004d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1415   .rodata.acFontHZSimSun_32_004e:00000000 acFontHZSimSun_32_004e
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1405   .rodata.acFontHZSimSun_32_004f:00000000 acFontHZSimSun_32_004f
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1395   .rodata.acFontHZSimSun_32_0050:00000000 acFontHZSimSun_32_0050
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1385   .rodata.acFontHZSimSun_32_0051:00000000 acFontHZSimSun_32_0051
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1374   .rodata.acFontHZSimSun_32_0052:00000000 acFontHZSimSun_32_0052
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1364   .rodata.acFontHZSimSun_32_0053:00000000 acFontHZSimSun_32_0053
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1353   .rodata.acFontHZSimSun_32_0054:00000000 acFontHZSimSun_32_0054
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1343   .rodata.acFontHZSimSun_32_0055:00000000 acFontHZSimSun_32_0055
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1332   .rodata.acFontHZSimSun_32_0056:00000000 acFontHZSimSun_32_0056
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1322   .rodata.acFontHZSimSun_32_0057:00000000 acFontHZSimSun_32_0057
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1311   .rodata.acFontHZSimSun_32_0058:00000000 acFontHZSimSun_32_0058
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1300   .rodata.acFontHZSimSun_32_0059:00000000 acFontHZSimSun_32_0059
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1289   .rodata.acFontHZSimSun_32_005a:00000000 acFontHZSimSun_32_005a
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1278   .rodata.acFontHZSimSun_32_005b:00000000 acFontHZSimSun_32_005b
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1267   .rodata.acFontHZSimSun_32_005c:00000000 acFontHZSimSun_32_005c
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1256   .rodata.acFontHZSimSun_32_005d:00000000 acFontHZSimSun_32_005d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1245   .rodata.acFontHZSimSun_32_005e:00000000 acFontHZSimSun_32_005e
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1234   .rodata.acFontHZSimSun_32_005f:00000000 acFontHZSimSun_32_005f
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1223   .rodata.acFontHZSimSun_32_0060:00000000 acFontHZSimSun_32_0060
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1212   .rodata.acFontHZSimSun_32_0061:00000000 acFontHZSimSun_32_0061
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1202   .rodata.acFontHZSimSun_32_0062:00000000 acFontHZSimSun_32_0062
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1191   .rodata.acFontHZSimSun_32_0063:00000000 acFontHZSimSun_32_0063
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1180   .rodata.acFontHZSimSun_32_0064:00000000 acFontHZSimSun_32_0064
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1169   .rodata.acFontHZSimSun_32_0065:00000000 acFontHZSimSun_32_0065
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1158   .rodata.acFontHZSimSun_32_0066:00000000 acFontHZSimSun_32_0066
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1147   .rodata.acFontHZSimSun_32_0067:00000000 acFontHZSimSun_32_0067
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1137   .rodata.acFontHZSimSun_32_0068:00000000 acFontHZSimSun_32_0068
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1126   .rodata.acFontHZSimSun_32_0069:00000000 acFontHZSimSun_32_0069
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1116   .rodata.acFontHZSimSun_32_006a:00000000 acFontHZSimSun_32_006a
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1105   .rodata.acFontHZSimSun_32_006b:00000000 acFontHZSimSun_32_006b
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1094   .rodata.acFontHZSimSun_32_006c:00000000 acFontHZSimSun_32_006c
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1083   .rodata.acFontHZSimSun_32_006d:00000000 acFontHZSimSun_32_006d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1073   .rodata.acFontHZSimSun_32_006e:00000000 acFontHZSimSun_32_006e
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1062   .rodata.acFontHZSimSun_32_006f:00000000 acFontHZSimSun_32_006f
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1052   .rodata.acFontHZSimSun_32_0070:00000000 acFontHZSimSun_32_0070
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1041   .rodata.acFontHZSimSun_32_0071:00000000 acFontHZSimSun_32_0071
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1030   .rodata.acFontHZSimSun_32_0072:00000000 acFontHZSimSun_32_0072
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1019   .rodata.acFontHZSimSun_32_0073:00000000 acFontHZSimSun_32_0073
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 60
+
+
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1008   .rodata.acFontHZSimSun_32_0074:00000000 acFontHZSimSun_32_0074
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:998    .rodata.acFontHZSimSun_32_0075:00000000 acFontHZSimSun_32_0075
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:987    .rodata.acFontHZSimSun_32_0076:00000000 acFontHZSimSun_32_0076
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:976    .rodata.acFontHZSimSun_32_0077:00000000 acFontHZSimSun_32_0077
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:965    .rodata.acFontHZSimSun_32_0078:00000000 acFontHZSimSun_32_0078
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:954    .rodata.acFontHZSimSun_32_0079:00000000 acFontHZSimSun_32_0079
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:943    .rodata.acFontHZSimSun_32_007a:00000000 acFontHZSimSun_32_007a
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:933    .rodata.acFontHZSimSun_32_007b:00000000 acFontHZSimSun_32_007b
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:922    .rodata.acFontHZSimSun_32_007c:00000000 acFontHZSimSun_32_007c
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:911    .rodata.acFontHZSimSun_32_007d:00000000 acFontHZSimSun_32_007d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:900    .rodata.acFontHZSimSun_32_007e:00000000 acFontHZSimSun_32_007e
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:893    .rodata.acFontHZSimSun_32_007f:00000000 acFontHZSimSun_32_007f
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:877    .rodata.acFontHZSimSun_32_b4f3:00000000 acFontHZSimSun_32_b4f3
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:861    .rodata.acFontHZSimSun_32_b5e7:00000000 acFontHZSimSun_32_b5e7
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:845    .rodata.acFontHZSimSun_32_babc:00000000 acFontHZSimSun_32_babc
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:829    .rodata.acFontHZSimSun_32_bcbc:00000000 acFontHZSimSun_32_bcbc
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:813    .rodata.acFontHZSimSun_32_bfc6:00000000 acFontHZSimSun_32_bfc6
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:797    .rodata.acFontHZSimSun_32_d1a7:00000000 acFontHZSimSun_32_d1a7
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:782    .rodata.acFontHZSimSun_32_d4f8:00000000 acFontHZSimSun_32_d4f8
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:769    .rodata.acFontHZSimSun_32_d6dd:00000000 acFontHZSimSun_32_d6dd
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:753    .rodata.acFontHZSimSun_32_d7d3:00000000 acFontHZSimSun_32_d7d3
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:739    .rodata.acFontHZSimSun_32_d8b9:00000000 acFontHZSimSun_32_d8b9
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:736    .rodata.acFontHZSimSun_32_d8b9:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:750    .rodata.acFontHZSimSun_32_d7d3:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:766    .rodata.acFontHZSimSun_32_d6dd:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:779    .rodata.acFontHZSimSun_32_d4f8:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:794    .rodata.acFontHZSimSun_32_d1a7:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:810    .rodata.acFontHZSimSun_32_bfc6:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:826    .rodata.acFontHZSimSun_32_bcbc:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:842    .rodata.acFontHZSimSun_32_babc:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:858    .rodata.acFontHZSimSun_32_b5e7:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:874    .rodata.acFontHZSimSun_32_b4f3:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:890    .rodata.acFontHZSimSun_32_007f:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:897    .rodata.acFontHZSimSun_32_007e:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:908    .rodata.acFontHZSimSun_32_007d:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:919    .rodata.acFontHZSimSun_32_007c:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:930    .rodata.acFontHZSimSun_32_007b:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:940    .rodata.acFontHZSimSun_32_007a:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:951    .rodata.acFontHZSimSun_32_0079:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:962    .rodata.acFontHZSimSun_32_0078:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:973    .rodata.acFontHZSimSun_32_0077:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:984    .rodata.acFontHZSimSun_32_0076:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:995    .rodata.acFontHZSimSun_32_0075:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1005   .rodata.acFontHZSimSun_32_0074:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1016   .rodata.acFontHZSimSun_32_0073:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1027   .rodata.acFontHZSimSun_32_0072:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1038   .rodata.acFontHZSimSun_32_0071:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1049   .rodata.acFontHZSimSun_32_0070:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1059   .rodata.acFontHZSimSun_32_006f:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1070   .rodata.acFontHZSimSun_32_006e:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1080   .rodata.acFontHZSimSun_32_006d:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1091   .rodata.acFontHZSimSun_32_006c:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1102   .rodata.acFontHZSimSun_32_006b:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1113   .rodata.acFontHZSimSun_32_006a:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1123   .rodata.acFontHZSimSun_32_0069:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1134   .rodata.acFontHZSimSun_32_0068:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1144   .rodata.acFontHZSimSun_32_0067:00000000 $d
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 61
+
+
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1155   .rodata.acFontHZSimSun_32_0066:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1166   .rodata.acFontHZSimSun_32_0065:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1177   .rodata.acFontHZSimSun_32_0064:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1188   .rodata.acFontHZSimSun_32_0063:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1199   .rodata.acFontHZSimSun_32_0062:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1209   .rodata.acFontHZSimSun_32_0061:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1220   .rodata.acFontHZSimSun_32_0060:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1231   .rodata.acFontHZSimSun_32_005f:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1242   .rodata.acFontHZSimSun_32_005e:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1253   .rodata.acFontHZSimSun_32_005d:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1264   .rodata.acFontHZSimSun_32_005c:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1275   .rodata.acFontHZSimSun_32_005b:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1286   .rodata.acFontHZSimSun_32_005a:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1297   .rodata.acFontHZSimSun_32_0059:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1308   .rodata.acFontHZSimSun_32_0058:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1319   .rodata.acFontHZSimSun_32_0057:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1329   .rodata.acFontHZSimSun_32_0056:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1340   .rodata.acFontHZSimSun_32_0055:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1350   .rodata.acFontHZSimSun_32_0054:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1361   .rodata.acFontHZSimSun_32_0053:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1371   .rodata.acFontHZSimSun_32_0052:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1382   .rodata.acFontHZSimSun_32_0051:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1392   .rodata.acFontHZSimSun_32_0050:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1402   .rodata.acFontHZSimSun_32_004f:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1412   .rodata.acFontHZSimSun_32_004e:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1422   .rodata.acFontHZSimSun_32_004d:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1432   .rodata.acFontHZSimSun_32_004c:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1443   .rodata.acFontHZSimSun_32_004b:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1453   .rodata.acFontHZSimSun_32_004a:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1463   .rodata.acFontHZSimSun_32_0049:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1474   .rodata.acFontHZSimSun_32_0048:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1484   .rodata.acFontHZSimSun_32_0047:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1494   .rodata.acFontHZSimSun_32_0046:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1504   .rodata.acFontHZSimSun_32_0045:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1514   .rodata.acFontHZSimSun_32_0044:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1524   .rodata.acFontHZSimSun_32_0043:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1534   .rodata.acFontHZSimSun_32_0042:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1544   .rodata.acFontHZSimSun_32_0041:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1555   .rodata.acFontHZSimSun_32_0040:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1565   .rodata.acFontHZSimSun_32_003f:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1576   .rodata.acFontHZSimSun_32_003e:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1587   .rodata.acFontHZSimSun_32_003d:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1598   .rodata.acFontHZSimSun_32_003c:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1609   .rodata.acFontHZSimSun_32_003b:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1620   .rodata.acFontHZSimSun_32_003a:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1631   .rodata.acFontHZSimSun_32_0039:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1641   .rodata.acFontHZSimSun_32_0038:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1651   .rodata.acFontHZSimSun_32_0037:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1662   .rodata.acFontHZSimSun_32_0036:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1672   .rodata.acFontHZSimSun_32_0035:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1683   .rodata.acFontHZSimSun_32_0034:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1693   .rodata.acFontHZSimSun_32_0033:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1703   .rodata.acFontHZSimSun_32_0032:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1714   .rodata.acFontHZSimSun_32_0031:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1725   .rodata.acFontHZSimSun_32_0030:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1735   .rodata.acFontHZSimSun_32_002f:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1746   .rodata.acFontHZSimSun_32_002e:00000000 $d
+ARM GAS  C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s 			page 62
+
+
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1757   .rodata.acFontHZSimSun_32_002d:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1768   .rodata.acFontHZSimSun_32_002c:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1779   .rodata.acFontHZSimSun_32_002b:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1790   .rodata.acFontHZSimSun_32_002a:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1801   .rodata.acFontHZSimSun_32_0029:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1812   .rodata.acFontHZSimSun_32_0028:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1823   .rodata.acFontHZSimSun_32_0027:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1834   .rodata.acFontHZSimSun_32_0026:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1845   .rodata.acFontHZSimSun_32_0025:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1855   .rodata.acFontHZSimSun_32_0024:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1866   .rodata.acFontHZSimSun_32_0023:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1877   .rodata.acFontHZSimSun_32_0022:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1888   .rodata.acFontHZSimSun_32_0021:00000000 $d
+C:\Users\24120\AppData\Local\Temp\ccdlb6T4.s:1899   .rodata.acFontHZSimSun_32_0020:00000000 $d
+
+UNDEFINED SYMBOLS
+GUIPROP_DispChar
+GUIPROP_GetCharDistX
+GUIPROP_GetFontInfo
+GUIPROP_IsInFont

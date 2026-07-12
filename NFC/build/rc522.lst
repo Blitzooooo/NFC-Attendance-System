@@ -1,0 +1,4299 @@
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"rc522.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "BSP/rc522.c"
+  20              		.section	.text.rc522_write_reg,"ax",%progbits
+  21              		.align	1
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	rc522_write_reg:
+  27              	.LVL0:
+  28              	.LFB3:
+   1:BSP/rc522.c   **** ﻿/**
+   2:BSP/rc522.c   ****  * @file    rc522.c
+   3:BSP/rc522.c   ****  * @brief   MFRC522/RC522 RFID读写芯片驱动 - 核心实现
+   4:BSP/rc522.c   ****  * @details 本文件实现 RC522 芯片的所有操作函数，通过 RC522_IO_t
+   5:BSP/rc522.c   ****  *          接口与硬件完全解耦，不依赖任何特定平台或 HAL 库。
+   6:BSP/rc522.c   ****  *
+   7:BSP/rc522.c   ****  *          内部函数 (static)：
+   8:BSP/rc522.c   ****  *          - rc522_write_reg()    : 写寄存器
+   9:BSP/rc522.c   ****  *          - rc522_read_reg()     : 读寄存器
+  10:BSP/rc522.c   ****  *          - rc522_set_bit_mask() : 置位寄存器位
+  11:BSP/rc522.c   ****  *          - rc522_clear_bit_mask(): 清零寄存器位
+  12:BSP/rc522.c   ****  *          - rc522_calculate_crc(): CRC16 计算
+  13:BSP/rc522.c   ****  *          - rc522_communicate()  : 与芯片核心通讯
+  14:BSP/rc522.c   ****  *
+  15:BSP/rc522.c   ****  * @note    编码: UTF-8
+  16:BSP/rc522.c   ****  */
+  17:BSP/rc522.c   **** 
+  18:BSP/rc522.c   **** #include "rc522.h"
+  19:BSP/rc522.c   **** #include <stdio.h>
+  20:BSP/rc522.c   **** #include <stdlib.h>
+  21:BSP/rc522.c   **** #include <string.h>
+  22:BSP/rc522.c   **** /* ======================================================
+  23:BSP/rc522.c   ****  *  内部常量
+  24:BSP/rc522.c   ****  * ====================================================== */
+  25:BSP/rc522.c   **** 
+  26:BSP/rc522.c   **** /** 内部通讯缓冲区长度 (FIFO 最大 64 字节 + 余量) */
+  27:BSP/rc522.c   **** #define RC522_INTERNAL_BUF_LEN     18
+  28:BSP/rc522.c   **** 
+  29:BSP/rc522.c   **** /** 通讯超时循环次数 (与参考工程一致, 约保证足够等待时间) */
+  30:BSP/rc522.c   **** #define RC522_COMM_TIMEOUT         2000
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 2
+
+
+  31:BSP/rc522.c   **** 
+  32:BSP/rc522.c   **** /** 连续通信失败计数器 (超过阈值自动硬件复位 RC522, 防止状态机卡死) */
+  33:BSP/rc522.c   **** static uint16_t s_commFailCount = 0;
+  34:BSP/rc522.c   **** #define RC522_COMM_FAIL_THRESHOLD   5     /**< 连续 5 次通信失败后自动恢复 */
+  35:BSP/rc522.c   **** 
+  36:BSP/rc522.c   **** /* ======================================================
+  37:BSP/rc522.c   ****  *  全局变量
+  38:BSP/rc522.c   ****  * ====================================================== */
+  39:BSP/rc522.c   **** 
+  40:BSP/rc522.c   **** /** 平台 IO 接口指针 (全局静态，驱动初始化时赋值) */
+  41:BSP/rc522.c   **** static RC522_IO_t *s_io = NULL;
+  42:BSP/rc522.c   **** 
+  43:BSP/rc522.c   **** /* ======================================================
+  44:BSP/rc522.c   ****  *  内部函数: 寄存器读写 (底层 SPI 通讯)
+  45:BSP/rc522.c   ****  * ====================================================== */
+  46:BSP/rc522.c   **** 
+  47:BSP/rc522.c   **** /**
+  48:BSP/rc522.c   ****  * @brief 向 RC522 指定寄存器写入数据
+  49:BSP/rc522.c   ****  * @param addr  寄存器地址 (8bit)
+  50:BSP/rc522.c   ****  * @param value 要写入的值
+  51:BSP/rc522.c   ****  * @note  SPI 写寄存器协议:
+  52:BSP/rc522.c   ****  *        地址格式 = (addr << 1) & 0x7E，最低位为 0 表示写操作
+  53:BSP/rc522.c   ****  */
+  54:BSP/rc522.c   **** static void rc522_write_reg(uint8_t addr, uint8_t value)
+  55:BSP/rc522.c   **** {
+  29              		.loc 1 55 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  56:BSP/rc522.c   ****     if (!s_io) return;
+  33              		.loc 1 56 5 view .LVU1
+  34              		.loc 1 56 9 is_stmt 0 view .LVU2
+  35 0000 0C4B     		ldr	r3, .L7
+  36 0002 1B68     		ldr	r3, [r3]
+  37              		.loc 1 56 8 view .LVU3
+  38 0004 ABB1     		cbz	r3, .L4
+  55:BSP/rc522.c   ****     if (!s_io) return;
+  39              		.loc 1 55 1 view .LVU4
+  40 0006 70B5     		push	{r4, r5, r6, lr}
+  41              	.LCFI0:
+  42              		.cfi_def_cfa_offset 16
+  43              		.cfi_offset 4, -16
+  44              		.cfi_offset 5, -12
+  45              		.cfi_offset 6, -8
+  46              		.cfi_offset 14, -4
+  47 0008 0546     		mov	r5, r0
+  48 000a 0E46     		mov	r6, r1
+  57:BSP/rc522.c   **** 
+  58:BSP/rc522.c   ****     s_io->cs_control(0);                              /* 拉低片选，选中芯片 */
+  49              		.loc 1 58 5 is_stmt 1 view .LVU5
+  50              		.loc 1 58 9 is_stmt 0 view .LVU6
+  51 000c 1B68     		ldr	r3, [r3]
+  52              		.loc 1 58 5 view .LVU7
+  53 000e 0020     		movs	r0, #0
+  54              	.LVL1:
+  55              		.loc 1 58 5 view .LVU8
+  56 0010 9847     		blx	r3
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 3
+
+
+  57              	.LVL2:
+  59:BSP/rc522.c   ****     s_io->spi_transfer(((addr << 1) & 0x7E));         /* 发送地址字节 (写) */
+  58              		.loc 1 59 5 is_stmt 1 view .LVU9
+  59              		.loc 1 59 9 is_stmt 0 view .LVU10
+  60 0012 084C     		ldr	r4, .L7
+  61 0014 2368     		ldr	r3, [r4]
+  62 0016 9B68     		ldr	r3, [r3, #8]
+  63              		.loc 1 59 37 view .LVU11
+  64 0018 6800     		lsls	r0, r5, #1
+  65              		.loc 1 59 5 view .LVU12
+  66 001a 00F07E00 		and	r0, r0, #126
+  67 001e 9847     		blx	r3
+  68              	.LVL3:
+  60:BSP/rc522.c   ****     s_io->spi_transfer(value);                        /* 发送数据字节 */
+  69              		.loc 1 60 5 is_stmt 1 view .LVU13
+  70              		.loc 1 60 9 is_stmt 0 view .LVU14
+  71 0020 2368     		ldr	r3, [r4]
+  72 0022 9B68     		ldr	r3, [r3, #8]
+  73              		.loc 1 60 5 view .LVU15
+  74 0024 3046     		mov	r0, r6
+  75 0026 9847     		blx	r3
+  76              	.LVL4:
+  61:BSP/rc522.c   ****     s_io->cs_control(1);                              /* 拉高片选，释放芯片 */
+  77              		.loc 1 61 5 is_stmt 1 view .LVU16
+  78              		.loc 1 61 9 is_stmt 0 view .LVU17
+  79 0028 2368     		ldr	r3, [r4]
+  80 002a 1B68     		ldr	r3, [r3]
+  81              		.loc 1 61 5 view .LVU18
+  82 002c 0120     		movs	r0, #1
+  83 002e 9847     		blx	r3
+  84              	.LVL5:
+  62:BSP/rc522.c   **** }
+  85              		.loc 1 62 1 view .LVU19
+  86 0030 70BD     		pop	{r4, r5, r6, pc}
+  87              	.LVL6:
+  88              	.L4:
+  89              	.LCFI1:
+  90              		.cfi_def_cfa_offset 0
+  91              		.cfi_restore 4
+  92              		.cfi_restore 5
+  93              		.cfi_restore 6
+  94              		.cfi_restore 14
+  95              		.loc 1 62 1 view .LVU20
+  96 0032 7047     		bx	lr
+  97              	.L8:
+  98              		.align	2
+  99              	.L7:
+ 100 0034 00000000 		.word	s_io
+ 101              		.cfi_endproc
+ 102              	.LFE3:
+ 104              		.section	.text.rc522_read_reg,"ax",%progbits
+ 105              		.align	1
+ 106              		.syntax unified
+ 107              		.thumb
+ 108              		.thumb_func
+ 110              	rc522_read_reg:
+ 111              	.LVL7:
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 4
+
+
+ 112              	.LFB4:
+  63:BSP/rc522.c   **** 
+  64:BSP/rc522.c   **** /**
+  65:BSP/rc522.c   ****  * @brief 从 RC522 指定寄存器读取数据
+  66:BSP/rc522.c   ****  * @param  addr 寄存器地址 (8bit)
+  67:BSP/rc522.c   ****  * @return 读取到的值
+  68:BSP/rc522.c   ****  * @note  SPI 读寄存器协议:
+  69:BSP/rc522.c   ****  *        地址格式 = ((addr << 1) & 0x7E) | 0x80，最低位为 1 表示读操作
+  70:BSP/rc522.c   ****  */
+  71:BSP/rc522.c   **** static uint8_t rc522_read_reg(uint8_t addr)
+  72:BSP/rc522.c   **** {
+ 113              		.loc 1 72 1 is_stmt 1 view -0
+ 114              		.cfi_startproc
+ 115              		@ args = 0, pretend = 0, frame = 0
+ 116              		@ frame_needed = 0, uses_anonymous_args = 0
+ 117              		.loc 1 72 1 is_stmt 0 view .LVU22
+ 118 0000 38B5     		push	{r3, r4, r5, lr}
+ 119              	.LCFI2:
+ 120              		.cfi_def_cfa_offset 16
+ 121              		.cfi_offset 3, -16
+ 122              		.cfi_offset 4, -12
+ 123              		.cfi_offset 5, -8
+ 124              		.cfi_offset 14, -4
+  73:BSP/rc522.c   ****     if (!s_io) return 0;
+ 125              		.loc 1 73 5 is_stmt 1 view .LVU23
+ 126              		.loc 1 73 9 is_stmt 0 view .LVU24
+ 127 0002 0E4B     		ldr	r3, .L13
+ 128 0004 1B68     		ldr	r3, [r3]
+ 129              		.loc 1 73 8 view .LVU25
+ 130 0006 BBB1     		cbz	r3, .L11
+ 131 0008 0446     		mov	r4, r0
+  74:BSP/rc522.c   **** 
+  75:BSP/rc522.c   ****     uint8_t value;
+ 132              		.loc 1 75 5 is_stmt 1 view .LVU26
+  76:BSP/rc522.c   ****     s_io->cs_control(0);                              /* 拉低片选，选中芯片 */
+ 133              		.loc 1 76 5 view .LVU27
+ 134              		.loc 1 76 9 is_stmt 0 view .LVU28
+ 135 000a 1B68     		ldr	r3, [r3]
+ 136              		.loc 1 76 5 view .LVU29
+ 137 000c 0020     		movs	r0, #0
+ 138              	.LVL8:
+ 139              		.loc 1 76 5 view .LVU30
+ 140 000e 9847     		blx	r3
+ 141              	.LVL9:
+  77:BSP/rc522.c   ****     s_io->spi_transfer(((addr << 1) & 0x7E) | 0x80); /* 发送地址字节 (读) */
+ 142              		.loc 1 77 5 is_stmt 1 view .LVU31
+ 143              		.loc 1 77 9 is_stmt 0 view .LVU32
+ 144 0010 0A4D     		ldr	r5, .L13
+ 145 0012 2B68     		ldr	r3, [r5]
+ 146 0014 9B68     		ldr	r3, [r3, #8]
+ 147              		.loc 1 77 37 view .LVU33
+ 148 0016 6000     		lsls	r0, r4, #1
+ 149 0018 00F07E00 		and	r0, r0, #126
+ 150              		.loc 1 77 5 view .LVU34
+ 151 001c 40F08000 		orr	r0, r0, #128
+ 152 0020 9847     		blx	r3
+ 153              	.LVL10:
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 5
+
+
+  78:BSP/rc522.c   ****     value = s_io->spi_transfer(0x00);                 /* 发送哑数据，同时接收数据 */
+ 154              		.loc 1 78 5 is_stmt 1 view .LVU35
+ 155              		.loc 1 78 17 is_stmt 0 view .LVU36
+ 156 0022 2B68     		ldr	r3, [r5]
+ 157 0024 9B68     		ldr	r3, [r3, #8]
+ 158              		.loc 1 78 13 view .LVU37
+ 159 0026 0020     		movs	r0, #0
+ 160 0028 9847     		blx	r3
+ 161              	.LVL11:
+ 162 002a 0446     		mov	r4, r0
+ 163              	.LVL12:
+  79:BSP/rc522.c   ****     s_io->cs_control(1);                              /* 拉高片选，释放芯片 */
+ 164              		.loc 1 79 5 is_stmt 1 view .LVU38
+ 165              		.loc 1 79 9 is_stmt 0 view .LVU39
+ 166 002c 2B68     		ldr	r3, [r5]
+ 167 002e 1B68     		ldr	r3, [r3]
+ 168              		.loc 1 79 5 view .LVU40
+ 169 0030 0120     		movs	r0, #1
+ 170 0032 9847     		blx	r3
+ 171              	.LVL13:
+  80:BSP/rc522.c   ****     return value;
+ 172              		.loc 1 80 5 is_stmt 1 view .LVU41
+ 173              	.L10:
+  81:BSP/rc522.c   **** }
+ 174              		.loc 1 81 1 is_stmt 0 view .LVU42
+ 175 0034 2046     		mov	r0, r4
+ 176 0036 38BD     		pop	{r3, r4, r5, pc}
+ 177              	.LVL14:
+ 178              	.L11:
+  73:BSP/rc522.c   **** 
+ 179              		.loc 1 73 23 discriminator 1 view .LVU43
+ 180 0038 0024     		movs	r4, #0
+ 181 003a FBE7     		b	.L10
+ 182              	.L14:
+ 183              		.align	2
+ 184              	.L13:
+ 185 003c 00000000 		.word	s_io
+ 186              		.cfi_endproc
+ 187              	.LFE4:
+ 189              		.section	.text.rc522_set_bit_mask,"ax",%progbits
+ 190              		.align	1
+ 191              		.syntax unified
+ 192              		.thumb
+ 193              		.thumb_func
+ 195              	rc522_set_bit_mask:
+ 196              	.LVL15:
+ 197              	.LFB5:
+  82:BSP/rc522.c   **** 
+  83:BSP/rc522.c   **** /* ======================================================
+  84:BSP/rc522.c   ****  *  内部函数: 位操作
+  85:BSP/rc522.c   ****  * ====================================================== */
+  86:BSP/rc522.c   **** 
+  87:BSP/rc522.c   **** /**
+  88:BSP/rc522.c   ****  * @brief 置位寄存器中指定的位
+  89:BSP/rc522.c   ****  * @param reg  寄存器地址
+  90:BSP/rc522.c   ****  * @param mask 位掩码 (要置 1 的位)
+  91:BSP/rc522.c   ****  */
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 6
+
+
+  92:BSP/rc522.c   **** static void rc522_set_bit_mask(uint8_t reg, uint8_t mask)
+  93:BSP/rc522.c   **** {
+ 198              		.loc 1 93 1 is_stmt 1 view -0
+ 199              		.cfi_startproc
+ 200              		@ args = 0, pretend = 0, frame = 0
+ 201              		@ frame_needed = 0, uses_anonymous_args = 0
+ 202              		.loc 1 93 1 is_stmt 0 view .LVU45
+ 203 0000 38B5     		push	{r3, r4, r5, lr}
+ 204              	.LCFI3:
+ 205              		.cfi_def_cfa_offset 16
+ 206              		.cfi_offset 3, -16
+ 207              		.cfi_offset 4, -12
+ 208              		.cfi_offset 5, -8
+ 209              		.cfi_offset 14, -4
+ 210 0002 0446     		mov	r4, r0
+ 211 0004 0D46     		mov	r5, r1
+  94:BSP/rc522.c   ****     uint8_t tmp = rc522_read_reg(reg);
+ 212              		.loc 1 94 5 is_stmt 1 view .LVU46
+ 213              		.loc 1 94 19 is_stmt 0 view .LVU47
+ 214 0006 FFF7FEFF 		bl	rc522_read_reg
+ 215              	.LVL16:
+  95:BSP/rc522.c   ****     rc522_write_reg(reg, tmp | mask);
+ 216              		.loc 1 95 5 is_stmt 1 view .LVU48
+ 217 000a 40EA0501 		orr	r1, r0, r5
+ 218 000e C9B2     		uxtb	r1, r1
+ 219 0010 2046     		mov	r0, r4
+ 220              	.LVL17:
+ 221              		.loc 1 95 5 is_stmt 0 view .LVU49
+ 222 0012 FFF7FEFF 		bl	rc522_write_reg
+ 223              	.LVL18:
+  96:BSP/rc522.c   **** }
+ 224              		.loc 1 96 1 view .LVU50
+ 225 0016 38BD     		pop	{r3, r4, r5, pc}
+ 226              		.loc 1 96 1 view .LVU51
+ 227              		.cfi_endproc
+ 228              	.LFE5:
+ 230              		.section	.text.rc522_clear_bit_mask,"ax",%progbits
+ 231              		.align	1
+ 232              		.syntax unified
+ 233              		.thumb
+ 234              		.thumb_func
+ 236              	rc522_clear_bit_mask:
+ 237              	.LVL19:
+ 238              	.LFB6:
+  97:BSP/rc522.c   **** 
+  98:BSP/rc522.c   **** /**
+  99:BSP/rc522.c   ****  * @brief 清零寄存器中指定的位
+ 100:BSP/rc522.c   ****  * @param reg  寄存器地址
+ 101:BSP/rc522.c   ****  * @param mask 位掩码 (要清零的位)
+ 102:BSP/rc522.c   ****  */
+ 103:BSP/rc522.c   **** static void rc522_clear_bit_mask(uint8_t reg, uint8_t mask)
+ 104:BSP/rc522.c   **** {
+ 239              		.loc 1 104 1 is_stmt 1 view -0
+ 240              		.cfi_startproc
+ 241              		@ args = 0, pretend = 0, frame = 0
+ 242              		@ frame_needed = 0, uses_anonymous_args = 0
+ 243              		.loc 1 104 1 is_stmt 0 view .LVU53
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 7
+
+
+ 244 0000 38B5     		push	{r3, r4, r5, lr}
+ 245              	.LCFI4:
+ 246              		.cfi_def_cfa_offset 16
+ 247              		.cfi_offset 3, -16
+ 248              		.cfi_offset 4, -12
+ 249              		.cfi_offset 5, -8
+ 250              		.cfi_offset 14, -4
+ 251 0002 0546     		mov	r5, r0
+ 252 0004 0C46     		mov	r4, r1
+ 105:BSP/rc522.c   ****     uint8_t tmp = rc522_read_reg(reg);
+ 253              		.loc 1 105 5 is_stmt 1 view .LVU54
+ 254              		.loc 1 105 19 is_stmt 0 view .LVU55
+ 255 0006 FFF7FEFF 		bl	rc522_read_reg
+ 256              	.LVL20:
+ 106:BSP/rc522.c   ****     rc522_write_reg(reg, tmp & ~mask);
+ 257              		.loc 1 106 5 is_stmt 1 view .LVU56
+ 258              		.loc 1 106 30 is_stmt 0 view .LVU57
+ 259 000a E443     		mvns	r4, r4
+ 260              	.LVL21:
+ 261              		.loc 1 106 30 view .LVU58
+ 262 000c 64B2     		sxtb	r4, r4
+ 263              	.LVL22:
+ 264              		.loc 1 106 5 view .LVU59
+ 265 000e 00EA0401 		and	r1, r0, r4
+ 266 0012 C9B2     		uxtb	r1, r1
+ 267 0014 2846     		mov	r0, r5
+ 268              	.LVL23:
+ 269              		.loc 1 106 5 view .LVU60
+ 270 0016 FFF7FEFF 		bl	rc522_write_reg
+ 271              	.LVL24:
+ 107:BSP/rc522.c   **** }
+ 272              		.loc 1 107 1 view .LVU61
+ 273 001a 38BD     		pop	{r3, r4, r5, pc}
+ 274              		.loc 1 107 1 view .LVU62
+ 275              		.cfi_endproc
+ 276              	.LFE6:
+ 278              		.section	.text.rc522_calculate_crc,"ax",%progbits
+ 279              		.align	1
+ 280              		.syntax unified
+ 281              		.thumb
+ 282              		.thumb_func
+ 284              	rc522_calculate_crc:
+ 285              	.LVL25:
+ 286              	.LFB7:
+ 108:BSP/rc522.c   **** 
+ 109:BSP/rc522.c   **** /* ======================================================
+ 110:BSP/rc522.c   ****  *  内部函数: CRC16 计算
+ 111:BSP/rc522.c   ****  *  (利用 RC522 片内硬件 CRC 协处理器)
+ 112:BSP/rc522.c   ****  * ====================================================== */
+ 113:BSP/rc522.c   **** 
+ 114:BSP/rc522.c   **** /**
+ 115:BSP/rc522.c   ****  * @brief 使用 RC522 硬件计算 CRC16
+ 116:BSP/rc522.c   ****  * @param pInData  输入数据缓冲区
+ 117:BSP/rc522.c   ****  * @param len      输入数据长度
+ 118:BSP/rc522.c   ****  * @param pOutData 输出 CRC 结果 (2 字节: [0]=低位, [1]=高位)
+ 119:BSP/rc522.c   ****  */
+ 120:BSP/rc522.c   **** static void rc522_calculate_crc(const uint8_t *pInData, uint8_t len, uint8_t *pOutData)
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 8
+
+
+ 121:BSP/rc522.c   **** {
+ 287              		.loc 1 121 1 is_stmt 1 view -0
+ 288              		.cfi_startproc
+ 289              		@ args = 0, pretend = 0, frame = 0
+ 290              		@ frame_needed = 0, uses_anonymous_args = 0
+ 291              		.loc 1 121 1 is_stmt 0 view .LVU64
+ 292 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 293              	.LCFI5:
+ 294              		.cfi_def_cfa_offset 24
+ 295              		.cfi_offset 3, -24
+ 296              		.cfi_offset 4, -20
+ 297              		.cfi_offset 5, -16
+ 298              		.cfi_offset 6, -12
+ 299              		.cfi_offset 7, -8
+ 300              		.cfi_offset 14, -4
+ 301 0002 0746     		mov	r7, r0
+ 302 0004 0D46     		mov	r5, r1
+ 303 0006 1646     		mov	r6, r2
+ 122:BSP/rc522.c   ****     uint8_t i, n;
+ 304              		.loc 1 122 5 is_stmt 1 view .LVU65
+ 123:BSP/rc522.c   **** 
+ 124:BSP/rc522.c   ****     rc522_clear_bit_mask(RC522_REG_DIVIRQ, 0x04);     /* 清除 CRC IRQ 标志 */
+ 305              		.loc 1 124 5 view .LVU66
+ 306 0008 0421     		movs	r1, #4
+ 307              	.LVL26:
+ 308              		.loc 1 124 5 is_stmt 0 view .LVU67
+ 309 000a 0520     		movs	r0, #5
+ 310              	.LVL27:
+ 311              		.loc 1 124 5 view .LVU68
+ 312 000c FFF7FEFF 		bl	rc522_clear_bit_mask
+ 313              	.LVL28:
+ 125:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_COMMAND, RC522_CMD_IDLE);/* 取消前一个命令 */
+ 314              		.loc 1 125 5 is_stmt 1 view .LVU69
+ 315 0010 0021     		movs	r1, #0
+ 316 0012 0120     		movs	r0, #1
+ 317 0014 FFF7FEFF 		bl	rc522_write_reg
+ 318              	.LVL29:
+ 126:BSP/rc522.c   ****     rc522_set_bit_mask(RC522_REG_FIFOLEVEL, 0x80);    /* 清空 FIFO */
+ 319              		.loc 1 126 5 view .LVU70
+ 320 0018 8021     		movs	r1, #128
+ 321 001a 0A20     		movs	r0, #10
+ 322 001c FFF7FEFF 		bl	rc522_set_bit_mask
+ 323              	.LVL30:
+ 127:BSP/rc522.c   **** 
+ 128:BSP/rc522.c   ****     /* 将数据逐字节写入 FIFO */
+ 129:BSP/rc522.c   ****     for (i = 0; i < len; i++) {
+ 324              		.loc 1 129 5 view .LVU71
+ 325              		.loc 1 129 12 is_stmt 0 view .LVU72
+ 326 0020 0024     		movs	r4, #0
+ 327              		.loc 1 129 5 view .LVU73
+ 328 0022 05E0     		b	.L20
+ 329              	.LVL31:
+ 330              	.L21:
+ 130:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_FIFODATA, pInData[i]);
+ 331              		.loc 1 130 9 is_stmt 1 view .LVU74
+ 332 0024 395D     		ldrb	r1, [r7, r4]	@ zero_extendqisi2
+ 333 0026 0920     		movs	r0, #9
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 9
+
+
+ 334 0028 FFF7FEFF 		bl	rc522_write_reg
+ 335              	.LVL32:
+ 129:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_FIFODATA, pInData[i]);
+ 336              		.loc 1 129 27 discriminator 3 view .LVU75
+ 337 002c 0134     		adds	r4, r4, #1
+ 338              	.LVL33:
+ 129:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_FIFODATA, pInData[i]);
+ 339              		.loc 1 129 27 is_stmt 0 discriminator 3 view .LVU76
+ 340 002e E4B2     		uxtb	r4, r4
+ 341              	.LVL34:
+ 342              	.L20:
+ 129:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_FIFODATA, pInData[i]);
+ 343              		.loc 1 129 19 is_stmt 1 discriminator 1 view .LVU77
+ 344 0030 AC42     		cmp	r4, r5
+ 345 0032 F7D3     		bcc	.L21
+ 131:BSP/rc522.c   ****     }
+ 132:BSP/rc522.c   **** 
+ 133:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_COMMAND, RC522_CMD_CALCCRC); /* 启动 CRC 计算 */
+ 346              		.loc 1 133 5 view .LVU78
+ 347 0034 0321     		movs	r1, #3
+ 348 0036 0120     		movs	r0, #1
+ 349 0038 FFF7FEFF 		bl	rc522_write_reg
+ 350              	.LVL35:
+ 134:BSP/rc522.c   **** 
+ 135:BSP/rc522.c   ****     /* 等待 CRC 计算完成 (超时 255 次) */
+ 136:BSP/rc522.c   ****     i = 0xFF;
+ 351              		.loc 1 136 5 view .LVU79
+ 352              		.loc 1 136 7 is_stmt 0 view .LVU80
+ 353 003c FF24     		movs	r4, #255
+ 354              	.LVL36:
+ 355              	.L23:
+ 137:BSP/rc522.c   ****     do {
+ 356              		.loc 1 137 5 is_stmt 1 view .LVU81
+ 138:BSP/rc522.c   ****         n = rc522_read_reg(RC522_REG_DIVIRQ);
+ 357              		.loc 1 138 9 view .LVU82
+ 358              		.loc 1 138 13 is_stmt 0 view .LVU83
+ 359 003e 0520     		movs	r0, #5
+ 360 0040 FFF7FEFF 		bl	rc522_read_reg
+ 361              	.LVL37:
+ 139:BSP/rc522.c   ****         i--;
+ 362              		.loc 1 139 9 is_stmt 1 view .LVU84
+ 363              		.loc 1 139 10 is_stmt 0 view .LVU85
+ 364 0044 631E     		subs	r3, r4, #1
+ 365              	.LVL38:
+ 140:BSP/rc522.c   ****     } while ((i != 0) && !(n & 0x04));
+ 366              		.loc 1 140 23 is_stmt 1 discriminator 2 view .LVU86
+ 367 0046 13F0FF04 		ands	r4, r3, #255
+ 368 004a 02D0     		beq	.L22
+ 369              		.loc 1 140 23 is_stmt 0 discriminator 1 view .LVU87
+ 370 004c 10F0040F 		tst	r0, #4
+ 371 0050 F5D0     		beq	.L23
+ 372              	.L22:
+ 141:BSP/rc522.c   **** 
+ 142:BSP/rc522.c   ****     /* 读取 CRC 结果 (低字节在前) */
+ 143:BSP/rc522.c   ****     pOutData[0] = rc522_read_reg(RC522_REG_CRCRESULTL);
+ 373              		.loc 1 143 5 is_stmt 1 view .LVU88
+ 374              		.loc 1 143 19 is_stmt 0 view .LVU89
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 10
+
+
+ 375 0052 2220     		movs	r0, #34
+ 376              	.LVL39:
+ 377              		.loc 1 143 19 view .LVU90
+ 378 0054 FFF7FEFF 		bl	rc522_read_reg
+ 379              	.LVL40:
+ 380              		.loc 1 143 17 discriminator 1 view .LVU91
+ 381 0058 3070     		strb	r0, [r6]
+ 144:BSP/rc522.c   ****     pOutData[1] = rc522_read_reg(RC522_REG_CRCRESULTM);
+ 382              		.loc 1 144 5 is_stmt 1 view .LVU92
+ 383              		.loc 1 144 19 is_stmt 0 view .LVU93
+ 384 005a 2120     		movs	r0, #33
+ 385 005c FFF7FEFF 		bl	rc522_read_reg
+ 386              	.LVL41:
+ 387              		.loc 1 144 17 discriminator 1 view .LVU94
+ 388 0060 7070     		strb	r0, [r6, #1]
+ 145:BSP/rc522.c   **** }
+ 389              		.loc 1 145 1 view .LVU95
+ 390 0062 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 391              		.loc 1 145 1 view .LVU96
+ 392              		.cfi_endproc
+ 393              	.LFE7:
+ 395              		.section	.text.RC522_Reset,"ax",%progbits
+ 396              		.align	1
+ 397              		.global	RC522_Reset
+ 398              		.syntax unified
+ 399              		.thumb
+ 400              		.thumb_func
+ 402              	RC522_Reset:
+ 403              	.LFB10:
+ 146:BSP/rc522.c   **** 
+ 147:BSP/rc522.c   **** /* ======================================================
+ 148:BSP/rc522.c   ****  *  内部函数: 与 RC522 核心通讯
+ 149:BSP/rc522.c   ****  *  (封装了命令发送、FIFO 操作和中断状态处理)
+ 150:BSP/rc522.c   ****  * ====================================================== */
+ 151:BSP/rc522.c   **** 
+ 152:BSP/rc522.c   **** /**
+ 153:BSP/rc522.c   ****  * @brief 通过 RC522 与 Mifare 卡进行数据通讯
+ 154:BSP/rc522.c   ****  * @param Command    RC522 命令 (PCD_TRANSCEIVE / PCD_AUTHENT 等)
+ 155:BSP/rc522.c   ****  * @param pInData    发送给卡的数据缓冲区
+ 156:BSP/rc522.c   ****  * @param InLenByte  发送数据长度 (字节)
+ 157:BSP/rc522.c   ****  * @param pOutData   接收数据缓冲区
+ 158:BSP/rc522.c   ****  * @param pOutLenBit 输出参数，接收数据的位长度
+ 159:BSP/rc522.c   ****  * @return RC522_OK 成功，RC522_ERR 失败，RC522_ERR_NO_TAG 无卡响应
+ 160:BSP/rc522.c   ****  */
+ 161:BSP/rc522.c   **** static char rc522_communicate(uint8_t Command,
+ 162:BSP/rc522.c   ****                               const uint8_t *pInData,
+ 163:BSP/rc522.c   ****                               uint8_t InLenByte,
+ 164:BSP/rc522.c   ****                               uint8_t *pOutData,
+ 165:BSP/rc522.c   ****                               uint32_t *pOutLenBit)
+ 166:BSP/rc522.c   **** {
+ 167:BSP/rc522.c   ****     char status = RC522_ERR;
+ 168:BSP/rc522.c   ****     uint8_t irqEn   = 0x00;
+ 169:BSP/rc522.c   ****     uint8_t waitFor = 0x00;
+ 170:BSP/rc522.c   ****     uint8_t lastBits, n;
+ 171:BSP/rc522.c   ****     uint32_t i;
+ 172:BSP/rc522.c   **** 
+ 173:BSP/rc522.c   ****     /* 根据命令类型选择中断使能和等待标志 */
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 11
+
+
+ 174:BSP/rc522.c   ****     switch (Command) {
+ 175:BSP/rc522.c   ****         case RC522_CMD_AUTHENT:
+ 176:BSP/rc522.c   ****             irqEn   = 0x12;
+ 177:BSP/rc522.c   ****             waitFor = 0x10;
+ 178:BSP/rc522.c   ****             break;
+ 179:BSP/rc522.c   **** 
+ 180:BSP/rc522.c   ****         case RC522_CMD_TRANSCEIVE:
+ 181:BSP/rc522.c   ****             irqEn   = 0x77;
+ 182:BSP/rc522.c   ****             waitFor = 0x30;
+ 183:BSP/rc522.c   ****             break;
+ 184:BSP/rc522.c   **** 
+ 185:BSP/rc522.c   ****         default:
+ 186:BSP/rc522.c   ****             break;
+ 187:BSP/rc522.c   ****     }
+ 188:BSP/rc522.c   **** 
+ 189:BSP/rc522.c   ****     /* 配置中断和 FIFO */
+ 190:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_COMIEN, irqEn | 0x80);  /* 使能相关中断 */
+ 191:BSP/rc522.c   ****     rc522_clear_bit_mask(RC522_REG_COMIRQ, 0x80);      /* 清除所有中断标志 */
+ 192:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_COMMAND, RC522_CMD_IDLE);/* 取消当前命令 */
+ 193:BSP/rc522.c   ****     rc522_set_bit_mask(RC522_REG_FIFOLEVEL, 0x80);     /* 清空 FIFO */
+ 194:BSP/rc522.c   **** 
+ 195:BSP/rc522.c   ****     /* 将要发送的数据写入 FIFO */
+ 196:BSP/rc522.c   ****     for (i = 0; i < InLenByte; i++) {
+ 197:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_FIFODATA, pInData[i]);
+ 198:BSP/rc522.c   ****     }
+ 199:BSP/rc522.c   **** 
+ 200:BSP/rc522.c   ****     /* 启动命令 */
+ 201:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_COMMAND, Command);
+ 202:BSP/rc522.c   **** 
+ 203:BSP/rc522.c   ****     /* 如果是收发命令，在发送最后一个字节后自动开启接收 */
+ 204:BSP/rc522.c   ****     if (Command == RC522_CMD_TRANSCEIVE) {
+ 205:BSP/rc522.c   ****         rc522_set_bit_mask(RC522_REG_BITFRAMING, 0x80);
+ 206:BSP/rc522.c   ****     }
+ 207:BSP/rc522.c   **** 
+ 208:BSP/rc522.c   ****     /* 等待命令完成或超时 */
+ 209:BSP/rc522.c   ****     i = RC522_COMM_TIMEOUT;
+ 210:BSP/rc522.c   ****     do {
+ 211:BSP/rc522.c   ****         n = rc522_read_reg(RC522_REG_COMIRQ);
+ 212:BSP/rc522.c   ****         i--;
+ 213:BSP/rc522.c   ****     } while ((i != 0) && !(n & 0x01) && !(n & waitFor));
+ 214:BSP/rc522.c   **** 
+ 215:BSP/rc522.c   ****     rc522_clear_bit_mask(RC522_REG_BITFRAMING, 0x80); /* 清除位帧调整 */
+ 216:BSP/rc522.c   **** 
+ 217:BSP/rc522.c   ****     if (i != 0) {
+ 218:BSP/rc522.c   ****         /* 检查错误寄存器 (TimerErr | CRCErr | ParityErr | ProtocolErr) */
+ 219:BSP/rc522.c   ****         if (!(rc522_read_reg(RC522_REG_ERROR) & 0x1B)) {
+ 220:BSP/rc522.c   ****             status = RC522_OK;
+ 221:BSP/rc522.c   **** 
+ 222:BSP/rc522.c   ****             /* 检查是否收到 Set1 (表示无标签响应) */
+ 223:BSP/rc522.c   ****             if (n & irqEn & 0x01) {
+ 224:BSP/rc522.c   ****                 status = RC522_ERR_NO_TAG;
+ 225:BSP/rc522.c   ****             }
+ 226:BSP/rc522.c   **** 
+ 227:BSP/rc522.c   ****             /* 收发命令需要读取返回数据 */
+ 228:BSP/rc522.c   ****             if (Command == RC522_CMD_TRANSCEIVE) {
+ 229:BSP/rc522.c   ****                 n = rc522_read_reg(RC522_REG_FIFOLEVEL);
+ 230:BSP/rc522.c   ****                 lastBits = rc522_read_reg(RC522_REG_CONTROL) & 0x07;
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 12
+
+
+ 231:BSP/rc522.c   **** 
+ 232:BSP/rc522.c   ****                 /* 计算接收到的位长度 */
+ 233:BSP/rc522.c   ****                 if (lastBits) {
+ 234:BSP/rc522.c   ****                     *pOutLenBit = (n - 1) * 8 + lastBits;
+ 235:BSP/rc522.c   ****                 } else {
+ 236:BSP/rc522.c   ****                     *pOutLenBit = n * 8;
+ 237:BSP/rc522.c   ****                 }
+ 238:BSP/rc522.c   **** 
+ 239:BSP/rc522.c   ****                 /* 处理 FIFO 空的情况 */
+ 240:BSP/rc522.c   ****                 if (n == 0) {
+ 241:BSP/rc522.c   ****                     n = 1;
+ 242:BSP/rc522.c   ****                 }
+ 243:BSP/rc522.c   ****                 if (n > RC522_INTERNAL_BUF_LEN) {
+ 244:BSP/rc522.c   ****                     n = RC522_INTERNAL_BUF_LEN;
+ 245:BSP/rc522.c   ****                 }
+ 246:BSP/rc522.c   **** 
+ 247:BSP/rc522.c   ****                 /* 从 FIFO 读取数据 */
+ 248:BSP/rc522.c   ****                 for (i = 0; i < n; i++) {
+ 249:BSP/rc522.c   ****                     pOutData[i] = rc522_read_reg(RC522_REG_FIFODATA);
+ 250:BSP/rc522.c   ****                 }
+ 251:BSP/rc522.c   ****             }
+ 252:BSP/rc522.c   ****         } else {
+ 253:BSP/rc522.c   ****             status = RC522_ERR;
+ 254:BSP/rc522.c   ****         }
+ 255:BSP/rc522.c   ****     }
+ 256:BSP/rc522.c   **** 
+ 257:BSP/rc522.c   ****     /* 停止定时器并取消命令 */
+ 258:BSP/rc522.c   ****     rc522_set_bit_mask(RC522_REG_CONTROL, 0x80);
+ 259:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_COMMAND, RC522_CMD_IDLE);
+ 260:BSP/rc522.c   **** 
+ 261:BSP/rc522.c   ****     /* 连续通信失败计数: 成功清零, 超时/错误累计, 超过阈值则硬件复位 */
+ 262:BSP/rc522.c   ****     if (status == RC522_OK) {
+ 263:BSP/rc522.c   ****         s_commFailCount = 0;
+ 264:BSP/rc522.c   ****     } else {
+ 265:BSP/rc522.c   ****         s_commFailCount++;
+ 266:BSP/rc522.c   ****         if (s_commFailCount >= RC522_COMM_FAIL_THRESHOLD) {
+ 267:BSP/rc522.c   ****             s_commFailCount = 0;
+ 268:BSP/rc522.c   ****             RC522_Reset();
+ 269:BSP/rc522.c   ****             s_io->delay_ms(5);
+ 270:BSP/rc522.c   ****             RC522_ConfigISOType('A');
+ 271:BSP/rc522.c   ****         }
+ 272:BSP/rc522.c   ****     }
+ 273:BSP/rc522.c   **** 
+ 274:BSP/rc522.c   ****     return status;
+ 275:BSP/rc522.c   **** }
+ 276:BSP/rc522.c   **** 
+ 277:BSP/rc522.c   **** /* ======================================================
+ 278:BSP/rc522.c   ****  *  公开 API 实现
+ 279:BSP/rc522.c   ****  * ====================================================== */
+ 280:BSP/rc522.c   **** 
+ 281:BSP/rc522.c   **** /* ---------- 初始化与配置 ---------- */
+ 282:BSP/rc522.c   **** 
+ 283:BSP/rc522.c   **** void RC522_Init(RC522_IO_t *io)
+ 284:BSP/rc522.c   **** {
+ 285:BSP/rc522.c   ****     if (!io) return;
+ 286:BSP/rc522.c   ****     s_io = io;
+ 287:BSP/rc522.c   **** 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 13
+
+
+ 288:BSP/rc522.c   ****     /* 硬件复位序列 */
+ 289:BSP/rc522.c   ****     s_io->rst_control(1);       /* RST 拉高 */
+ 290:BSP/rc522.c   ****     s_io->delay_ms(10);
+ 291:BSP/rc522.c   ****     s_io->rst_control(0);       /* RST 拉低 */
+ 292:BSP/rc522.c   ****     s_io->delay_ms(10);
+ 293:BSP/rc522.c   ****     s_io->rst_control(1);       /* RST 拉高 */
+ 294:BSP/rc522.c   ****     s_io->delay_ms(20);
+ 295:BSP/rc522.c   **** 
+ 296:BSP/rc522.c   ****     /* 检查芯片是否就绪 (读 ComIEnReg 预期值为 0x80) */
+ 297:BSP/rc522.c   ****     if (rc522_read_reg(RC522_REG_COMIEN) == 0x80) {
+ 298:BSP/rc522.c   ****         s_io->delay_ms(20);
+ 299:BSP/rc522.c   ****     }
+ 300:BSP/rc522.c   **** 
+ 301:BSP/rc522.c   ****     /* 软复位芯片 */
+ 302:BSP/rc522.c   ****     RC522_Reset();
+ 303:BSP/rc522.c   **** 
+ 304:BSP/rc522.c   ****     /* 配置工作参数 */
+ 305:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_MODE, 0x3D);             /* 与 Mifare 通讯，CRC 初始值 0x6363 
+ 306:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_TRELOADL, 30);           /* 定时器重载值低位 */
+ 307:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_TRELOADH, 0);            /* 定时器重载值高位 */
+ 308:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_TMODE, 0x8D);            /* 定时器模式 */
+ 309:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_TPRESCALER, 0x3E);       /* 定时器预分频 */
+ 310:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_TXAUTO, 0x40);           /* 发送自动模式 */
+ 311:BSP/rc522.c   **** }
+ 312:BSP/rc522.c   **** 
+ 313:BSP/rc522.c   **** void RC522_Reset(void)
+ 314:BSP/rc522.c   **** {
+ 404              		.loc 1 314 1 is_stmt 1 view -0
+ 405              		.cfi_startproc
+ 406              		@ args = 0, pretend = 0, frame = 0
+ 407              		@ frame_needed = 0, uses_anonymous_args = 0
+ 408 0000 10B5     		push	{r4, lr}
+ 409              	.LCFI6:
+ 410              		.cfi_def_cfa_offset 8
+ 411              		.cfi_offset 4, -8
+ 412              		.cfi_offset 14, -4
+ 315:BSP/rc522.c   ****     /* 硬件复位序列 */
+ 316:BSP/rc522.c   ****     s_io->rst_control(1);
+ 413              		.loc 1 316 5 view .LVU98
+ 414              		.loc 1 316 9 is_stmt 0 view .LVU99
+ 415 0002 1D4C     		ldr	r4, .L27
+ 416 0004 2368     		ldr	r3, [r4]
+ 417 0006 5B68     		ldr	r3, [r3, #4]
+ 418              		.loc 1 316 5 view .LVU100
+ 419 0008 0120     		movs	r0, #1
+ 420 000a 9847     		blx	r3
+ 421              	.LVL42:
+ 317:BSP/rc522.c   ****     s_io->delay_ms(10);
+ 422              		.loc 1 317 5 is_stmt 1 view .LVU101
+ 423              		.loc 1 317 9 is_stmt 0 view .LVU102
+ 424 000c 2368     		ldr	r3, [r4]
+ 425 000e 1B69     		ldr	r3, [r3, #16]
+ 426              		.loc 1 317 5 view .LVU103
+ 427 0010 0A20     		movs	r0, #10
+ 428 0012 9847     		blx	r3
+ 429              	.LVL43:
+ 318:BSP/rc522.c   ****     s_io->rst_control(0);
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 14
+
+
+ 430              		.loc 1 318 5 is_stmt 1 view .LVU104
+ 431              		.loc 1 318 9 is_stmt 0 view .LVU105
+ 432 0014 2368     		ldr	r3, [r4]
+ 433 0016 5B68     		ldr	r3, [r3, #4]
+ 434              		.loc 1 318 5 view .LVU106
+ 435 0018 0020     		movs	r0, #0
+ 436 001a 9847     		blx	r3
+ 437              	.LVL44:
+ 319:BSP/rc522.c   ****     s_io->delay_ms(10);
+ 438              		.loc 1 319 5 is_stmt 1 view .LVU107
+ 439              		.loc 1 319 9 is_stmt 0 view .LVU108
+ 440 001c 2368     		ldr	r3, [r4]
+ 441 001e 1B69     		ldr	r3, [r3, #16]
+ 442              		.loc 1 319 5 view .LVU109
+ 443 0020 0A20     		movs	r0, #10
+ 444 0022 9847     		blx	r3
+ 445              	.LVL45:
+ 320:BSP/rc522.c   ****     s_io->rst_control(1);
+ 446              		.loc 1 320 5 is_stmt 1 view .LVU110
+ 447              		.loc 1 320 9 is_stmt 0 view .LVU111
+ 448 0024 2368     		ldr	r3, [r4]
+ 449 0026 5B68     		ldr	r3, [r3, #4]
+ 450              		.loc 1 320 5 view .LVU112
+ 451 0028 0120     		movs	r0, #1
+ 452 002a 9847     		blx	r3
+ 453              	.LVL46:
+ 321:BSP/rc522.c   ****     s_io->delay_ms(20);
+ 454              		.loc 1 321 5 is_stmt 1 view .LVU113
+ 455              		.loc 1 321 9 is_stmt 0 view .LVU114
+ 456 002c 2368     		ldr	r3, [r4]
+ 457 002e 1B69     		ldr	r3, [r3, #16]
+ 458              		.loc 1 321 5 view .LVU115
+ 459 0030 1420     		movs	r0, #20
+ 460 0032 9847     		blx	r3
+ 461              	.LVL47:
+ 322:BSP/rc522.c   **** 
+ 323:BSP/rc522.c   ****     /* 软复位芯片 */
+ 324:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_COMMAND, RC522_CMD_RESETPHASE);
+ 462              		.loc 1 324 5 is_stmt 1 view .LVU116
+ 463 0034 0F21     		movs	r1, #15
+ 464 0036 0120     		movs	r0, #1
+ 465 0038 FFF7FEFF 		bl	rc522_write_reg
+ 466              	.LVL48:
+ 325:BSP/rc522.c   ****     s_io->delay_ms(10);
+ 467              		.loc 1 325 5 view .LVU117
+ 468              		.loc 1 325 9 is_stmt 0 view .LVU118
+ 469 003c 2368     		ldr	r3, [r4]
+ 470 003e 1B69     		ldr	r3, [r3, #16]
+ 471              		.loc 1 325 5 view .LVU119
+ 472 0040 0A20     		movs	r0, #10
+ 473 0042 9847     		blx	r3
+ 474              	.LVL49:
+ 326:BSP/rc522.c   **** 
+ 327:BSP/rc522.c   ****     /* 软复位后寄存器恢复默认值，需重新配置工作参数 */
+ 328:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_MODE, 0x3D);
+ 475              		.loc 1 328 5 is_stmt 1 view .LVU120
+ 476 0044 3D21     		movs	r1, #61
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 15
+
+
+ 477 0046 1120     		movs	r0, #17
+ 478 0048 FFF7FEFF 		bl	rc522_write_reg
+ 479              	.LVL50:
+ 329:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_TRELOADL, 30);
+ 480              		.loc 1 329 5 view .LVU121
+ 481 004c 1E21     		movs	r1, #30
+ 482 004e 2D20     		movs	r0, #45
+ 483 0050 FFF7FEFF 		bl	rc522_write_reg
+ 484              	.LVL51:
+ 330:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_TRELOADH, 0);
+ 485              		.loc 1 330 5 view .LVU122
+ 486 0054 0021     		movs	r1, #0
+ 487 0056 2C20     		movs	r0, #44
+ 488 0058 FFF7FEFF 		bl	rc522_write_reg
+ 489              	.LVL52:
+ 331:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_TMODE, 0x8D);
+ 490              		.loc 1 331 5 view .LVU123
+ 491 005c 8D21     		movs	r1, #141
+ 492 005e 2A20     		movs	r0, #42
+ 493 0060 FFF7FEFF 		bl	rc522_write_reg
+ 494              	.LVL53:
+ 332:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_TPRESCALER, 0x3E);
+ 495              		.loc 1 332 5 view .LVU124
+ 496 0064 3E21     		movs	r1, #62
+ 497 0066 2B20     		movs	r0, #43
+ 498 0068 FFF7FEFF 		bl	rc522_write_reg
+ 499              	.LVL54:
+ 333:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_TXAUTO, 0x40);
+ 500              		.loc 1 333 5 view .LVU125
+ 501 006c 4021     		movs	r1, #64
+ 502 006e 1520     		movs	r0, #21
+ 503 0070 FFF7FEFF 		bl	rc522_write_reg
+ 504              	.LVL55:
+ 334:BSP/rc522.c   **** }
+ 505              		.loc 1 334 1 is_stmt 0 view .LVU126
+ 506 0074 10BD     		pop	{r4, pc}
+ 507              	.L28:
+ 508 0076 00BF     		.align	2
+ 509              	.L27:
+ 510 0078 00000000 		.word	s_io
+ 511              		.cfi_endproc
+ 512              	.LFE10:
+ 514              		.section	.text.RC522_Init,"ax",%progbits
+ 515              		.align	1
+ 516              		.global	RC522_Init
+ 517              		.syntax unified
+ 518              		.thumb
+ 519              		.thumb_func
+ 521              	RC522_Init:
+ 522              	.LVL56:
+ 523              	.LFB9:
+ 284:BSP/rc522.c   ****     if (!io) return;
+ 524              		.loc 1 284 1 is_stmt 1 view -0
+ 525              		.cfi_startproc
+ 526              		@ args = 0, pretend = 0, frame = 0
+ 527              		@ frame_needed = 0, uses_anonymous_args = 0
+ 285:BSP/rc522.c   ****     s_io = io;
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 16
+
+
+ 528              		.loc 1 285 5 view .LVU128
+ 285:BSP/rc522.c   ****     s_io = io;
+ 529              		.loc 1 285 8 is_stmt 0 view .LVU129
+ 530 0000 0028     		cmp	r0, #0
+ 531 0002 3ED0     		beq	.L33
+ 284:BSP/rc522.c   ****     if (!io) return;
+ 532              		.loc 1 284 1 view .LVU130
+ 533 0004 10B5     		push	{r4, lr}
+ 534              	.LCFI7:
+ 535              		.cfi_def_cfa_offset 8
+ 536              		.cfi_offset 4, -8
+ 537              		.cfi_offset 14, -4
+ 286:BSP/rc522.c   **** 
+ 538              		.loc 1 286 5 is_stmt 1 view .LVU131
+ 286:BSP/rc522.c   **** 
+ 539              		.loc 1 286 10 is_stmt 0 view .LVU132
+ 540 0006 1F4C     		ldr	r4, .L37
+ 541 0008 2060     		str	r0, [r4]
+ 289:BSP/rc522.c   ****     s_io->delay_ms(10);
+ 542              		.loc 1 289 5 is_stmt 1 view .LVU133
+ 289:BSP/rc522.c   ****     s_io->delay_ms(10);
+ 543              		.loc 1 289 9 is_stmt 0 view .LVU134
+ 544 000a 4368     		ldr	r3, [r0, #4]
+ 289:BSP/rc522.c   ****     s_io->delay_ms(10);
+ 545              		.loc 1 289 5 view .LVU135
+ 546 000c 0120     		movs	r0, #1
+ 547              	.LVL57:
+ 289:BSP/rc522.c   ****     s_io->delay_ms(10);
+ 548              		.loc 1 289 5 view .LVU136
+ 549 000e 9847     		blx	r3
+ 550              	.LVL58:
+ 290:BSP/rc522.c   ****     s_io->rst_control(0);       /* RST 拉低 */
+ 551              		.loc 1 290 5 is_stmt 1 view .LVU137
+ 290:BSP/rc522.c   ****     s_io->rst_control(0);       /* RST 拉低 */
+ 552              		.loc 1 290 9 is_stmt 0 view .LVU138
+ 553 0010 2368     		ldr	r3, [r4]
+ 554 0012 1B69     		ldr	r3, [r3, #16]
+ 290:BSP/rc522.c   ****     s_io->rst_control(0);       /* RST 拉低 */
+ 555              		.loc 1 290 5 view .LVU139
+ 556 0014 0A20     		movs	r0, #10
+ 557 0016 9847     		blx	r3
+ 558              	.LVL59:
+ 291:BSP/rc522.c   ****     s_io->delay_ms(10);
+ 559              		.loc 1 291 5 is_stmt 1 view .LVU140
+ 291:BSP/rc522.c   ****     s_io->delay_ms(10);
+ 560              		.loc 1 291 9 is_stmt 0 view .LVU141
+ 561 0018 2368     		ldr	r3, [r4]
+ 562 001a 5B68     		ldr	r3, [r3, #4]
+ 291:BSP/rc522.c   ****     s_io->delay_ms(10);
+ 563              		.loc 1 291 5 view .LVU142
+ 564 001c 0020     		movs	r0, #0
+ 565 001e 9847     		blx	r3
+ 566              	.LVL60:
+ 292:BSP/rc522.c   ****     s_io->rst_control(1);       /* RST 拉高 */
+ 567              		.loc 1 292 5 is_stmt 1 view .LVU143
+ 292:BSP/rc522.c   ****     s_io->rst_control(1);       /* RST 拉高 */
+ 568              		.loc 1 292 9 is_stmt 0 view .LVU144
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 17
+
+
+ 569 0020 2368     		ldr	r3, [r4]
+ 570 0022 1B69     		ldr	r3, [r3, #16]
+ 292:BSP/rc522.c   ****     s_io->rst_control(1);       /* RST 拉高 */
+ 571              		.loc 1 292 5 view .LVU145
+ 572 0024 0A20     		movs	r0, #10
+ 573 0026 9847     		blx	r3
+ 574              	.LVL61:
+ 293:BSP/rc522.c   ****     s_io->delay_ms(20);
+ 575              		.loc 1 293 5 is_stmt 1 view .LVU146
+ 293:BSP/rc522.c   ****     s_io->delay_ms(20);
+ 576              		.loc 1 293 9 is_stmt 0 view .LVU147
+ 577 0028 2368     		ldr	r3, [r4]
+ 578 002a 5B68     		ldr	r3, [r3, #4]
+ 293:BSP/rc522.c   ****     s_io->delay_ms(20);
+ 579              		.loc 1 293 5 view .LVU148
+ 580 002c 0120     		movs	r0, #1
+ 581 002e 9847     		blx	r3
+ 582              	.LVL62:
+ 294:BSP/rc522.c   **** 
+ 583              		.loc 1 294 5 is_stmt 1 view .LVU149
+ 294:BSP/rc522.c   **** 
+ 584              		.loc 1 294 9 is_stmt 0 view .LVU150
+ 585 0030 2368     		ldr	r3, [r4]
+ 586 0032 1B69     		ldr	r3, [r3, #16]
+ 294:BSP/rc522.c   **** 
+ 587              		.loc 1 294 5 view .LVU151
+ 588 0034 1420     		movs	r0, #20
+ 589 0036 9847     		blx	r3
+ 590              	.LVL63:
+ 297:BSP/rc522.c   ****         s_io->delay_ms(20);
+ 591              		.loc 1 297 5 is_stmt 1 view .LVU152
+ 297:BSP/rc522.c   ****         s_io->delay_ms(20);
+ 592              		.loc 1 297 9 is_stmt 0 view .LVU153
+ 593 0038 0220     		movs	r0, #2
+ 594 003a FFF7FEFF 		bl	rc522_read_reg
+ 595              	.LVL64:
+ 297:BSP/rc522.c   ****         s_io->delay_ms(20);
+ 596              		.loc 1 297 8 discriminator 1 view .LVU154
+ 597 003e 8028     		cmp	r0, #128
+ 598 0040 1AD0     		beq	.L36
+ 599              	.L31:
+ 302:BSP/rc522.c   **** 
+ 600              		.loc 1 302 5 is_stmt 1 view .LVU155
+ 601 0042 FFF7FEFF 		bl	RC522_Reset
+ 602              	.LVL65:
+ 305:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_TRELOADL, 30);           /* 定时器重载值低位 */
+ 603              		.loc 1 305 5 view .LVU156
+ 604 0046 3D21     		movs	r1, #61
+ 605 0048 1120     		movs	r0, #17
+ 606 004a FFF7FEFF 		bl	rc522_write_reg
+ 607              	.LVL66:
+ 306:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_TRELOADH, 0);            /* 定时器重载值高位 */
+ 608              		.loc 1 306 5 view .LVU157
+ 609 004e 1E21     		movs	r1, #30
+ 610 0050 2D20     		movs	r0, #45
+ 611 0052 FFF7FEFF 		bl	rc522_write_reg
+ 612              	.LVL67:
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 18
+
+
+ 307:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_TMODE, 0x8D);            /* 定时器模式 */
+ 613              		.loc 1 307 5 view .LVU158
+ 614 0056 0021     		movs	r1, #0
+ 615 0058 2C20     		movs	r0, #44
+ 616 005a FFF7FEFF 		bl	rc522_write_reg
+ 617              	.LVL68:
+ 308:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_TPRESCALER, 0x3E);       /* 定时器预分频 */
+ 618              		.loc 1 308 5 view .LVU159
+ 619 005e 8D21     		movs	r1, #141
+ 620 0060 2A20     		movs	r0, #42
+ 621 0062 FFF7FEFF 		bl	rc522_write_reg
+ 622              	.LVL69:
+ 309:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_TXAUTO, 0x40);           /* 发送自动模式 */
+ 623              		.loc 1 309 5 view .LVU160
+ 624 0066 3E21     		movs	r1, #62
+ 625 0068 2B20     		movs	r0, #43
+ 626 006a FFF7FEFF 		bl	rc522_write_reg
+ 627              	.LVL70:
+ 310:BSP/rc522.c   **** }
+ 628              		.loc 1 310 5 view .LVU161
+ 629 006e 4021     		movs	r1, #64
+ 630 0070 1520     		movs	r0, #21
+ 631 0072 FFF7FEFF 		bl	rc522_write_reg
+ 632              	.LVL71:
+ 311:BSP/rc522.c   **** 
+ 633              		.loc 1 311 1 is_stmt 0 view .LVU162
+ 634 0076 10BD     		pop	{r4, pc}
+ 635              	.L36:
+ 298:BSP/rc522.c   ****     }
+ 636              		.loc 1 298 9 is_stmt 1 view .LVU163
+ 298:BSP/rc522.c   ****     }
+ 637              		.loc 1 298 13 is_stmt 0 view .LVU164
+ 638 0078 2368     		ldr	r3, [r4]
+ 639 007a 1B69     		ldr	r3, [r3, #16]
+ 298:BSP/rc522.c   ****     }
+ 640              		.loc 1 298 9 view .LVU165
+ 641 007c 1420     		movs	r0, #20
+ 642 007e 9847     		blx	r3
+ 643              	.LVL72:
+ 644 0080 DFE7     		b	.L31
+ 645              	.LVL73:
+ 646              	.L33:
+ 647              	.LCFI8:
+ 648              		.cfi_def_cfa_offset 0
+ 649              		.cfi_restore 4
+ 650              		.cfi_restore 14
+ 298:BSP/rc522.c   ****     }
+ 651              		.loc 1 298 9 view .LVU166
+ 652 0082 7047     		bx	lr
+ 653              	.L38:
+ 654              		.align	2
+ 655              	.L37:
+ 656 0084 00000000 		.word	s_io
+ 657              		.cfi_endproc
+ 658              	.LFE9:
+ 660              		.section	.text.RC522_AntennaOn,"ax",%progbits
+ 661              		.align	1
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 19
+
+
+ 662              		.global	RC522_AntennaOn
+ 663              		.syntax unified
+ 664              		.thumb
+ 665              		.thumb_func
+ 667              	RC522_AntennaOn:
+ 668              	.LFB12:
+ 335:BSP/rc522.c   **** 
+ 336:BSP/rc522.c   **** void RC522_ConfigISOType(char type)
+ 337:BSP/rc522.c   **** {
+ 338:BSP/rc522.c   ****     if (type == 'A') {
+ 339:BSP/rc522.c   ****         rc522_clear_bit_mask(RC522_REG_STATUS2, 0x08);
+ 340:BSP/rc522.c   **** 
+ 341:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_MODE, 0x3D);
+ 342:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_RXSEL, 0x86);
+ 343:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_RFCFG, 0x7F);
+ 344:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_TRELOADL, 30);
+ 345:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_TRELOADH, 0);
+ 346:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_TMODE, 0x8D);
+ 347:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_TPRESCALER, 0x3E);
+ 348:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_TXAUTO, 0x40);       /* 使能内部 RF 发生器（软复位后�
+ 349:BSP/rc522.c   **** 
+ 350:BSP/rc522.c   ****         s_io->delay_ms(10);
+ 351:BSP/rc522.c   ****         RC522_AntennaOn();
+ 352:BSP/rc522.c   ****     }
+ 353:BSP/rc522.c   **** }
+ 354:BSP/rc522.c   **** 
+ 355:BSP/rc522.c   **** void RC522_AntennaOn(void)
+ 356:BSP/rc522.c   **** {
+ 669              		.loc 1 356 1 is_stmt 1 view -0
+ 670              		.cfi_startproc
+ 671              		@ args = 0, pretend = 0, frame = 0
+ 672              		@ frame_needed = 0, uses_anonymous_args = 0
+ 673 0000 08B5     		push	{r3, lr}
+ 674              	.LCFI9:
+ 675              		.cfi_def_cfa_offset 8
+ 676              		.cfi_offset 3, -8
+ 677              		.cfi_offset 14, -4
+ 357:BSP/rc522.c   ****     uint8_t i = rc522_read_reg(RC522_REG_TXCONTROL);
+ 678              		.loc 1 357 5 view .LVU168
+ 679              		.loc 1 357 17 is_stmt 0 view .LVU169
+ 680 0002 1420     		movs	r0, #20
+ 681 0004 FFF7FEFF 		bl	rc522_read_reg
+ 682              	.LVL74:
+ 358:BSP/rc522.c   ****     if (!(i & 0x03)) {
+ 683              		.loc 1 358 5 is_stmt 1 view .LVU170
+ 684              		.loc 1 358 8 is_stmt 0 view .LVU171
+ 685 0008 10F0030F 		tst	r0, #3
+ 686 000c 00D0     		beq	.L42
+ 687              	.LVL75:
+ 688              	.L39:
+ 359:BSP/rc522.c   ****         rc522_set_bit_mask(RC522_REG_TXCONTROL, 0x03);
+ 360:BSP/rc522.c   ****     }
+ 361:BSP/rc522.c   **** }
+ 689              		.loc 1 361 1 view .LVU172
+ 690 000e 08BD     		pop	{r3, pc}
+ 691              	.LVL76:
+ 692              	.L42:
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 20
+
+
+ 359:BSP/rc522.c   ****         rc522_set_bit_mask(RC522_REG_TXCONTROL, 0x03);
+ 693              		.loc 1 359 9 is_stmt 1 view .LVU173
+ 694 0010 0321     		movs	r1, #3
+ 695 0012 1420     		movs	r0, #20
+ 696              	.LVL77:
+ 359:BSP/rc522.c   ****         rc522_set_bit_mask(RC522_REG_TXCONTROL, 0x03);
+ 697              		.loc 1 359 9 is_stmt 0 view .LVU174
+ 698 0014 FFF7FEFF 		bl	rc522_set_bit_mask
+ 699              	.LVL78:
+ 700              		.loc 1 361 1 view .LVU175
+ 701 0018 F9E7     		b	.L39
+ 702              		.cfi_endproc
+ 703              	.LFE12:
+ 705              		.section	.text.RC522_ConfigISOType,"ax",%progbits
+ 706              		.align	1
+ 707              		.global	RC522_ConfigISOType
+ 708              		.syntax unified
+ 709              		.thumb
+ 710              		.thumb_func
+ 712              	RC522_ConfigISOType:
+ 713              	.LVL79:
+ 714              	.LFB11:
+ 337:BSP/rc522.c   ****     if (type == 'A') {
+ 715              		.loc 1 337 1 is_stmt 1 view -0
+ 716              		.cfi_startproc
+ 717              		@ args = 0, pretend = 0, frame = 0
+ 718              		@ frame_needed = 0, uses_anonymous_args = 0
+ 338:BSP/rc522.c   ****         rc522_clear_bit_mask(RC522_REG_STATUS2, 0x08);
+ 719              		.loc 1 338 5 view .LVU177
+ 338:BSP/rc522.c   ****         rc522_clear_bit_mask(RC522_REG_STATUS2, 0x08);
+ 720              		.loc 1 338 8 is_stmt 0 view .LVU178
+ 721 0000 4128     		cmp	r0, #65
+ 722 0002 00D0     		beq	.L49
+ 723 0004 7047     		bx	lr
+ 724              	.L49:
+ 337:BSP/rc522.c   ****     if (type == 'A') {
+ 725              		.loc 1 337 1 view .LVU179
+ 726 0006 08B5     		push	{r3, lr}
+ 727              	.LCFI10:
+ 728              		.cfi_def_cfa_offset 8
+ 729              		.cfi_offset 3, -8
+ 730              		.cfi_offset 14, -4
+ 339:BSP/rc522.c   **** 
+ 731              		.loc 1 339 9 is_stmt 1 view .LVU180
+ 732 0008 0821     		movs	r1, #8
+ 733 000a 0846     		mov	r0, r1
+ 734              	.LVL80:
+ 339:BSP/rc522.c   **** 
+ 735              		.loc 1 339 9 is_stmt 0 view .LVU181
+ 736 000c FFF7FEFF 		bl	rc522_clear_bit_mask
+ 737              	.LVL81:
+ 341:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_RXSEL, 0x86);
+ 738              		.loc 1 341 9 is_stmt 1 view .LVU182
+ 739 0010 3D21     		movs	r1, #61
+ 740 0012 1120     		movs	r0, #17
+ 741 0014 FFF7FEFF 		bl	rc522_write_reg
+ 742              	.LVL82:
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 21
+
+
+ 342:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_RFCFG, 0x7F);
+ 743              		.loc 1 342 9 view .LVU183
+ 744 0018 8621     		movs	r1, #134
+ 745 001a 1720     		movs	r0, #23
+ 746 001c FFF7FEFF 		bl	rc522_write_reg
+ 747              	.LVL83:
+ 343:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_TRELOADL, 30);
+ 748              		.loc 1 343 9 view .LVU184
+ 749 0020 7F21     		movs	r1, #127
+ 750 0022 2620     		movs	r0, #38
+ 751 0024 FFF7FEFF 		bl	rc522_write_reg
+ 752              	.LVL84:
+ 344:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_TRELOADH, 0);
+ 753              		.loc 1 344 9 view .LVU185
+ 754 0028 1E21     		movs	r1, #30
+ 755 002a 2D20     		movs	r0, #45
+ 756 002c FFF7FEFF 		bl	rc522_write_reg
+ 757              	.LVL85:
+ 345:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_TMODE, 0x8D);
+ 758              		.loc 1 345 9 view .LVU186
+ 759 0030 0021     		movs	r1, #0
+ 760 0032 2C20     		movs	r0, #44
+ 761 0034 FFF7FEFF 		bl	rc522_write_reg
+ 762              	.LVL86:
+ 346:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_TPRESCALER, 0x3E);
+ 763              		.loc 1 346 9 view .LVU187
+ 764 0038 8D21     		movs	r1, #141
+ 765 003a 2A20     		movs	r0, #42
+ 766 003c FFF7FEFF 		bl	rc522_write_reg
+ 767              	.LVL87:
+ 347:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_TXAUTO, 0x40);       /* 使能内部 RF 发生器（软复位后�
+ 768              		.loc 1 347 9 view .LVU188
+ 769 0040 3E21     		movs	r1, #62
+ 770 0042 2B20     		movs	r0, #43
+ 771 0044 FFF7FEFF 		bl	rc522_write_reg
+ 772              	.LVL88:
+ 348:BSP/rc522.c   **** 
+ 773              		.loc 1 348 9 view .LVU189
+ 774 0048 4021     		movs	r1, #64
+ 775 004a 1520     		movs	r0, #21
+ 776 004c FFF7FEFF 		bl	rc522_write_reg
+ 777              	.LVL89:
+ 350:BSP/rc522.c   ****         RC522_AntennaOn();
+ 778              		.loc 1 350 9 view .LVU190
+ 350:BSP/rc522.c   ****         RC522_AntennaOn();
+ 779              		.loc 1 350 13 is_stmt 0 view .LVU191
+ 780 0050 034B     		ldr	r3, .L50
+ 781 0052 1B68     		ldr	r3, [r3]
+ 782 0054 1B69     		ldr	r3, [r3, #16]
+ 350:BSP/rc522.c   ****         RC522_AntennaOn();
+ 783              		.loc 1 350 9 view .LVU192
+ 784 0056 0A20     		movs	r0, #10
+ 785 0058 9847     		blx	r3
+ 786              	.LVL90:
+ 351:BSP/rc522.c   ****     }
+ 787              		.loc 1 351 9 is_stmt 1 view .LVU193
+ 788 005a FFF7FEFF 		bl	RC522_AntennaOn
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 22
+
+
+ 789              	.LVL91:
+ 353:BSP/rc522.c   **** 
+ 790              		.loc 1 353 1 is_stmt 0 view .LVU194
+ 791 005e 08BD     		pop	{r3, pc}
+ 792              	.L51:
+ 793              		.align	2
+ 794              	.L50:
+ 795 0060 00000000 		.word	s_io
+ 796              		.cfi_endproc
+ 797              	.LFE11:
+ 799              		.section	.text.rc522_communicate,"ax",%progbits
+ 800              		.align	1
+ 801              		.syntax unified
+ 802              		.thumb
+ 803              		.thumb_func
+ 805              	rc522_communicate:
+ 806              	.LVL92:
+ 807              	.LFB8:
+ 166:BSP/rc522.c   ****     char status = RC522_ERR;
+ 808              		.loc 1 166 1 is_stmt 1 view -0
+ 809              		.cfi_startproc
+ 810              		@ args = 4, pretend = 0, frame = 0
+ 811              		@ frame_needed = 0, uses_anonymous_args = 0
+ 166:BSP/rc522.c   ****     char status = RC522_ERR;
+ 812              		.loc 1 166 1 is_stmt 0 view .LVU196
+ 813 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 814              	.LCFI11:
+ 815              		.cfi_def_cfa_offset 32
+ 816              		.cfi_offset 4, -32
+ 817              		.cfi_offset 5, -28
+ 818              		.cfi_offset 6, -24
+ 819              		.cfi_offset 7, -20
+ 820              		.cfi_offset 8, -16
+ 821              		.cfi_offset 9, -12
+ 822              		.cfi_offset 10, -8
+ 823              		.cfi_offset 14, -4
+ 824 0004 0746     		mov	r7, r0
+ 825 0006 8A46     		mov	r10, r1
+ 826 0008 1546     		mov	r5, r2
+ 827 000a 9946     		mov	r9, r3
+ 167:BSP/rc522.c   ****     uint8_t irqEn   = 0x00;
+ 828              		.loc 1 167 5 is_stmt 1 view .LVU197
+ 829              	.LVL93:
+ 168:BSP/rc522.c   ****     uint8_t waitFor = 0x00;
+ 830              		.loc 1 168 5 view .LVU198
+ 169:BSP/rc522.c   ****     uint8_t lastBits, n;
+ 831              		.loc 1 169 5 view .LVU199
+ 170:BSP/rc522.c   ****     uint32_t i;
+ 832              		.loc 1 170 5 view .LVU200
+ 171:BSP/rc522.c   **** 
+ 833              		.loc 1 171 5 view .LVU201
+ 174:BSP/rc522.c   ****         case RC522_CMD_AUTHENT:
+ 834              		.loc 1 174 5 view .LVU202
+ 835 000c 0C28     		cmp	r0, #12
+ 836 000e 17D0     		beq	.L68
+ 837 0010 0E28     		cmp	r0, #14
+ 838 0012 19D1     		bne	.L69
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 23
+
+
+ 177:BSP/rc522.c   ****             break;
+ 839              		.loc 1 177 21 is_stmt 0 view .LVU203
+ 840 0014 1026     		movs	r6, #16
+ 176:BSP/rc522.c   ****             waitFor = 0x10;
+ 841              		.loc 1 176 21 view .LVU204
+ 842 0016 4FF01208 		mov	r8, #18
+ 843              	.L53:
+ 844              	.LVL94:
+ 190:BSP/rc522.c   ****     rc522_clear_bit_mask(RC522_REG_COMIRQ, 0x80);      /* 清除所有中断标志 */
+ 845              		.loc 1 190 5 is_stmt 1 view .LVU205
+ 846 001a 48F08001 		orr	r1, r8, #128
+ 847              	.LVL95:
+ 190:BSP/rc522.c   ****     rc522_clear_bit_mask(RC522_REG_COMIRQ, 0x80);      /* 清除所有中断标志 */
+ 848              		.loc 1 190 5 is_stmt 0 view .LVU206
+ 849 001e 0220     		movs	r0, #2
+ 850              	.LVL96:
+ 190:BSP/rc522.c   ****     rc522_clear_bit_mask(RC522_REG_COMIRQ, 0x80);      /* 清除所有中断标志 */
+ 851              		.loc 1 190 5 view .LVU207
+ 852 0020 FFF7FEFF 		bl	rc522_write_reg
+ 853              	.LVL97:
+ 191:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_COMMAND, RC522_CMD_IDLE);/* 取消当前命令 */
+ 854              		.loc 1 191 5 is_stmt 1 view .LVU208
+ 855 0024 8021     		movs	r1, #128
+ 856 0026 0420     		movs	r0, #4
+ 857 0028 FFF7FEFF 		bl	rc522_clear_bit_mask
+ 858              	.LVL98:
+ 192:BSP/rc522.c   ****     rc522_set_bit_mask(RC522_REG_FIFOLEVEL, 0x80);     /* 清空 FIFO */
+ 859              		.loc 1 192 5 view .LVU209
+ 860 002c 0021     		movs	r1, #0
+ 861 002e 0120     		movs	r0, #1
+ 862 0030 FFF7FEFF 		bl	rc522_write_reg
+ 863              	.LVL99:
+ 193:BSP/rc522.c   **** 
+ 864              		.loc 1 193 5 view .LVU210
+ 865 0034 8021     		movs	r1, #128
+ 866 0036 0A20     		movs	r0, #10
+ 867 0038 FFF7FEFF 		bl	rc522_set_bit_mask
+ 868              	.LVL100:
+ 196:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_FIFODATA, pInData[i]);
+ 869              		.loc 1 196 5 view .LVU211
+ 196:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_FIFODATA, pInData[i]);
+ 870              		.loc 1 196 12 is_stmt 0 view .LVU212
+ 871 003c 0024     		movs	r4, #0
+ 196:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_FIFODATA, pInData[i]);
+ 872              		.loc 1 196 5 view .LVU213
+ 873 003e 0CE0     		b	.L54
+ 874              	.LVL101:
+ 875              	.L68:
+ 182:BSP/rc522.c   ****             break;
+ 876              		.loc 1 182 21 view .LVU214
+ 877 0040 3026     		movs	r6, #48
+ 181:BSP/rc522.c   ****             waitFor = 0x30;
+ 878              		.loc 1 181 21 view .LVU215
+ 879 0042 4FF07708 		mov	r8, #119
+ 880 0046 E8E7     		b	.L53
+ 881              	.L69:
+ 174:BSP/rc522.c   ****         case RC522_CMD_AUTHENT:
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 24
+
+
+ 882              		.loc 1 174 5 view .LVU216
+ 883 0048 0026     		movs	r6, #0
+ 884 004a B046     		mov	r8, r6
+ 885 004c E5E7     		b	.L53
+ 886              	.LVL102:
+ 887              	.L55:
+ 197:BSP/rc522.c   ****     }
+ 888              		.loc 1 197 9 is_stmt 1 view .LVU217
+ 889 004e 1AF80410 		ldrb	r1, [r10, r4]	@ zero_extendqisi2
+ 890 0052 0920     		movs	r0, #9
+ 891 0054 FFF7FEFF 		bl	rc522_write_reg
+ 892              	.LVL103:
+ 196:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_FIFODATA, pInData[i]);
+ 893              		.loc 1 196 33 discriminator 3 view .LVU218
+ 894 0058 0134     		adds	r4, r4, #1
+ 895              	.LVL104:
+ 896              	.L54:
+ 196:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_FIFODATA, pInData[i]);
+ 897              		.loc 1 196 19 discriminator 1 view .LVU219
+ 898 005a A542     		cmp	r5, r4
+ 899 005c F7D8     		bhi	.L55
+ 201:BSP/rc522.c   **** 
+ 900              		.loc 1 201 5 view .LVU220
+ 901 005e 3946     		mov	r1, r7
+ 902 0060 0120     		movs	r0, #1
+ 903 0062 FFF7FEFF 		bl	rc522_write_reg
+ 904              	.LVL105:
+ 204:BSP/rc522.c   ****         rc522_set_bit_mask(RC522_REG_BITFRAMING, 0x80);
+ 905              		.loc 1 204 5 view .LVU221
+ 204:BSP/rc522.c   ****         rc522_set_bit_mask(RC522_REG_BITFRAMING, 0x80);
+ 906              		.loc 1 204 8 is_stmt 0 view .LVU222
+ 907 0066 0C2F     		cmp	r7, #12
+ 908 0068 22D0     		beq	.L76
+ 909              	.L56:
+ 196:BSP/rc522.c   ****         rc522_write_reg(RC522_REG_FIFODATA, pInData[i]);
+ 910              		.loc 1 196 12 view .LVU223
+ 911 006a 4FF4FA65 		mov	r5, #2000
+ 912              	.LVL106:
+ 913              	.L58:
+ 210:BSP/rc522.c   ****         n = rc522_read_reg(RC522_REG_COMIRQ);
+ 914              		.loc 1 210 5 is_stmt 1 view .LVU224
+ 211:BSP/rc522.c   ****         i--;
+ 915              		.loc 1 211 9 view .LVU225
+ 211:BSP/rc522.c   ****         i--;
+ 916              		.loc 1 211 13 is_stmt 0 view .LVU226
+ 917 006e 0420     		movs	r0, #4
+ 918 0070 FFF7FEFF 		bl	rc522_read_reg
+ 919              	.LVL107:
+ 920 0074 0446     		mov	r4, r0
+ 921              	.LVL108:
+ 212:BSP/rc522.c   ****     } while ((i != 0) && !(n & 0x01) && !(n & waitFor));
+ 922              		.loc 1 212 9 is_stmt 1 view .LVU227
+ 213:BSP/rc522.c   **** 
+ 923              		.loc 1 213 38 discriminator 3 view .LVU228
+ 924 0076 013D     		subs	r5, r5, #1
+ 925              	.LVL109:
+ 213:BSP/rc522.c   **** 
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 25
+
+
+ 926              		.loc 1 213 38 is_stmt 0 discriminator 3 view .LVU229
+ 927 0078 04D0     		beq	.L57
+ 213:BSP/rc522.c   **** 
+ 928              		.loc 1 213 23 discriminator 1 view .LVU230
+ 929 007a 10F0010F 		tst	r0, #1
+ 930 007e 01D1     		bne	.L57
+ 213:BSP/rc522.c   **** 
+ 931              		.loc 1 213 38 discriminator 2 view .LVU231
+ 932 0080 0642     		tst	r6, r0
+ 933 0082 F4D0     		beq	.L58
+ 934              	.L57:
+ 215:BSP/rc522.c   **** 
+ 935              		.loc 1 215 5 is_stmt 1 view .LVU232
+ 936 0084 8021     		movs	r1, #128
+ 937 0086 0D20     		movs	r0, #13
+ 938              	.LVL110:
+ 215:BSP/rc522.c   **** 
+ 939              		.loc 1 215 5 is_stmt 0 view .LVU233
+ 940 0088 FFF7FEFF 		bl	rc522_clear_bit_mask
+ 941              	.LVL111:
+ 217:BSP/rc522.c   ****         /* 检查错误寄存器 (TimerErr | CRCErr | ParityErr | ProtocolErr) */
+ 942              		.loc 1 217 5 is_stmt 1 view .LVU234
+ 217:BSP/rc522.c   ****         /* 检查错误寄存器 (TimerErr | CRCErr | ParityErr | ProtocolErr) */
+ 943              		.loc 1 217 8 is_stmt 0 view .LVU235
+ 944 008c ADB9     		cbnz	r5, .L77
+ 167:BSP/rc522.c   ****     uint8_t irqEn   = 0x00;
+ 945              		.loc 1 167 10 view .LVU236
+ 946 008e FF24     		movs	r4, #255
+ 947              	.LVL112:
+ 948              	.L59:
+ 258:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_COMMAND, RC522_CMD_IDLE);
+ 949              		.loc 1 258 5 is_stmt 1 view .LVU237
+ 950 0090 8021     		movs	r1, #128
+ 951 0092 0C20     		movs	r0, #12
+ 952 0094 FFF7FEFF 		bl	rc522_set_bit_mask
+ 953              	.LVL113:
+ 259:BSP/rc522.c   **** 
+ 954              		.loc 1 259 5 view .LVU238
+ 955 0098 0021     		movs	r1, #0
+ 956 009a 0120     		movs	r0, #1
+ 957 009c FFF7FEFF 		bl	rc522_write_reg
+ 958              	.LVL114:
+ 262:BSP/rc522.c   ****         s_commFailCount = 0;
+ 959              		.loc 1 262 5 view .LVU239
+ 262:BSP/rc522.c   ****         s_commFailCount = 0;
+ 960              		.loc 1 262 8 is_stmt 0 view .LVU240
+ 961 00a0 002C     		cmp	r4, #0
+ 962 00a2 3DD1     		bne	.L66
+ 263:BSP/rc522.c   ****     } else {
+ 963              		.loc 1 263 9 is_stmt 1 view .LVU241
+ 263:BSP/rc522.c   ****     } else {
+ 964              		.loc 1 263 25 is_stmt 0 view .LVU242
+ 965 00a4 294B     		ldr	r3, .L78
+ 966 00a6 0022     		movs	r2, #0
+ 967 00a8 1A80     		strh	r2, [r3]	@ movhi
+ 968              	.L67:
+ 274:BSP/rc522.c   **** }
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 26
+
+
+ 969              		.loc 1 274 5 is_stmt 1 view .LVU243
+ 275:BSP/rc522.c   **** 
+ 970              		.loc 1 275 1 is_stmt 0 view .LVU244
+ 971 00aa 2046     		mov	r0, r4
+ 972 00ac BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 973              	.LVL115:
+ 974              	.L76:
+ 205:BSP/rc522.c   ****     }
+ 975              		.loc 1 205 9 is_stmt 1 view .LVU245
+ 976 00b0 8021     		movs	r1, #128
+ 977 00b2 0D20     		movs	r0, #13
+ 978 00b4 FFF7FEFF 		bl	rc522_set_bit_mask
+ 979              	.LVL116:
+ 980 00b8 D7E7     		b	.L56
+ 981              	.LVL117:
+ 982              	.L77:
+ 219:BSP/rc522.c   ****             status = RC522_OK;
+ 983              		.loc 1 219 9 view .LVU246
+ 219:BSP/rc522.c   ****             status = RC522_OK;
+ 984              		.loc 1 219 15 is_stmt 0 view .LVU247
+ 985 00ba 0620     		movs	r0, #6
+ 986 00bc FFF7FEFF 		bl	rc522_read_reg
+ 987              	.LVL118:
+ 219:BSP/rc522.c   ****             status = RC522_OK;
+ 988              		.loc 1 219 12 discriminator 1 view .LVU248
+ 989 00c0 10F01B0F 		tst	r0, #27
+ 990 00c4 2AD1     		bne	.L71
+ 220:BSP/rc522.c   **** 
+ 991              		.loc 1 220 13 is_stmt 1 view .LVU249
+ 992              	.LVL119:
+ 223:BSP/rc522.c   ****                 status = RC522_ERR_NO_TAG;
+ 993              		.loc 1 223 13 view .LVU250
+ 223:BSP/rc522.c   ****                 status = RC522_ERR_NO_TAG;
+ 994              		.loc 1 223 27 is_stmt 0 view .LVU251
+ 995 00c6 08EA0408 		and	r8, r8, r4
+ 996              	.LVL120:
+ 223:BSP/rc522.c   ****                 status = RC522_ERR_NO_TAG;
+ 997              		.loc 1 223 16 view .LVU252
+ 998 00ca 18F00104 		ands	r4, r8, #1
+ 999 00ce 00D0     		beq	.L60
+ 224:BSP/rc522.c   ****             }
+ 1000              		.loc 1 224 24 view .LVU253
+ 1001 00d0 FE24     		movs	r4, #254
+ 1002              	.L60:
+ 1003              	.LVL121:
+ 228:BSP/rc522.c   ****                 n = rc522_read_reg(RC522_REG_FIFOLEVEL);
+ 1004              		.loc 1 228 13 is_stmt 1 view .LVU254
+ 228:BSP/rc522.c   ****                 n = rc522_read_reg(RC522_REG_FIFOLEVEL);
+ 1005              		.loc 1 228 16 is_stmt 0 view .LVU255
+ 1006 00d2 0C2F     		cmp	r7, #12
+ 1007 00d4 DCD1     		bne	.L59
+ 229:BSP/rc522.c   ****                 lastBits = rc522_read_reg(RC522_REG_CONTROL) & 0x07;
+ 1008              		.loc 1 229 17 is_stmt 1 view .LVU256
+ 229:BSP/rc522.c   ****                 lastBits = rc522_read_reg(RC522_REG_CONTROL) & 0x07;
+ 1009              		.loc 1 229 21 is_stmt 0 view .LVU257
+ 1010 00d6 0A20     		movs	r0, #10
+ 1011 00d8 FFF7FEFF 		bl	rc522_read_reg
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 27
+
+
+ 1012              	.LVL122:
+ 1013 00dc 0646     		mov	r6, r0
+ 1014              	.LVL123:
+ 230:BSP/rc522.c   **** 
+ 1015              		.loc 1 230 17 is_stmt 1 view .LVU258
+ 230:BSP/rc522.c   **** 
+ 1016              		.loc 1 230 28 is_stmt 0 view .LVU259
+ 1017 00de 0C20     		movs	r0, #12
+ 1018 00e0 FFF7FEFF 		bl	rc522_read_reg
+ 1019              	.LVL124:
+ 233:BSP/rc522.c   ****                     *pOutLenBit = (n - 1) * 8 + lastBits;
+ 1020              		.loc 1 233 17 is_stmt 1 view .LVU260
+ 233:BSP/rc522.c   ****                     *pOutLenBit = (n - 1) * 8 + lastBits;
+ 1021              		.loc 1 233 20 is_stmt 0 view .LVU261
+ 1022 00e4 10F00700 		ands	r0, r0, #7
+ 1023              	.LVL125:
+ 233:BSP/rc522.c   ****                     *pOutLenBit = (n - 1) * 8 + lastBits;
+ 1024              		.loc 1 233 20 view .LVU262
+ 1025 00e8 09D0     		beq	.L61
+ 234:BSP/rc522.c   ****                 } else {
+ 1026              		.loc 1 234 21 is_stmt 1 view .LVU263
+ 234:BSP/rc522.c   ****                 } else {
+ 1027              		.loc 1 234 38 is_stmt 0 view .LVU264
+ 1028 00ea 731E     		subs	r3, r6, #1
+ 234:BSP/rc522.c   ****                 } else {
+ 1029              		.loc 1 234 47 view .LVU265
+ 1030 00ec 00EBC300 		add	r0, r0, r3, lsl #3
+ 234:BSP/rc522.c   ****                 } else {
+ 1031              		.loc 1 234 33 view .LVU266
+ 1032 00f0 089B     		ldr	r3, [sp, #32]
+ 1033 00f2 1860     		str	r0, [r3]
+ 1034              	.L62:
+ 240:BSP/rc522.c   ****                     n = 1;
+ 1035              		.loc 1 240 17 is_stmt 1 view .LVU267
+ 240:BSP/rc522.c   ****                     n = 1;
+ 1036              		.loc 1 240 20 is_stmt 0 view .LVU268
+ 1037 00f4 3EB1     		cbz	r6, .L73
+ 243:BSP/rc522.c   ****                     n = RC522_INTERNAL_BUF_LEN;
+ 1038              		.loc 1 243 17 is_stmt 1 view .LVU269
+ 243:BSP/rc522.c   ****                     n = RC522_INTERNAL_BUF_LEN;
+ 1039              		.loc 1 243 20 is_stmt 0 view .LVU270
+ 1040 00f6 122E     		cmp	r6, #18
+ 1041 00f8 06D9     		bls	.L63
+ 244:BSP/rc522.c   ****                 }
+ 1042              		.loc 1 244 23 view .LVU271
+ 1043 00fa 1226     		movs	r6, #18
+ 1044              	.LVL126:
+ 244:BSP/rc522.c   ****                 }
+ 1045              		.loc 1 244 23 view .LVU272
+ 1046 00fc 04E0     		b	.L63
+ 1047              	.LVL127:
+ 1048              	.L61:
+ 236:BSP/rc522.c   ****                 }
+ 1049              		.loc 1 236 21 is_stmt 1 view .LVU273
+ 236:BSP/rc522.c   ****                 }
+ 1050              		.loc 1 236 37 is_stmt 0 view .LVU274
+ 1051 00fe F300     		lsls	r3, r6, #3
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 28
+
+
+ 236:BSP/rc522.c   ****                 }
+ 1052              		.loc 1 236 33 view .LVU275
+ 1053 0100 089A     		ldr	r2, [sp, #32]
+ 1054 0102 1360     		str	r3, [r2]
+ 1055 0104 F6E7     		b	.L62
+ 1056              	.L73:
+ 241:BSP/rc522.c   ****                 }
+ 1057              		.loc 1 241 23 view .LVU276
+ 1058 0106 0126     		movs	r6, #1
+ 1059              	.LVL128:
+ 1060              	.L63:
+ 248:BSP/rc522.c   ****                     pOutData[i] = rc522_read_reg(RC522_REG_FIFODATA);
+ 1061              		.loc 1 248 17 is_stmt 1 view .LVU277
+ 248:BSP/rc522.c   ****                     pOutData[i] = rc522_read_reg(RC522_REG_FIFODATA);
+ 1062              		.loc 1 248 24 is_stmt 0 view .LVU278
+ 1063 0108 0025     		movs	r5, #0
+ 1064              	.LVL129:
+ 1065              	.L64:
+ 248:BSP/rc522.c   ****                     pOutData[i] = rc522_read_reg(RC522_REG_FIFODATA);
+ 1066              		.loc 1 248 31 is_stmt 1 discriminator 1 view .LVU279
+ 1067 010a AE42     		cmp	r6, r5
+ 1068 010c C0D9     		bls	.L59
+ 249:BSP/rc522.c   ****                 }
+ 1069              		.loc 1 249 21 view .LVU280
+ 249:BSP/rc522.c   ****                 }
+ 1070              		.loc 1 249 35 is_stmt 0 view .LVU281
+ 1071 010e 0920     		movs	r0, #9
+ 1072 0110 FFF7FEFF 		bl	rc522_read_reg
+ 1073              	.LVL130:
+ 249:BSP/rc522.c   ****                 }
+ 1074              		.loc 1 249 33 discriminator 1 view .LVU282
+ 1075 0114 09F80500 		strb	r0, [r9, r5]
+ 248:BSP/rc522.c   ****                     pOutData[i] = rc522_read_reg(RC522_REG_FIFODATA);
+ 1076              		.loc 1 248 37 is_stmt 1 discriminator 3 view .LVU283
+ 1077 0118 0135     		adds	r5, r5, #1
+ 1078              	.LVL131:
+ 248:BSP/rc522.c   ****                     pOutData[i] = rc522_read_reg(RC522_REG_FIFODATA);
+ 1079              		.loc 1 248 37 is_stmt 0 discriminator 3 view .LVU284
+ 1080 011a F6E7     		b	.L64
+ 1081              	.LVL132:
+ 1082              	.L71:
+ 253:BSP/rc522.c   ****         }
+ 1083              		.loc 1 253 20 view .LVU285
+ 1084 011c FF24     		movs	r4, #255
+ 1085 011e B7E7     		b	.L59
+ 1086              	.LVL133:
+ 1087              	.L66:
+ 265:BSP/rc522.c   ****         if (s_commFailCount >= RC522_COMM_FAIL_THRESHOLD) {
+ 1088              		.loc 1 265 9 is_stmt 1 view .LVU286
+ 265:BSP/rc522.c   ****         if (s_commFailCount >= RC522_COMM_FAIL_THRESHOLD) {
+ 1089              		.loc 1 265 24 is_stmt 0 view .LVU287
+ 1090 0120 0A4A     		ldr	r2, .L78
+ 1091 0122 1388     		ldrh	r3, [r2]
+ 1092 0124 0133     		adds	r3, r3, #1
+ 1093 0126 9BB2     		uxth	r3, r3
+ 1094 0128 1380     		strh	r3, [r2]	@ movhi
+ 266:BSP/rc522.c   ****             s_commFailCount = 0;
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 29
+
+
+ 1095              		.loc 1 266 9 is_stmt 1 view .LVU288
+ 266:BSP/rc522.c   ****             s_commFailCount = 0;
+ 1096              		.loc 1 266 12 is_stmt 0 view .LVU289
+ 1097 012a 042B     		cmp	r3, #4
+ 1098 012c BDD9     		bls	.L67
+ 267:BSP/rc522.c   ****             RC522_Reset();
+ 1099              		.loc 1 267 13 is_stmt 1 view .LVU290
+ 267:BSP/rc522.c   ****             RC522_Reset();
+ 1100              		.loc 1 267 29 is_stmt 0 view .LVU291
+ 1101 012e 1346     		mov	r3, r2
+ 1102 0130 0022     		movs	r2, #0
+ 1103 0132 1A80     		strh	r2, [r3]	@ movhi
+ 268:BSP/rc522.c   ****             s_io->delay_ms(5);
+ 1104              		.loc 1 268 13 is_stmt 1 view .LVU292
+ 1105 0134 FFF7FEFF 		bl	RC522_Reset
+ 1106              	.LVL134:
+ 269:BSP/rc522.c   ****             RC522_ConfigISOType('A');
+ 1107              		.loc 1 269 13 view .LVU293
+ 269:BSP/rc522.c   ****             RC522_ConfigISOType('A');
+ 1108              		.loc 1 269 17 is_stmt 0 view .LVU294
+ 1109 0138 054B     		ldr	r3, .L78+4
+ 1110 013a 1B68     		ldr	r3, [r3]
+ 1111 013c 1B69     		ldr	r3, [r3, #16]
+ 269:BSP/rc522.c   ****             RC522_ConfigISOType('A');
+ 1112              		.loc 1 269 13 view .LVU295
+ 1113 013e 0520     		movs	r0, #5
+ 1114 0140 9847     		blx	r3
+ 1115              	.LVL135:
+ 270:BSP/rc522.c   ****         }
+ 1116              		.loc 1 270 13 is_stmt 1 view .LVU296
+ 1117 0142 4120     		movs	r0, #65
+ 1118 0144 FFF7FEFF 		bl	RC522_ConfigISOType
+ 1119              	.LVL136:
+ 1120 0148 AFE7     		b	.L67
+ 1121              	.L79:
+ 1122 014a 00BF     		.align	2
+ 1123              	.L78:
+ 1124 014c 00000000 		.word	s_commFailCount
+ 1125 0150 00000000 		.word	s_io
+ 1126              		.cfi_endproc
+ 1127              	.LFE8:
+ 1129              		.section	.text.RC522_AntennaOff,"ax",%progbits
+ 1130              		.align	1
+ 1131              		.global	RC522_AntennaOff
+ 1132              		.syntax unified
+ 1133              		.thumb
+ 1134              		.thumb_func
+ 1136              	RC522_AntennaOff:
+ 1137              	.LFB13:
+ 362:BSP/rc522.c   **** 
+ 363:BSP/rc522.c   **** void RC522_AntennaOff(void)
+ 364:BSP/rc522.c   **** {
+ 1138              		.loc 1 364 1 view -0
+ 1139              		.cfi_startproc
+ 1140              		@ args = 0, pretend = 0, frame = 0
+ 1141              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1142 0000 08B5     		push	{r3, lr}
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 30
+
+
+ 1143              	.LCFI12:
+ 1144              		.cfi_def_cfa_offset 8
+ 1145              		.cfi_offset 3, -8
+ 1146              		.cfi_offset 14, -4
+ 365:BSP/rc522.c   ****     rc522_clear_bit_mask(RC522_REG_TXCONTROL, 0x03);
+ 1147              		.loc 1 365 5 view .LVU298
+ 1148 0002 0321     		movs	r1, #3
+ 1149 0004 1420     		movs	r0, #20
+ 1150 0006 FFF7FEFF 		bl	rc522_clear_bit_mask
+ 1151              	.LVL137:
+ 366:BSP/rc522.c   **** }
+ 1152              		.loc 1 366 1 is_stmt 0 view .LVU299
+ 1153 000a 08BD     		pop	{r3, pc}
+ 1154              		.cfi_endproc
+ 1155              	.LFE13:
+ 1157              		.section	.text.RC522_Request,"ax",%progbits
+ 1158              		.align	1
+ 1159              		.global	RC522_Request
+ 1160              		.syntax unified
+ 1161              		.thumb
+ 1162              		.thumb_func
+ 1164              	RC522_Request:
+ 1165              	.LVL138:
+ 1166              	.LFB14:
+ 367:BSP/rc522.c   **** 
+ 368:BSP/rc522.c   **** /* ---------- 卡片基本操作 ---------- */
+ 369:BSP/rc522.c   **** 
+ 370:BSP/rc522.c   **** char RC522_Request(uint8_t req_code, uint8_t *pTagType)
+ 371:BSP/rc522.c   **** {
+ 1167              		.loc 1 371 1 is_stmt 1 view -0
+ 1168              		.cfi_startproc
+ 1169              		@ args = 0, pretend = 0, frame = 24
+ 1170              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1171              		.loc 1 371 1 is_stmt 0 view .LVU301
+ 1172 0000 30B5     		push	{r4, r5, lr}
+ 1173              	.LCFI13:
+ 1174              		.cfi_def_cfa_offset 12
+ 1175              		.cfi_offset 4, -12
+ 1176              		.cfi_offset 5, -8
+ 1177              		.cfi_offset 14, -4
+ 1178 0002 89B0     		sub	sp, sp, #36
+ 1179              	.LCFI14:
+ 1180              		.cfi_def_cfa_offset 48
+ 1181 0004 0446     		mov	r4, r0
+ 1182 0006 0D46     		mov	r5, r1
+ 372:BSP/rc522.c   ****     char status;
+ 1183              		.loc 1 372 5 is_stmt 1 view .LVU302
+ 373:BSP/rc522.c   ****     uint32_t unLen;
+ 1184              		.loc 1 373 5 view .LVU303
+ 374:BSP/rc522.c   ****     uint8_t buf[RC522_INTERNAL_BUF_LEN];
+ 1185              		.loc 1 374 5 view .LVU304
+ 375:BSP/rc522.c   **** 
+ 376:BSP/rc522.c   ****     rc522_clear_bit_mask(RC522_REG_STATUS2, 0x08);
+ 1186              		.loc 1 376 5 view .LVU305
+ 1187 0008 0821     		movs	r1, #8
+ 1188              	.LVL139:
+ 1189              		.loc 1 376 5 is_stmt 0 view .LVU306
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 31
+
+
+ 1190 000a 0846     		mov	r0, r1
+ 1191              	.LVL140:
+ 1192              		.loc 1 376 5 view .LVU307
+ 1193 000c FFF7FEFF 		bl	rc522_clear_bit_mask
+ 1194              	.LVL141:
+ 377:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_BITFRAMING, 0x07);
+ 1195              		.loc 1 377 5 is_stmt 1 view .LVU308
+ 1196 0010 0721     		movs	r1, #7
+ 1197 0012 0D20     		movs	r0, #13
+ 1198 0014 FFF7FEFF 		bl	rc522_write_reg
+ 1199              	.LVL142:
+ 378:BSP/rc522.c   ****     rc522_set_bit_mask(RC522_REG_TXCONTROL, 0x03);
+ 1200              		.loc 1 378 5 view .LVU309
+ 1201 0018 0321     		movs	r1, #3
+ 1202 001a 1420     		movs	r0, #20
+ 1203 001c FFF7FEFF 		bl	rc522_set_bit_mask
+ 1204              	.LVL143:
+ 379:BSP/rc522.c   **** 
+ 380:BSP/rc522.c   ****     buf[0] = req_code;
+ 1205              		.loc 1 380 5 view .LVU310
+ 1206              		.loc 1 380 12 is_stmt 0 view .LVU311
+ 1207 0020 8DF80840 		strb	r4, [sp, #8]
+ 381:BSP/rc522.c   ****     status = rc522_communicate(RC522_CMD_TRANSCEIVE, buf, 1, buf, &unLen);
+ 1208              		.loc 1 381 5 is_stmt 1 view .LVU312
+ 1209              		.loc 1 381 14 is_stmt 0 view .LVU313
+ 1210 0024 02A9     		add	r1, sp, #8
+ 1211 0026 07AB     		add	r3, sp, #28
+ 1212 0028 0093     		str	r3, [sp]
+ 1213 002a 0B46     		mov	r3, r1
+ 1214 002c 0122     		movs	r2, #1
+ 1215 002e 0C20     		movs	r0, #12
+ 1216 0030 FFF7FEFF 		bl	rc522_communicate
+ 1217              	.LVL144:
+ 382:BSP/rc522.c   **** 
+ 383:BSP/rc522.c   ****     if ((status == RC522_OK) && (unLen == 0x10)) {
+ 1218              		.loc 1 383 5 is_stmt 1 view .LVU314
+ 1219              		.loc 1 383 8 is_stmt 0 view .LVU315
+ 1220 0034 58B9     		cbnz	r0, .L84
+ 1221              		.loc 1 383 40 discriminator 1 view .LVU316
+ 1222 0036 079B     		ldr	r3, [sp, #28]
+ 1223              		.loc 1 383 30 discriminator 1 view .LVU317
+ 1224 0038 102B     		cmp	r3, #16
+ 1225 003a 01D0     		beq	.L87
+ 384:BSP/rc522.c   ****         *pTagType     = buf[0];
+ 385:BSP/rc522.c   ****         *(pTagType + 1) = buf[1];
+ 386:BSP/rc522.c   ****     } else {
+ 387:BSP/rc522.c   ****         status = RC522_ERR;
+ 1226              		.loc 1 387 16 view .LVU318
+ 1227 003c FF20     		movs	r0, #255
+ 1228 003e 07E0     		b	.L83
+ 1229              	.L87:
+ 384:BSP/rc522.c   ****         *pTagType     = buf[0];
+ 1230              		.loc 1 384 9 is_stmt 1 view .LVU319
+ 384:BSP/rc522.c   ****         *pTagType     = buf[0];
+ 1231              		.loc 1 384 28 is_stmt 0 view .LVU320
+ 1232 0040 9DF80830 		ldrb	r3, [sp, #8]	@ zero_extendqisi2
+ 384:BSP/rc522.c   ****         *pTagType     = buf[0];
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 32
+
+
+ 1233              		.loc 1 384 23 view .LVU321
+ 1234 0044 2B70     		strb	r3, [r5]
+ 385:BSP/rc522.c   ****     } else {
+ 1235              		.loc 1 385 9 is_stmt 1 view .LVU322
+ 385:BSP/rc522.c   ****     } else {
+ 1236              		.loc 1 385 30 is_stmt 0 view .LVU323
+ 1237 0046 9DF80930 		ldrb	r3, [sp, #9]	@ zero_extendqisi2
+ 385:BSP/rc522.c   ****     } else {
+ 1238              		.loc 1 385 25 view .LVU324
+ 1239 004a 6B70     		strb	r3, [r5, #1]
+ 1240 004c 00E0     		b	.L83
+ 1241              	.L84:
+ 1242              		.loc 1 387 16 view .LVU325
+ 1243 004e FF20     		movs	r0, #255
+ 1244              	.L83:
+ 1245              	.LVL145:
+ 388:BSP/rc522.c   ****     }
+ 389:BSP/rc522.c   **** 
+ 390:BSP/rc522.c   ****     return status;
+ 1246              		.loc 1 390 5 is_stmt 1 view .LVU326
+ 391:BSP/rc522.c   **** }
+ 1247              		.loc 1 391 1 is_stmt 0 view .LVU327
+ 1248 0050 09B0     		add	sp, sp, #36
+ 1249              	.LCFI15:
+ 1250              		.cfi_def_cfa_offset 12
+ 1251              		@ sp needed
+ 1252 0052 30BD     		pop	{r4, r5, pc}
+ 1253              		.loc 1 391 1 view .LVU328
+ 1254              		.cfi_endproc
+ 1255              	.LFE14:
+ 1257              		.section	.text.RC522_Anticoll,"ax",%progbits
+ 1258              		.align	1
+ 1259              		.global	RC522_Anticoll
+ 1260              		.syntax unified
+ 1261              		.thumb
+ 1262              		.thumb_func
+ 1264              	RC522_Anticoll:
+ 1265              	.LVL146:
+ 1266              	.LFB15:
+ 392:BSP/rc522.c   **** 
+ 393:BSP/rc522.c   **** char RC522_Anticoll(uint8_t *pSnr)
+ 394:BSP/rc522.c   **** {
+ 1267              		.loc 1 394 1 is_stmt 1 view -0
+ 1268              		.cfi_startproc
+ 1269              		@ args = 0, pretend = 0, frame = 24
+ 1270              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1271              		.loc 1 394 1 is_stmt 0 view .LVU330
+ 1272 0000 30B5     		push	{r4, r5, lr}
+ 1273              	.LCFI16:
+ 1274              		.cfi_def_cfa_offset 12
+ 1275              		.cfi_offset 4, -12
+ 1276              		.cfi_offset 5, -8
+ 1277              		.cfi_offset 14, -4
+ 1278 0002 89B0     		sub	sp, sp, #36
+ 1279              	.LCFI17:
+ 1280              		.cfi_def_cfa_offset 48
+ 1281 0004 0446     		mov	r4, r0
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 33
+
+
+ 395:BSP/rc522.c   ****     char status;
+ 1282              		.loc 1 395 5 is_stmt 1 view .LVU331
+ 396:BSP/rc522.c   ****     uint8_t i, snr_check = 0;
+ 1283              		.loc 1 396 5 view .LVU332
+ 1284              	.LVL147:
+ 397:BSP/rc522.c   ****     uint32_t unLen;
+ 1285              		.loc 1 397 5 view .LVU333
+ 398:BSP/rc522.c   ****     uint8_t buf[RC522_INTERNAL_BUF_LEN];
+ 1286              		.loc 1 398 5 view .LVU334
+ 399:BSP/rc522.c   **** 
+ 400:BSP/rc522.c   ****     rc522_clear_bit_mask(RC522_REG_STATUS2, 0x08);
+ 1287              		.loc 1 400 5 view .LVU335
+ 1288 0006 0821     		movs	r1, #8
+ 1289 0008 0846     		mov	r0, r1
+ 1290              	.LVL148:
+ 1291              		.loc 1 400 5 is_stmt 0 view .LVU336
+ 1292 000a FFF7FEFF 		bl	rc522_clear_bit_mask
+ 1293              	.LVL149:
+ 401:BSP/rc522.c   ****     rc522_write_reg(RC522_REG_BITFRAMING, 0x00);
+ 1294              		.loc 1 401 5 is_stmt 1 view .LVU337
+ 1295 000e 0021     		movs	r1, #0
+ 1296 0010 0D20     		movs	r0, #13
+ 1297 0012 FFF7FEFF 		bl	rc522_write_reg
+ 1298              	.LVL150:
+ 402:BSP/rc522.c   ****     rc522_clear_bit_mask(RC522_REG_COLL, 0x80);
+ 1299              		.loc 1 402 5 view .LVU338
+ 1300 0016 8021     		movs	r1, #128
+ 1301 0018 0E20     		movs	r0, #14
+ 1302 001a FFF7FEFF 		bl	rc522_clear_bit_mask
+ 1303              	.LVL151:
+ 403:BSP/rc522.c   **** 
+ 404:BSP/rc522.c   ****     buf[0] = RC522_PICC_ANTICOLL1;
+ 1304              		.loc 1 404 5 view .LVU339
+ 1305              		.loc 1 404 12 is_stmt 0 view .LVU340
+ 1306 001e 9323     		movs	r3, #147
+ 1307 0020 8DF80830 		strb	r3, [sp, #8]
+ 405:BSP/rc522.c   ****     buf[1] = 0x20;
+ 1308              		.loc 1 405 5 is_stmt 1 view .LVU341
+ 1309              		.loc 1 405 12 is_stmt 0 view .LVU342
+ 1310 0024 2023     		movs	r3, #32
+ 1311 0026 8DF80930 		strb	r3, [sp, #9]
+ 406:BSP/rc522.c   **** 
+ 407:BSP/rc522.c   ****     status = rc522_communicate(RC522_CMD_TRANSCEIVE, buf, 2, buf, &unLen);
+ 1312              		.loc 1 407 5 is_stmt 1 view .LVU343
+ 1313              		.loc 1 407 14 is_stmt 0 view .LVU344
+ 1314 002a 02A9     		add	r1, sp, #8
+ 1315 002c 07AB     		add	r3, sp, #28
+ 1316 002e 0093     		str	r3, [sp]
+ 1317 0030 0B46     		mov	r3, r1
+ 1318 0032 0222     		movs	r2, #2
+ 1319 0034 0C20     		movs	r0, #12
+ 1320 0036 FFF7FEFF 		bl	rc522_communicate
+ 1321              	.LVL152:
+ 408:BSP/rc522.c   **** 
+ 409:BSP/rc522.c   ****     if (status == RC522_OK) {
+ 1322              		.loc 1 409 5 is_stmt 1 view .LVU345
+ 1323              		.loc 1 409 8 is_stmt 0 view .LVU346
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 34
+
+
+ 1324 003a 0546     		mov	r5, r0
+ 1325 003c D0B1     		cbz	r0, .L92
+ 1326              	.LVL153:
+ 1327              	.L90:
+ 410:BSP/rc522.c   ****         for (i = 0; i < 4; i++) {
+ 411:BSP/rc522.c   ****             *(pSnr + i) = buf[i];
+ 412:BSP/rc522.c   ****             snr_check  ^= buf[i];
+ 413:BSP/rc522.c   ****         }
+ 414:BSP/rc522.c   ****         /* 校验 UID 校验字节 */
+ 415:BSP/rc522.c   ****         if (snr_check != buf[i]) {
+ 416:BSP/rc522.c   ****             status = RC522_ERR;
+ 417:BSP/rc522.c   ****         }
+ 418:BSP/rc522.c   ****     }
+ 419:BSP/rc522.c   **** 
+ 420:BSP/rc522.c   ****     rc522_set_bit_mask(RC522_REG_COLL, 0x80);
+ 1328              		.loc 1 420 5 is_stmt 1 view .LVU347
+ 1329 003e 8021     		movs	r1, #128
+ 1330 0040 0E20     		movs	r0, #14
+ 1331 0042 FFF7FEFF 		bl	rc522_set_bit_mask
+ 1332              	.LVL154:
+ 421:BSP/rc522.c   ****     return status;
+ 1333              		.loc 1 421 5 view .LVU348
+ 422:BSP/rc522.c   **** }
+ 1334              		.loc 1 422 1 is_stmt 0 view .LVU349
+ 1335 0046 2846     		mov	r0, r5
+ 1336 0048 09B0     		add	sp, sp, #36
+ 1337              	.LCFI18:
+ 1338              		.cfi_remember_state
+ 1339              		.cfi_def_cfa_offset 12
+ 1340              		@ sp needed
+ 1341 004a 30BD     		pop	{r4, r5, pc}
+ 1342              	.LVL155:
+ 1343              	.L91:
+ 1344              	.LCFI19:
+ 1345              		.cfi_restore_state
+ 411:BSP/rc522.c   ****             snr_check  ^= buf[i];
+ 1346              		.loc 1 411 13 is_stmt 1 view .LVU350
+ 411:BSP/rc522.c   ****             snr_check  ^= buf[i];
+ 1347              		.loc 1 411 30 is_stmt 0 view .LVU351
+ 1348 004c 03F12001 		add	r1, r3, #32
+ 1349 0050 6944     		add	r1, sp, r1
+ 1350 0052 11F8181C 		ldrb	r1, [r1, #-24]	@ zero_extendqisi2
+ 411:BSP/rc522.c   ****             snr_check  ^= buf[i];
+ 1351              		.loc 1 411 25 view .LVU352
+ 1352 0056 E154     		strb	r1, [r4, r3]
+ 412:BSP/rc522.c   ****         }
+ 1353              		.loc 1 412 13 is_stmt 1 view .LVU353
+ 412:BSP/rc522.c   ****         }
+ 1354              		.loc 1 412 24 is_stmt 0 view .LVU354
+ 1355 0058 4A40     		eors	r2, r2, r1
+ 1356              	.LVL156:
+ 412:BSP/rc522.c   ****         }
+ 1357              		.loc 1 412 24 view .LVU355
+ 1358 005a D2B2     		uxtb	r2, r2
+ 1359              	.LVL157:
+ 410:BSP/rc522.c   ****             *(pSnr + i) = buf[i];
+ 1360              		.loc 1 410 29 is_stmt 1 discriminator 3 view .LVU356
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 35
+
+
+ 1361 005c 0133     		adds	r3, r3, #1
+ 1362              	.LVL158:
+ 410:BSP/rc522.c   ****             *(pSnr + i) = buf[i];
+ 1363              		.loc 1 410 29 is_stmt 0 discriminator 3 view .LVU357
+ 1364 005e DBB2     		uxtb	r3, r3
+ 1365              	.LVL159:
+ 1366              	.L89:
+ 410:BSP/rc522.c   ****             *(pSnr + i) = buf[i];
+ 1367              		.loc 1 410 23 is_stmt 1 discriminator 1 view .LVU358
+ 1368 0060 032B     		cmp	r3, #3
+ 1369 0062 F3D9     		bls	.L91
+ 415:BSP/rc522.c   ****             status = RC522_ERR;
+ 1370              		.loc 1 415 9 view .LVU359
+ 415:BSP/rc522.c   ****             status = RC522_ERR;
+ 1371              		.loc 1 415 29 is_stmt 0 view .LVU360
+ 1372 0064 2033     		adds	r3, r3, #32
+ 1373              	.LVL160:
+ 415:BSP/rc522.c   ****             status = RC522_ERR;
+ 1374              		.loc 1 415 29 view .LVU361
+ 1375 0066 6B44     		add	r3, sp, r3
+ 1376              	.LVL161:
+ 415:BSP/rc522.c   ****             status = RC522_ERR;
+ 1377              		.loc 1 415 29 view .LVU362
+ 1378 0068 13F8183C 		ldrb	r3, [r3, #-24]	@ zero_extendqisi2
+ 415:BSP/rc522.c   ****             status = RC522_ERR;
+ 1379              		.loc 1 415 12 view .LVU363
+ 1380 006c 9342     		cmp	r3, r2
+ 1381 006e E6D0     		beq	.L90
+ 416:BSP/rc522.c   ****         }
+ 1382              		.loc 1 416 20 view .LVU364
+ 1383 0070 FF25     		movs	r5, #255
+ 1384 0072 E4E7     		b	.L90
+ 1385              	.LVL162:
+ 1386              	.L92:
+ 396:BSP/rc522.c   ****     uint32_t unLen;
+ 1387              		.loc 1 396 16 view .LVU365
+ 1388 0074 0246     		mov	r2, r0
+ 410:BSP/rc522.c   ****             *(pSnr + i) = buf[i];
+ 1389              		.loc 1 410 16 view .LVU366
+ 1390 0076 0346     		mov	r3, r0
+ 1391 0078 F2E7     		b	.L89
+ 1392              		.cfi_endproc
+ 1393              	.LFE15:
+ 1395              		.section	.text.RC522_Select,"ax",%progbits
+ 1396              		.align	1
+ 1397              		.global	RC522_Select
+ 1398              		.syntax unified
+ 1399              		.thumb
+ 1400              		.thumb_func
+ 1402              	RC522_Select:
+ 1403              	.LVL163:
+ 1404              	.LFB16:
+ 423:BSP/rc522.c   **** 
+ 424:BSP/rc522.c   **** char RC522_Select(uint8_t *pSnr)
+ 425:BSP/rc522.c   **** {
+ 1405              		.loc 1 425 1 is_stmt 1 view -0
+ 1406              		.cfi_startproc
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 36
+
+
+ 1407              		@ args = 0, pretend = 0, frame = 24
+ 1408              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1409              		.loc 1 425 1 is_stmt 0 view .LVU368
+ 1410 0000 10B5     		push	{r4, lr}
+ 1411              	.LCFI20:
+ 1412              		.cfi_def_cfa_offset 8
+ 1413              		.cfi_offset 4, -8
+ 1414              		.cfi_offset 14, -4
+ 1415 0002 88B0     		sub	sp, sp, #32
+ 1416              	.LCFI21:
+ 1417              		.cfi_def_cfa_offset 40
+ 426:BSP/rc522.c   ****     char status;
+ 1418              		.loc 1 426 5 is_stmt 1 view .LVU369
+ 427:BSP/rc522.c   ****     uint8_t i;
+ 1419              		.loc 1 427 5 view .LVU370
+ 428:BSP/rc522.c   ****     uint32_t unLen;
+ 1420              		.loc 1 428 5 view .LVU371
+ 429:BSP/rc522.c   ****     uint8_t buf[RC522_INTERNAL_BUF_LEN];
+ 1421              		.loc 1 429 5 view .LVU372
+ 430:BSP/rc522.c   **** 
+ 431:BSP/rc522.c   ****     buf[0] = RC522_PICC_ANTICOLL1;
+ 1422              		.loc 1 431 5 view .LVU373
+ 1423              		.loc 1 431 12 is_stmt 0 view .LVU374
+ 1424 0004 9323     		movs	r3, #147
+ 1425 0006 8DF80830 		strb	r3, [sp, #8]
+ 432:BSP/rc522.c   ****     buf[1] = 0x70;
+ 1426              		.loc 1 432 5 is_stmt 1 view .LVU375
+ 1427              		.loc 1 432 12 is_stmt 0 view .LVU376
+ 1428 000a 7023     		movs	r3, #112
+ 1429 000c 8DF80930 		strb	r3, [sp, #9]
+ 433:BSP/rc522.c   ****     buf[6] = 0;
+ 1430              		.loc 1 433 5 is_stmt 1 view .LVU377
+ 1431              		.loc 1 433 12 is_stmt 0 view .LVU378
+ 1432 0010 0023     		movs	r3, #0
+ 1433 0012 8DF80E30 		strb	r3, [sp, #14]
+ 434:BSP/rc522.c   **** 
+ 435:BSP/rc522.c   ****     for (i = 0; i < 4; i++) {
+ 1434              		.loc 1 435 5 is_stmt 1 view .LVU379
+ 1435              	.LVL164:
+ 1436              		.loc 1 435 5 is_stmt 0 view .LVU380
+ 1437 0016 0CE0     		b	.L96
+ 1438              	.LVL165:
+ 1439              	.L97:
+ 436:BSP/rc522.c   ****         buf[i + 2] = *(pSnr + i);
+ 1440              		.loc 1 436 9 is_stmt 1 view .LVU381
+ 1441              		.loc 1 436 22 is_stmt 0 view .LVU382
+ 1442 0018 C25C     		ldrb	r2, [r0, r3]	@ zero_extendqisi2
+ 1443              		.loc 1 436 20 view .LVU383
+ 1444 001a 03F12201 		add	r1, r3, #34
+ 1445 001e 6944     		add	r1, sp, r1
+ 1446 0020 01F8182C 		strb	r2, [r1, #-24]
+ 437:BSP/rc522.c   ****         buf[6]    ^= *(pSnr + i);
+ 1447              		.loc 1 437 9 is_stmt 1 view .LVU384
+ 1448              		.loc 1 437 12 is_stmt 0 view .LVU385
+ 1449 0024 9DF80E10 		ldrb	r1, [sp, #14]	@ zero_extendqisi2
+ 1450              		.loc 1 437 19 view .LVU386
+ 1451 0028 4A40     		eors	r2, r2, r1
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 37
+
+
+ 1452 002a 8DF80E20 		strb	r2, [sp, #14]
+ 435:BSP/rc522.c   ****         buf[i + 2] = *(pSnr + i);
+ 1453              		.loc 1 435 25 is_stmt 1 discriminator 3 view .LVU387
+ 1454 002e 0133     		adds	r3, r3, #1
+ 1455              	.LVL166:
+ 435:BSP/rc522.c   ****         buf[i + 2] = *(pSnr + i);
+ 1456              		.loc 1 435 25 is_stmt 0 discriminator 3 view .LVU388
+ 1457 0030 DBB2     		uxtb	r3, r3
+ 1458              	.LVL167:
+ 1459              	.L96:
+ 435:BSP/rc522.c   ****         buf[i + 2] = *(pSnr + i);
+ 1460              		.loc 1 435 19 is_stmt 1 discriminator 1 view .LVU389
+ 1461 0032 032B     		cmp	r3, #3
+ 1462 0034 F0D9     		bls	.L97
+ 438:BSP/rc522.c   ****     }
+ 439:BSP/rc522.c   **** 
+ 440:BSP/rc522.c   ****     rc522_calculate_crc(buf, 7, &buf[7]);
+ 1463              		.loc 1 440 5 view .LVU390
+ 1464 0036 02AC     		add	r4, sp, #8
+ 1465 0038 0DF10F02 		add	r2, sp, #15
+ 1466 003c 0721     		movs	r1, #7
+ 1467 003e 2046     		mov	r0, r4
+ 1468              	.LVL168:
+ 1469              		.loc 1 440 5 is_stmt 0 view .LVU391
+ 1470 0040 FFF7FEFF 		bl	rc522_calculate_crc
+ 1471              	.LVL169:
+ 441:BSP/rc522.c   **** 
+ 442:BSP/rc522.c   ****     rc522_clear_bit_mask(RC522_REG_STATUS2, 0x08);
+ 1472              		.loc 1 442 5 is_stmt 1 view .LVU392
+ 1473 0044 0821     		movs	r1, #8
+ 1474 0046 0846     		mov	r0, r1
+ 1475 0048 FFF7FEFF 		bl	rc522_clear_bit_mask
+ 1476              	.LVL170:
+ 443:BSP/rc522.c   ****     status = rc522_communicate(RC522_CMD_TRANSCEIVE, buf, 9, buf, &unLen);
+ 1477              		.loc 1 443 5 view .LVU393
+ 1478              		.loc 1 443 14 is_stmt 0 view .LVU394
+ 1479 004c 07AB     		add	r3, sp, #28
+ 1480 004e 0093     		str	r3, [sp]
+ 1481 0050 2346     		mov	r3, r4
+ 1482 0052 0922     		movs	r2, #9
+ 1483 0054 2146     		mov	r1, r4
+ 1484 0056 0C20     		movs	r0, #12
+ 1485 0058 FFF7FEFF 		bl	rc522_communicate
+ 1486              	.LVL171:
+ 444:BSP/rc522.c   **** 
+ 445:BSP/rc522.c   ****     if ((status == RC522_OK) && (unLen == 0x18)) {
+ 1487              		.loc 1 445 5 is_stmt 1 view .LVU395
+ 1488              		.loc 1 445 8 is_stmt 0 view .LVU396
+ 1489 005c 20B9     		cbnz	r0, .L99
+ 1490              		.loc 1 445 40 discriminator 1 view .LVU397
+ 1491 005e 079B     		ldr	r3, [sp, #28]
+ 1492              		.loc 1 445 30 discriminator 1 view .LVU398
+ 1493 0060 182B     		cmp	r3, #24
+ 1494 0062 02D0     		beq	.L98
+ 446:BSP/rc522.c   ****         /* 选卡成功 */
+ 447:BSP/rc522.c   ****     } else {
+ 448:BSP/rc522.c   ****         status = RC522_ERR;
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 38
+
+
+ 1495              		.loc 1 448 16 view .LVU399
+ 1496 0064 FF20     		movs	r0, #255
+ 1497              	.LVL172:
+ 1498              		.loc 1 448 16 view .LVU400
+ 1499 0066 00E0     		b	.L98
+ 1500              	.LVL173:
+ 1501              	.L99:
+ 1502              		.loc 1 448 16 view .LVU401
+ 1503 0068 FF20     		movs	r0, #255
+ 1504              	.LVL174:
+ 1505              	.L98:
+ 449:BSP/rc522.c   ****     }
+ 450:BSP/rc522.c   **** 
+ 451:BSP/rc522.c   ****     return status;
+ 1506              		.loc 1 451 5 is_stmt 1 view .LVU402
+ 452:BSP/rc522.c   **** }
+ 1507              		.loc 1 452 1 is_stmt 0 view .LVU403
+ 1508 006a 08B0     		add	sp, sp, #32
+ 1509              	.LCFI22:
+ 1510              		.cfi_def_cfa_offset 8
+ 1511              		@ sp needed
+ 1512 006c 10BD     		pop	{r4, pc}
+ 1513              		.cfi_endproc
+ 1514              	.LFE16:
+ 1516              		.section	.text.RC522_AuthState,"ax",%progbits
+ 1517              		.align	1
+ 1518              		.global	RC522_AuthState
+ 1519              		.syntax unified
+ 1520              		.thumb
+ 1521              		.thumb_func
+ 1523              	RC522_AuthState:
+ 1524              	.LVL175:
+ 1525              	.LFB17:
+ 453:BSP/rc522.c   **** 
+ 454:BSP/rc522.c   **** char RC522_AuthState(uint8_t auth_mode, uint8_t addr, uint8_t *pKey, uint8_t *pSnr)
+ 455:BSP/rc522.c   **** {
+ 1526              		.loc 1 455 1 is_stmt 1 view -0
+ 1527              		.cfi_startproc
+ 1528              		@ args = 0, pretend = 0, frame = 24
+ 1529              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1530              		.loc 1 455 1 is_stmt 0 view .LVU405
+ 1531 0000 10B5     		push	{r4, lr}
+ 1532              	.LCFI23:
+ 1533              		.cfi_def_cfa_offset 8
+ 1534              		.cfi_offset 4, -8
+ 1535              		.cfi_offset 14, -4
+ 1536 0002 88B0     		sub	sp, sp, #32
+ 1537              	.LCFI24:
+ 1538              		.cfi_def_cfa_offset 40
+ 456:BSP/rc522.c   ****     char status;
+ 1539              		.loc 1 456 5 is_stmt 1 view .LVU406
+ 457:BSP/rc522.c   ****     uint32_t unLen;
+ 1540              		.loc 1 457 5 view .LVU407
+ 458:BSP/rc522.c   ****     uint8_t i, buf[RC522_INTERNAL_BUF_LEN];
+ 1541              		.loc 1 458 5 view .LVU408
+ 459:BSP/rc522.c   **** 
+ 460:BSP/rc522.c   ****     buf[0] = auth_mode;
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 39
+
+
+ 1542              		.loc 1 460 5 view .LVU409
+ 1543              		.loc 1 460 12 is_stmt 0 view .LVU410
+ 1544 0004 8DF80800 		strb	r0, [sp, #8]
+ 461:BSP/rc522.c   ****     buf[1] = addr;
+ 1545              		.loc 1 461 5 is_stmt 1 view .LVU411
+ 1546              		.loc 1 461 12 is_stmt 0 view .LVU412
+ 1547 0008 8DF80910 		strb	r1, [sp, #9]
+ 462:BSP/rc522.c   **** 
+ 463:BSP/rc522.c   ****     for (i = 0; i < 6; i++) {
+ 1548              		.loc 1 463 5 is_stmt 1 view .LVU413
+ 1549              	.LVL176:
+ 1550              		.loc 1 463 12 is_stmt 0 view .LVU414
+ 1551 000c 0021     		movs	r1, #0
+ 1552              	.LVL177:
+ 1553              		.loc 1 463 5 view .LVU415
+ 1554 000e 08E0     		b	.L102
+ 1555              	.LVL178:
+ 1556              	.L103:
+ 464:BSP/rc522.c   ****         buf[i + 2] = *(pKey + i);
+ 1557              		.loc 1 464 9 is_stmt 1 view .LVU416
+ 1558              		.loc 1 464 22 is_stmt 0 view .LVU417
+ 1559 0010 12F801C0 		ldrb	ip, [r2, r1]	@ zero_extendqisi2
+ 1560              		.loc 1 464 20 view .LVU418
+ 1561 0014 01F12200 		add	r0, r1, #34
+ 1562 0018 6844     		add	r0, sp, r0
+ 1563 001a 00F818CC 		strb	ip, [r0, #-24]
+ 463:BSP/rc522.c   ****         buf[i + 2] = *(pKey + i);
+ 1564              		.loc 1 463 25 is_stmt 1 discriminator 3 view .LVU419
+ 1565 001e 0131     		adds	r1, r1, #1
+ 1566              	.LVL179:
+ 463:BSP/rc522.c   ****         buf[i + 2] = *(pKey + i);
+ 1567              		.loc 1 463 25 is_stmt 0 discriminator 3 view .LVU420
+ 1568 0020 C9B2     		uxtb	r1, r1
+ 1569              	.LVL180:
+ 1570              	.L102:
+ 463:BSP/rc522.c   ****         buf[i + 2] = *(pKey + i);
+ 1571              		.loc 1 463 19 is_stmt 1 discriminator 1 view .LVU421
+ 1572 0022 0529     		cmp	r1, #5
+ 1573 0024 F4D9     		bls	.L103
+ 465:BSP/rc522.c   ****     }
+ 466:BSP/rc522.c   ****     for (i = 0; i < 4; i++) {
+ 1574              		.loc 1 466 12 is_stmt 0 view .LVU422
+ 1575 0026 0022     		movs	r2, #0
+ 1576              	.LVL181:
+ 1577              		.loc 1 466 12 view .LVU423
+ 1578 0028 07E0     		b	.L104
+ 1579              	.LVL182:
+ 1580              	.L105:
+ 467:BSP/rc522.c   ****         buf[i + 8] = *(pSnr + i);
+ 1581              		.loc 1 467 9 is_stmt 1 view .LVU424
+ 1582              		.loc 1 467 22 is_stmt 0 view .LVU425
+ 1583 002a 985C     		ldrb	r0, [r3, r2]	@ zero_extendqisi2
+ 1584              		.loc 1 467 20 view .LVU426
+ 1585 002c 02F12801 		add	r1, r2, #40
+ 1586 0030 6944     		add	r1, sp, r1
+ 1587 0032 01F8180C 		strb	r0, [r1, #-24]
+ 466:BSP/rc522.c   ****         buf[i + 8] = *(pSnr + i);
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 40
+
+
+ 1588              		.loc 1 466 25 is_stmt 1 discriminator 3 view .LVU427
+ 1589 0036 0132     		adds	r2, r2, #1
+ 1590              	.LVL183:
+ 466:BSP/rc522.c   ****         buf[i + 8] = *(pSnr + i);
+ 1591              		.loc 1 466 25 is_stmt 0 discriminator 3 view .LVU428
+ 1592 0038 D2B2     		uxtb	r2, r2
+ 1593              	.LVL184:
+ 1594              	.L104:
+ 466:BSP/rc522.c   ****         buf[i + 8] = *(pSnr + i);
+ 1595              		.loc 1 466 19 is_stmt 1 discriminator 1 view .LVU429
+ 1596 003a 032A     		cmp	r2, #3
+ 1597 003c F5D9     		bls	.L105
+ 468:BSP/rc522.c   ****     }
+ 469:BSP/rc522.c   **** 
+ 470:BSP/rc522.c   ****     status = rc522_communicate(RC522_CMD_AUTHENT, buf, 12, buf, &unLen);
+ 1598              		.loc 1 470 5 view .LVU430
+ 1599              		.loc 1 470 14 is_stmt 0 view .LVU431
+ 1600 003e 02A9     		add	r1, sp, #8
+ 1601 0040 07AB     		add	r3, sp, #28
+ 1602              	.LVL185:
+ 1603              		.loc 1 470 14 view .LVU432
+ 1604 0042 0093     		str	r3, [sp]
+ 1605 0044 0B46     		mov	r3, r1
+ 1606 0046 0C22     		movs	r2, #12
+ 1607              	.LVL186:
+ 1608              		.loc 1 470 14 view .LVU433
+ 1609 0048 0E20     		movs	r0, #14
+ 1610 004a FFF7FEFF 		bl	rc522_communicate
+ 1611              	.LVL187:
+ 471:BSP/rc522.c   **** 
+ 472:BSP/rc522.c   ****     /* 验证通过后 Status2Reg 的 bit3 会被置 1 */
+ 473:BSP/rc522.c   ****     if ((status != RC522_OK) || (!(rc522_read_reg(RC522_REG_STATUS2) & 0x08))) {
+ 1612              		.loc 1 473 5 is_stmt 1 view .LVU434
+ 1613              		.loc 1 473 8 is_stmt 0 view .LVU435
+ 1614 004e 0446     		mov	r4, r0
+ 1615 0050 18B1     		cbz	r0, .L110
+ 474:BSP/rc522.c   ****         status = RC522_ERR;
+ 1616              		.loc 1 474 16 view .LVU436
+ 1617 0052 FF24     		movs	r4, #255
+ 1618              	.LVL188:
+ 1619              	.L106:
+ 475:BSP/rc522.c   ****     }
+ 476:BSP/rc522.c   **** 
+ 477:BSP/rc522.c   ****     return status;
+ 1620              		.loc 1 477 5 is_stmt 1 view .LVU437
+ 478:BSP/rc522.c   **** }
+ 1621              		.loc 1 478 1 is_stmt 0 view .LVU438
+ 1622 0054 2046     		mov	r0, r4
+ 1623 0056 08B0     		add	sp, sp, #32
+ 1624              	.LCFI25:
+ 1625              		.cfi_remember_state
+ 1626              		.cfi_def_cfa_offset 8
+ 1627              		@ sp needed
+ 1628 0058 10BD     		pop	{r4, pc}
+ 1629              	.LVL189:
+ 1630              	.L110:
+ 1631              	.LCFI26:
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 41
+
+
+ 1632              		.cfi_restore_state
+ 473:BSP/rc522.c   ****         status = RC522_ERR;
+ 1633              		.loc 1 473 36 discriminator 1 view .LVU439
+ 1634 005a 0820     		movs	r0, #8
+ 1635              	.LVL190:
+ 473:BSP/rc522.c   ****         status = RC522_ERR;
+ 1636              		.loc 1 473 36 discriminator 1 view .LVU440
+ 1637 005c FFF7FEFF 		bl	rc522_read_reg
+ 1638              	.LVL191:
+ 473:BSP/rc522.c   ****         status = RC522_ERR;
+ 1639              		.loc 1 473 30 discriminator 1 view .LVU441
+ 1640 0060 10F0080F 		tst	r0, #8
+ 1641 0064 F6D1     		bne	.L106
+ 474:BSP/rc522.c   ****     }
+ 1642              		.loc 1 474 16 view .LVU442
+ 1643 0066 FF24     		movs	r4, #255
+ 1644              	.LVL192:
+ 474:BSP/rc522.c   ****     }
+ 1645              		.loc 1 474 16 view .LVU443
+ 1646 0068 F4E7     		b	.L106
+ 1647              		.cfi_endproc
+ 1648              	.LFE17:
+ 1650              		.section	.text.RC522_Read,"ax",%progbits
+ 1651              		.align	1
+ 1652              		.global	RC522_Read
+ 1653              		.syntax unified
+ 1654              		.thumb
+ 1655              		.thumb_func
+ 1657              	RC522_Read:
+ 1658              	.LVL193:
+ 1659              	.LFB18:
+ 479:BSP/rc522.c   **** 
+ 480:BSP/rc522.c   **** char RC522_Read(uint8_t addr, uint8_t *pData)
+ 481:BSP/rc522.c   **** {
+ 1660              		.loc 1 481 1 is_stmt 1 view -0
+ 1661              		.cfi_startproc
+ 1662              		@ args = 0, pretend = 0, frame = 24
+ 1663              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1664              		.loc 1 481 1 is_stmt 0 view .LVU445
+ 1665 0000 30B5     		push	{r4, r5, lr}
+ 1666              	.LCFI27:
+ 1667              		.cfi_def_cfa_offset 12
+ 1668              		.cfi_offset 4, -12
+ 1669              		.cfi_offset 5, -8
+ 1670              		.cfi_offset 14, -4
+ 1671 0002 89B0     		sub	sp, sp, #36
+ 1672              	.LCFI28:
+ 1673              		.cfi_def_cfa_offset 48
+ 1674 0004 0C46     		mov	r4, r1
+ 482:BSP/rc522.c   ****     char status;
+ 1675              		.loc 1 482 5 is_stmt 1 view .LVU446
+ 483:BSP/rc522.c   ****     uint32_t unLen;
+ 1676              		.loc 1 483 5 view .LVU447
+ 484:BSP/rc522.c   ****     uint8_t i, buf[RC522_INTERNAL_BUF_LEN];
+ 1677              		.loc 1 484 5 view .LVU448
+ 485:BSP/rc522.c   **** 
+ 486:BSP/rc522.c   ****     buf[0] = RC522_PICC_READ;
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 42
+
+
+ 1678              		.loc 1 486 5 view .LVU449
+ 1679              		.loc 1 486 12 is_stmt 0 view .LVU450
+ 1680 0006 3023     		movs	r3, #48
+ 1681 0008 8DF80830 		strb	r3, [sp, #8]
+ 487:BSP/rc522.c   ****     buf[1] = addr;
+ 1682              		.loc 1 487 5 is_stmt 1 view .LVU451
+ 1683              		.loc 1 487 12 is_stmt 0 view .LVU452
+ 1684 000c 8DF80900 		strb	r0, [sp, #9]
+ 488:BSP/rc522.c   ****     rc522_calculate_crc(buf, 2, &buf[2]);
+ 1685              		.loc 1 488 5 is_stmt 1 view .LVU453
+ 1686 0010 02AD     		add	r5, sp, #8
+ 1687 0012 0DF10A02 		add	r2, sp, #10
+ 1688 0016 0221     		movs	r1, #2
+ 1689              	.LVL194:
+ 1690              		.loc 1 488 5 is_stmt 0 view .LVU454
+ 1691 0018 2846     		mov	r0, r5
+ 1692              	.LVL195:
+ 1693              		.loc 1 488 5 view .LVU455
+ 1694 001a FFF7FEFF 		bl	rc522_calculate_crc
+ 1695              	.LVL196:
+ 489:BSP/rc522.c   **** 
+ 490:BSP/rc522.c   ****     status = rc522_communicate(RC522_CMD_TRANSCEIVE, buf, 4, buf, &unLen);
+ 1696              		.loc 1 490 5 is_stmt 1 view .LVU456
+ 1697              		.loc 1 490 14 is_stmt 0 view .LVU457
+ 1698 001e 07AB     		add	r3, sp, #28
+ 1699 0020 0093     		str	r3, [sp]
+ 1700 0022 2B46     		mov	r3, r5
+ 1701 0024 0422     		movs	r2, #4
+ 1702 0026 2946     		mov	r1, r5
+ 1703 0028 0C20     		movs	r0, #12
+ 1704 002a FFF7FEFF 		bl	rc522_communicate
+ 1705              	.LVL197:
+ 491:BSP/rc522.c   **** 
+ 492:BSP/rc522.c   ****     if ((status == RC522_OK) && (unLen == 0x90)) {
+ 1706              		.loc 1 492 5 is_stmt 1 view .LVU458
+ 1707              		.loc 1 492 8 is_stmt 0 view .LVU459
+ 1708 002e 88B9     		cbnz	r0, .L115
+ 1709              		.loc 1 492 40 discriminator 1 view .LVU460
+ 1710 0030 079B     		ldr	r3, [sp, #28]
+ 1711              		.loc 1 492 30 discriminator 1 view .LVU461
+ 1712 0032 902B     		cmp	r3, #144
+ 1713 0034 0CD0     		beq	.L116
+ 493:BSP/rc522.c   ****         for (i = 0; i < 16; i++) {
+ 494:BSP/rc522.c   ****             *(pData + i) = buf[i];
+ 495:BSP/rc522.c   ****         }
+ 496:BSP/rc522.c   ****     } else {
+ 497:BSP/rc522.c   ****         status = RC522_ERR;
+ 1714              		.loc 1 497 16 view .LVU462
+ 1715 0036 FF20     		movs	r0, #255
+ 1716 0038 0DE0     		b	.L112
+ 1717              	.LVL198:
+ 1718              	.L114:
+ 494:BSP/rc522.c   ****         }
+ 1719              		.loc 1 494 13 is_stmt 1 view .LVU463
+ 494:BSP/rc522.c   ****         }
+ 1720              		.loc 1 494 31 is_stmt 0 view .LVU464
+ 1721 003a 03F12002 		add	r2, r3, #32
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 43
+
+
+ 1722 003e 6A44     		add	r2, sp, r2
+ 1723 0040 12F8182C 		ldrb	r2, [r2, #-24]	@ zero_extendqisi2
+ 494:BSP/rc522.c   ****         }
+ 1724              		.loc 1 494 26 view .LVU465
+ 1725 0044 E254     		strb	r2, [r4, r3]
+ 493:BSP/rc522.c   ****         for (i = 0; i < 16; i++) {
+ 1726              		.loc 1 493 30 is_stmt 1 discriminator 3 view .LVU466
+ 1727 0046 0133     		adds	r3, r3, #1
+ 1728              	.LVL199:
+ 493:BSP/rc522.c   ****         for (i = 0; i < 16; i++) {
+ 1729              		.loc 1 493 30 is_stmt 0 discriminator 3 view .LVU467
+ 1730 0048 DBB2     		uxtb	r3, r3
+ 1731              	.LVL200:
+ 1732              	.L113:
+ 493:BSP/rc522.c   ****         for (i = 0; i < 16; i++) {
+ 1733              		.loc 1 493 23 is_stmt 1 discriminator 1 view .LVU468
+ 1734 004a 0F2B     		cmp	r3, #15
+ 1735 004c F5D9     		bls	.L114
+ 1736 004e 02E0     		b	.L112
+ 1737              	.LVL201:
+ 1738              	.L116:
+ 493:BSP/rc522.c   ****         for (i = 0; i < 16; i++) {
+ 1739              		.loc 1 493 16 is_stmt 0 view .LVU469
+ 1740 0050 0346     		mov	r3, r0
+ 1741 0052 FAE7     		b	.L113
+ 1742              	.L115:
+ 1743              		.loc 1 497 16 view .LVU470
+ 1744 0054 FF20     		movs	r0, #255
+ 1745              	.L112:
+ 1746              	.LVL202:
+ 498:BSP/rc522.c   ****     }
+ 499:BSP/rc522.c   **** 
+ 500:BSP/rc522.c   ****     return status;
+ 1747              		.loc 1 500 5 is_stmt 1 view .LVU471
+ 501:BSP/rc522.c   **** }
+ 1748              		.loc 1 501 1 is_stmt 0 view .LVU472
+ 1749 0056 09B0     		add	sp, sp, #36
+ 1750              	.LCFI29:
+ 1751              		.cfi_def_cfa_offset 12
+ 1752              		@ sp needed
+ 1753 0058 30BD     		pop	{r4, r5, pc}
+ 1754              		.loc 1 501 1 view .LVU473
+ 1755              		.cfi_endproc
+ 1756              	.LFE18:
+ 1758              		.section	.text.RC522_Write,"ax",%progbits
+ 1759              		.align	1
+ 1760              		.global	RC522_Write
+ 1761              		.syntax unified
+ 1762              		.thumb
+ 1763              		.thumb_func
+ 1765              	RC522_Write:
+ 1766              	.LVL203:
+ 1767              	.LFB19:
+ 502:BSP/rc522.c   **** 
+ 503:BSP/rc522.c   **** char RC522_Write(uint8_t addr, uint8_t *pData)
+ 504:BSP/rc522.c   **** {
+ 1768              		.loc 1 504 1 is_stmt 1 view -0
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 44
+
+
+ 1769              		.cfi_startproc
+ 1770              		@ args = 0, pretend = 0, frame = 24
+ 1771              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1772              		.loc 1 504 1 is_stmt 0 view .LVU475
+ 1773 0000 30B5     		push	{r4, r5, lr}
+ 1774              	.LCFI30:
+ 1775              		.cfi_def_cfa_offset 12
+ 1776              		.cfi_offset 4, -12
+ 1777              		.cfi_offset 5, -8
+ 1778              		.cfi_offset 14, -4
+ 1779 0002 89B0     		sub	sp, sp, #36
+ 1780              	.LCFI31:
+ 1781              		.cfi_def_cfa_offset 48
+ 1782 0004 0C46     		mov	r4, r1
+ 505:BSP/rc522.c   ****     char status;
+ 1783              		.loc 1 505 5 is_stmt 1 view .LVU476
+ 506:BSP/rc522.c   ****     uint32_t unLen;
+ 1784              		.loc 1 506 5 view .LVU477
+ 507:BSP/rc522.c   ****     uint8_t i, buf[RC522_INTERNAL_BUF_LEN];
+ 1785              		.loc 1 507 5 view .LVU478
+ 508:BSP/rc522.c   **** 
+ 509:BSP/rc522.c   ****     buf[0] = RC522_PICC_WRITE;
+ 1786              		.loc 1 509 5 view .LVU479
+ 1787              		.loc 1 509 12 is_stmt 0 view .LVU480
+ 1788 0006 A023     		movs	r3, #160
+ 1789 0008 8DF80830 		strb	r3, [sp, #8]
+ 510:BSP/rc522.c   ****     buf[1] = addr;
+ 1790              		.loc 1 510 5 is_stmt 1 view .LVU481
+ 1791              		.loc 1 510 12 is_stmt 0 view .LVU482
+ 1792 000c 8DF80900 		strb	r0, [sp, #9]
+ 511:BSP/rc522.c   ****     rc522_calculate_crc(buf, 2, &buf[2]);
+ 1793              		.loc 1 511 5 is_stmt 1 view .LVU483
+ 1794 0010 02AD     		add	r5, sp, #8
+ 1795 0012 0DF10A02 		add	r2, sp, #10
+ 1796 0016 0221     		movs	r1, #2
+ 1797              	.LVL204:
+ 1798              		.loc 1 511 5 is_stmt 0 view .LVU484
+ 1799 0018 2846     		mov	r0, r5
+ 1800              	.LVL205:
+ 1801              		.loc 1 511 5 view .LVU485
+ 1802 001a FFF7FEFF 		bl	rc522_calculate_crc
+ 1803              	.LVL206:
+ 512:BSP/rc522.c   **** 
+ 513:BSP/rc522.c   ****     /* 发送写命令 */
+ 514:BSP/rc522.c   ****     status = rc522_communicate(RC522_CMD_TRANSCEIVE, buf, 4, buf, &unLen);
+ 1804              		.loc 1 514 5 is_stmt 1 view .LVU486
+ 1805              		.loc 1 514 14 is_stmt 0 view .LVU487
+ 1806 001e 07AB     		add	r3, sp, #28
+ 1807 0020 0093     		str	r3, [sp]
+ 1808 0022 2B46     		mov	r3, r5
+ 1809 0024 0422     		movs	r2, #4
+ 1810 0026 2946     		mov	r1, r5
+ 1811 0028 0C20     		movs	r0, #12
+ 1812 002a FFF7FEFF 		bl	rc522_communicate
+ 1813              	.LVL207:
+ 515:BSP/rc522.c   **** 
+ 516:BSP/rc522.c   ****     /* 检查卡是否准备接收数据 (应答 0x0A) */
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 45
+
+
+ 517:BSP/rc522.c   ****     if ((status != RC522_OK) || (unLen != 4) || ((buf[0] & 0x0F) != 0x0A)) {
+ 1814              		.loc 1 517 5 is_stmt 1 view .LVU488
+ 1815              		.loc 1 517 8 is_stmt 0 view .LVU489
+ 1816 002e 88BB     		cbnz	r0, .L122
+ 1817 0030 0346     		mov	r3, r0
+ 1818              		.loc 1 517 40 discriminator 1 view .LVU490
+ 1819 0032 079A     		ldr	r2, [sp, #28]
+ 1820              		.loc 1 517 30 discriminator 1 view .LVU491
+ 1821 0034 042A     		cmp	r2, #4
+ 1822 0036 2FD1     		bne	.L123
+ 1823              		.loc 1 517 54 discriminator 2 view .LVU492
+ 1824 0038 9DF80820 		ldrb	r2, [sp, #8]	@ zero_extendqisi2
+ 1825              		.loc 1 517 46 discriminator 2 view .LVU493
+ 1826 003c 02F00F02 		and	r2, r2, #15
+ 1827 0040 0A2A     		cmp	r2, #10
+ 1828 0042 09D0     		beq	.L120
+ 518:BSP/rc522.c   ****         return RC522_ERR;
+ 1829              		.loc 1 518 16 view .LVU494
+ 1830 0044 FF20     		movs	r0, #255
+ 1831              	.LVL208:
+ 1832              		.loc 1 518 16 view .LVU495
+ 1833 0046 28E0     		b	.L119
+ 1834              	.LVL209:
+ 1835              	.L121:
+ 519:BSP/rc522.c   ****     }
+ 520:BSP/rc522.c   **** 
+ 521:BSP/rc522.c   ****     /* 发送数据块 */
+ 522:BSP/rc522.c   ****     for (i = 0; i < 16; i++) {
+ 523:BSP/rc522.c   ****         buf[i] = *(pData + i);
+ 1836              		.loc 1 523 9 is_stmt 1 view .LVU496
+ 1837              		.loc 1 523 18 is_stmt 0 view .LVU497
+ 1838 0048 E05C     		ldrb	r0, [r4, r3]	@ zero_extendqisi2
+ 1839              		.loc 1 523 16 view .LVU498
+ 1840 004a 03F12002 		add	r2, r3, #32
+ 1841 004e 6A44     		add	r2, sp, r2
+ 1842 0050 02F8180C 		strb	r0, [r2, #-24]
+ 522:BSP/rc522.c   ****         buf[i] = *(pData + i);
+ 1843              		.loc 1 522 26 is_stmt 1 discriminator 3 view .LVU499
+ 1844 0054 0133     		adds	r3, r3, #1
+ 1845              	.LVL210:
+ 522:BSP/rc522.c   ****         buf[i] = *(pData + i);
+ 1846              		.loc 1 522 26 is_stmt 0 discriminator 3 view .LVU500
+ 1847 0056 DBB2     		uxtb	r3, r3
+ 1848              	.LVL211:
+ 1849              	.L120:
+ 522:BSP/rc522.c   ****         buf[i] = *(pData + i);
+ 1850              		.loc 1 522 19 is_stmt 1 discriminator 1 view .LVU501
+ 1851 0058 0F2B     		cmp	r3, #15
+ 1852 005a F5D9     		bls	.L121
+ 524:BSP/rc522.c   ****     }
+ 525:BSP/rc522.c   ****     rc522_calculate_crc(buf, 16, &buf[16]);
+ 1853              		.loc 1 525 5 view .LVU502
+ 1854 005c 02AC     		add	r4, sp, #8
+ 1855              	.LVL212:
+ 1856              		.loc 1 525 5 is_stmt 0 view .LVU503
+ 1857 005e 06AA     		add	r2, sp, #24
+ 1858 0060 1021     		movs	r1, #16
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 46
+
+
+ 1859 0062 2046     		mov	r0, r4
+ 1860 0064 FFF7FEFF 		bl	rc522_calculate_crc
+ 1861              	.LVL213:
+ 526:BSP/rc522.c   **** 
+ 527:BSP/rc522.c   ****     status = rc522_communicate(RC522_CMD_TRANSCEIVE, buf, 18, buf, &unLen);
+ 1862              		.loc 1 527 5 is_stmt 1 view .LVU504
+ 1863              		.loc 1 527 14 is_stmt 0 view .LVU505
+ 1864 0068 07AB     		add	r3, sp, #28
+ 1865 006a 0093     		str	r3, [sp]
+ 1866 006c 2346     		mov	r3, r4
+ 1867 006e 1222     		movs	r2, #18
+ 1868 0070 2146     		mov	r1, r4
+ 1869 0072 0C20     		movs	r0, #12
+ 1870 0074 FFF7FEFF 		bl	rc522_communicate
+ 1871              	.LVL214:
+ 528:BSP/rc522.c   **** 
+ 529:BSP/rc522.c   ****     if ((status != RC522_OK) || (unLen != 4) || ((buf[0] & 0x0F) != 0x0A)) {
+ 1872              		.loc 1 529 5 is_stmt 1 view .LVU506
+ 1873              		.loc 1 529 8 is_stmt 0 view .LVU507
+ 1874 0078 88B9     		cbnz	r0, .L125
+ 1875              		.loc 1 529 40 discriminator 1 view .LVU508
+ 1876 007a 079B     		ldr	r3, [sp, #28]
+ 1877              		.loc 1 529 30 discriminator 1 view .LVU509
+ 1878 007c 042B     		cmp	r3, #4
+ 1879 007e 01D0     		beq	.L129
+ 530:BSP/rc522.c   ****         status = RC522_ERR;
+ 1880              		.loc 1 530 16 view .LVU510
+ 1881 0080 FF20     		movs	r0, #255
+ 1882              	.LVL215:
+ 1883              		.loc 1 530 16 view .LVU511
+ 1884 0082 0AE0     		b	.L119
+ 1885              	.LVL216:
+ 1886              	.L129:
+ 529:BSP/rc522.c   ****         status = RC522_ERR;
+ 1887              		.loc 1 529 54 discriminator 2 view .LVU512
+ 1888 0084 9DF80830 		ldrb	r3, [sp, #8]	@ zero_extendqisi2
+ 529:BSP/rc522.c   ****         status = RC522_ERR;
+ 1889              		.loc 1 529 46 discriminator 2 view .LVU513
+ 1890 0088 03F00F03 		and	r3, r3, #15
+ 1891 008c 0A2B     		cmp	r3, #10
+ 1892 008e 04D0     		beq	.L119
+ 1893              		.loc 1 530 16 view .LVU514
+ 1894 0090 FF20     		movs	r0, #255
+ 1895              	.LVL217:
+ 1896              		.loc 1 530 16 view .LVU515
+ 1897 0092 02E0     		b	.L119
+ 1898              	.LVL218:
+ 1899              	.L122:
+ 518:BSP/rc522.c   ****     }
+ 1900              		.loc 1 518 16 view .LVU516
+ 1901 0094 FF20     		movs	r0, #255
+ 1902              	.LVL219:
+ 518:BSP/rc522.c   ****     }
+ 1903              		.loc 1 518 16 view .LVU517
+ 1904 0096 00E0     		b	.L119
+ 1905              	.LVL220:
+ 1906              	.L123:
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 47
+
+
+ 518:BSP/rc522.c   ****     }
+ 1907              		.loc 1 518 16 view .LVU518
+ 1908 0098 FF20     		movs	r0, #255
+ 1909              	.LVL221:
+ 1910              	.L119:
+ 531:BSP/rc522.c   ****     }
+ 532:BSP/rc522.c   **** 
+ 533:BSP/rc522.c   ****     return status;
+ 534:BSP/rc522.c   **** }
+ 1911              		.loc 1 534 1 view .LVU519
+ 1912 009a 09B0     		add	sp, sp, #36
+ 1913              	.LCFI32:
+ 1914              		.cfi_remember_state
+ 1915              		.cfi_def_cfa_offset 12
+ 1916              		@ sp needed
+ 1917 009c 30BD     		pop	{r4, r5, pc}
+ 1918              	.LVL222:
+ 1919              	.L125:
+ 1920              	.LCFI33:
+ 1921              		.cfi_restore_state
+ 530:BSP/rc522.c   ****     }
+ 1922              		.loc 1 530 16 view .LVU520
+ 1923 009e FF20     		movs	r0, #255
+ 1924              	.LVL223:
+ 530:BSP/rc522.c   ****     }
+ 1925              		.loc 1 530 16 view .LVU521
+ 1926 00a0 FBE7     		b	.L119
+ 1927              		.cfi_endproc
+ 1928              	.LFE19:
+ 1930              		.section	.text.RC522_Halt,"ax",%progbits
+ 1931              		.align	1
+ 1932              		.global	RC522_Halt
+ 1933              		.syntax unified
+ 1934              		.thumb
+ 1935              		.thumb_func
+ 1937              	RC522_Halt:
+ 1938              	.LFB20:
+ 535:BSP/rc522.c   **** 
+ 536:BSP/rc522.c   **** char RC522_Halt(void)
+ 537:BSP/rc522.c   **** {
+ 1939              		.loc 1 537 1 is_stmt 1 view -0
+ 1940              		.cfi_startproc
+ 1941              		@ args = 0, pretend = 0, frame = 24
+ 1942              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1943 0000 30B5     		push	{r4, r5, lr}
+ 1944              	.LCFI34:
+ 1945              		.cfi_def_cfa_offset 12
+ 1946              		.cfi_offset 4, -12
+ 1947              		.cfi_offset 5, -8
+ 1948              		.cfi_offset 14, -4
+ 1949 0002 89B0     		sub	sp, sp, #36
+ 1950              	.LCFI35:
+ 1951              		.cfi_def_cfa_offset 48
+ 538:BSP/rc522.c   ****     uint32_t unLen;
+ 1952              		.loc 1 538 5 view .LVU523
+ 539:BSP/rc522.c   ****     uint8_t buf[RC522_INTERNAL_BUF_LEN];
+ 1953              		.loc 1 539 5 view .LVU524
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 48
+
+
+ 540:BSP/rc522.c   **** 
+ 541:BSP/rc522.c   ****     buf[0] = RC522_PICC_HALT;
+ 1954              		.loc 1 541 5 view .LVU525
+ 1955              		.loc 1 541 12 is_stmt 0 view .LVU526
+ 1956 0004 5023     		movs	r3, #80
+ 1957 0006 8DF80830 		strb	r3, [sp, #8]
+ 542:BSP/rc522.c   ****     buf[1] = 0;
+ 1958              		.loc 1 542 5 is_stmt 1 view .LVU527
+ 1959              		.loc 1 542 12 is_stmt 0 view .LVU528
+ 1960 000a 0025     		movs	r5, #0
+ 1961 000c 8DF80950 		strb	r5, [sp, #9]
+ 543:BSP/rc522.c   ****     rc522_calculate_crc(buf, 2, &buf[2]);
+ 1962              		.loc 1 543 5 is_stmt 1 view .LVU529
+ 1963 0010 02AC     		add	r4, sp, #8
+ 1964 0012 0DF10A02 		add	r2, sp, #10
+ 1965 0016 0221     		movs	r1, #2
+ 1966 0018 2046     		mov	r0, r4
+ 1967 001a FFF7FEFF 		bl	rc522_calculate_crc
+ 1968              	.LVL224:
+ 544:BSP/rc522.c   **** 
+ 545:BSP/rc522.c   ****     rc522_communicate(RC522_CMD_TRANSCEIVE, buf, 4, buf, &unLen);
+ 1969              		.loc 1 545 5 view .LVU530
+ 1970 001e 07AB     		add	r3, sp, #28
+ 1971 0020 0093     		str	r3, [sp]
+ 1972 0022 2346     		mov	r3, r4
+ 1973 0024 0422     		movs	r2, #4
+ 1974 0026 2146     		mov	r1, r4
+ 1975 0028 0C20     		movs	r0, #12
+ 1976 002a FFF7FEFF 		bl	rc522_communicate
+ 1977              	.LVL225:
+ 546:BSP/rc522.c   **** 
+ 547:BSP/rc522.c   ****     return RC522_OK;
+ 1978              		.loc 1 547 5 view .LVU531
+ 548:BSP/rc522.c   **** }
+ 1979              		.loc 1 548 1 is_stmt 0 view .LVU532
+ 1980 002e 2846     		mov	r0, r5
+ 1981 0030 09B0     		add	sp, sp, #36
+ 1982              	.LCFI36:
+ 1983              		.cfi_def_cfa_offset 12
+ 1984              		@ sp needed
+ 1985 0032 30BD     		pop	{r4, r5, pc}
+ 1986              		.cfi_endproc
+ 1987              	.LFE20:
+ 1989              		.section	.text.RC522_WaitCardOff,"ax",%progbits
+ 1990              		.align	1
+ 1991              		.global	RC522_WaitCardOff
+ 1992              		.syntax unified
+ 1993              		.thumb
+ 1994              		.thumb_func
+ 1996              	RC522_WaitCardOff:
+ 1997              	.LFB21:
+ 549:BSP/rc522.c   **** 
+ 550:BSP/rc522.c   **** void RC522_WaitCardOff(void)
+ 551:BSP/rc522.c   **** {
+ 1998              		.loc 1 551 1 is_stmt 1 view -0
+ 1999              		.cfi_startproc
+ 2000              		@ args = 0, pretend = 0, frame = 8
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 49
+
+
+ 2001              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2002 0000 00B5     		push	{lr}
+ 2003              	.LCFI37:
+ 2004              		.cfi_def_cfa_offset 4
+ 2005              		.cfi_offset 14, -4
+ 2006 0002 83B0     		sub	sp, sp, #12
+ 2007              	.LCFI38:
+ 2008              		.cfi_def_cfa_offset 16
+ 2009 0004 05E0     		b	.L134
+ 2010              	.L133:
+ 552:BSP/rc522.c   ****     uint8_t tagType[2];
+ 553:BSP/rc522.c   **** 
+ 554:BSP/rc522.c   ****     /* 连续 3 次寻卡失败即认为卡已离开 */
+ 555:BSP/rc522.c   ****     while (1) {
+ 556:BSP/rc522.c   ****         if (RC522_Request(RC522_PICC_REQALL, tagType) != RC522_OK) {
+ 557:BSP/rc522.c   ****             if (RC522_Request(RC522_PICC_REQALL, tagType) != RC522_OK) {
+ 558:BSP/rc522.c   ****                 if (RC522_Request(RC522_PICC_REQALL, tagType) != RC522_OK) {
+ 559:BSP/rc522.c   ****                     return;
+ 560:BSP/rc522.c   ****                 }
+ 561:BSP/rc522.c   ****             }
+ 562:BSP/rc522.c   ****         }
+ 563:BSP/rc522.c   ****         s_io->delay_ms(1000);
+ 2011              		.loc 1 563 9 view .LVU534
+ 2012              		.loc 1 563 13 is_stmt 0 view .LVU535
+ 2013 0006 0D4B     		ldr	r3, .L137
+ 2014 0008 1B68     		ldr	r3, [r3]
+ 2015 000a 1B69     		ldr	r3, [r3, #16]
+ 2016              		.loc 1 563 9 view .LVU536
+ 2017 000c 4FF47A70 		mov	r0, #1000
+ 2018 0010 9847     		blx	r3
+ 2019              	.LVL226:
+ 555:BSP/rc522.c   ****         if (RC522_Request(RC522_PICC_REQALL, tagType) != RC522_OK) {
+ 2020              		.loc 1 555 11 is_stmt 1 view .LVU537
+ 2021              	.L134:
+ 552:BSP/rc522.c   ****     uint8_t tagType[2];
+ 2022              		.loc 1 552 5 view .LVU538
+ 555:BSP/rc522.c   ****         if (RC522_Request(RC522_PICC_REQALL, tagType) != RC522_OK) {
+ 2023              		.loc 1 555 5 view .LVU539
+ 556:BSP/rc522.c   ****             if (RC522_Request(RC522_PICC_REQALL, tagType) != RC522_OK) {
+ 2024              		.loc 1 556 9 view .LVU540
+ 556:BSP/rc522.c   ****             if (RC522_Request(RC522_PICC_REQALL, tagType) != RC522_OK) {
+ 2025              		.loc 1 556 13 is_stmt 0 view .LVU541
+ 2026 0012 01A9     		add	r1, sp, #4
+ 2027 0014 5220     		movs	r0, #82
+ 2028 0016 FFF7FEFF 		bl	RC522_Request
+ 2029              	.LVL227:
+ 556:BSP/rc522.c   ****             if (RC522_Request(RC522_PICC_REQALL, tagType) != RC522_OK) {
+ 2030              		.loc 1 556 12 discriminator 1 view .LVU542
+ 2031 001a 0028     		cmp	r0, #0
+ 2032 001c F3D0     		beq	.L133
+ 557:BSP/rc522.c   ****                 if (RC522_Request(RC522_PICC_REQALL, tagType) != RC522_OK) {
+ 2033              		.loc 1 557 13 is_stmt 1 view .LVU543
+ 557:BSP/rc522.c   ****                 if (RC522_Request(RC522_PICC_REQALL, tagType) != RC522_OK) {
+ 2034              		.loc 1 557 17 is_stmt 0 view .LVU544
+ 2035 001e 01A9     		add	r1, sp, #4
+ 2036 0020 5220     		movs	r0, #82
+ 2037 0022 FFF7FEFF 		bl	RC522_Request
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 50
+
+
+ 2038              	.LVL228:
+ 557:BSP/rc522.c   ****                 if (RC522_Request(RC522_PICC_REQALL, tagType) != RC522_OK) {
+ 2039              		.loc 1 557 16 discriminator 1 view .LVU545
+ 2040 0026 0028     		cmp	r0, #0
+ 2041 0028 EDD0     		beq	.L133
+ 558:BSP/rc522.c   ****                     return;
+ 2042              		.loc 1 558 17 is_stmt 1 view .LVU546
+ 558:BSP/rc522.c   ****                     return;
+ 2043              		.loc 1 558 21 is_stmt 0 view .LVU547
+ 2044 002a 01A9     		add	r1, sp, #4
+ 2045 002c 5220     		movs	r0, #82
+ 2046 002e FFF7FEFF 		bl	RC522_Request
+ 2047              	.LVL229:
+ 558:BSP/rc522.c   ****                     return;
+ 2048              		.loc 1 558 20 discriminator 1 view .LVU548
+ 2049 0032 0028     		cmp	r0, #0
+ 2050 0034 E7D0     		beq	.L133
+ 564:BSP/rc522.c   ****     }
+ 565:BSP/rc522.c   **** }
+ 2051              		.loc 1 565 1 view .LVU549
+ 2052 0036 03B0     		add	sp, sp, #12
+ 2053              	.LCFI39:
+ 2054              		.cfi_def_cfa_offset 4
+ 2055              		@ sp needed
+ 2056 0038 5DF804FB 		ldr	pc, [sp], #4
+ 2057              	.L138:
+ 2058              		.align	2
+ 2059              	.L137:
+ 2060 003c 00000000 		.word	s_io
+ 2061              		.cfi_endproc
+ 2062              	.LFE21:
+ 2064              		.section	.text.RC522_ReadBlock,"ax",%progbits
+ 2065              		.align	1
+ 2066              		.global	RC522_ReadBlock
+ 2067              		.syntax unified
+ 2068              		.thumb
+ 2069              		.thumb_func
+ 2071              	RC522_ReadBlock:
+ 2072              	.LVL230:
+ 2073              	.LFB22:
+ 566:BSP/rc522.c   **** 
+ 567:BSP/rc522.c   **** /* ---------- 高级数据操作 ---------- */
+ 568:BSP/rc522.c   **** 
+ 569:BSP/rc522.c   **** char RC522_ReadBlock(uint8_t secNum, uint8_t blkNum, uint8_t buf[16])
+ 570:BSP/rc522.c   **** {
+ 2074              		.loc 1 570 1 is_stmt 1 view -0
+ 2075              		.cfi_startproc
+ 2076              		@ args = 0, pretend = 0, frame = 0
+ 2077              		@ frame_needed = 0, uses_anonymous_args = 0
+ 571:BSP/rc522.c   ****     if (secNum > 15 || blkNum > 3) {
+ 2078              		.loc 1 571 5 view .LVU551
+ 2079              		.loc 1 571 8 is_stmt 0 view .LVU552
+ 2080 0000 0F28     		cmp	r0, #15
+ 2081 0002 09D8     		bhi	.L141
+ 570:BSP/rc522.c   ****     if (secNum > 15 || blkNum > 3) {
+ 2082              		.loc 1 570 1 view .LVU553
+ 2083 0004 08B5     		push	{r3, lr}
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 51
+
+
+ 2084              	.LCFI40:
+ 2085              		.cfi_def_cfa_offset 8
+ 2086              		.cfi_offset 3, -8
+ 2087              		.cfi_offset 14, -4
+ 2088              		.loc 1 571 21 discriminator 1 view .LVU554
+ 2089 0006 0329     		cmp	r1, #3
+ 2090 0008 08D8     		bhi	.L142
+ 572:BSP/rc522.c   ****         return RC522_ERR;
+ 573:BSP/rc522.c   ****     }
+ 574:BSP/rc522.c   ****     return RC522_Read((secNum * 4 + blkNum), buf);
+ 2091              		.loc 1 574 5 is_stmt 1 view .LVU555
+ 2092              		.loc 1 574 12 is_stmt 0 view .LVU556
+ 2093 000a 01EB8000 		add	r0, r1, r0, lsl #2
+ 2094              	.LVL231:
+ 2095              		.loc 1 574 12 view .LVU557
+ 2096 000e 1146     		mov	r1, r2
+ 2097              	.LVL232:
+ 2098              		.loc 1 574 12 view .LVU558
+ 2099 0010 C0B2     		uxtb	r0, r0
+ 2100 0012 FFF7FEFF 		bl	RC522_Read
+ 2101              	.LVL233:
+ 2102              	.L140:
+ 575:BSP/rc522.c   **** }
+ 2103              		.loc 1 575 1 view .LVU559
+ 2104 0016 08BD     		pop	{r3, pc}
+ 2105              	.LVL234:
+ 2106              	.L141:
+ 2107              	.LCFI41:
+ 2108              		.cfi_def_cfa_offset 0
+ 2109              		.cfi_restore 3
+ 2110              		.cfi_restore 14
+ 572:BSP/rc522.c   ****         return RC522_ERR;
+ 2111              		.loc 1 572 16 view .LVU560
+ 2112 0018 FF20     		movs	r0, #255
+ 2113              	.LVL235:
+ 2114              		.loc 1 575 1 view .LVU561
+ 2115 001a 7047     		bx	lr
+ 2116              	.LVL236:
+ 2117              	.L142:
+ 2118              	.LCFI42:
+ 2119              		.cfi_def_cfa_offset 8
+ 2120              		.cfi_offset 3, -8
+ 2121              		.cfi_offset 14, -4
+ 572:BSP/rc522.c   ****         return RC522_ERR;
+ 2122              		.loc 1 572 16 view .LVU562
+ 2123 001c FF20     		movs	r0, #255
+ 2124              	.LVL237:
+ 572:BSP/rc522.c   ****         return RC522_ERR;
+ 2125              		.loc 1 572 16 view .LVU563
+ 2126 001e FAE7     		b	.L140
+ 2127              		.cfi_endproc
+ 2128              	.LFE22:
+ 2130              		.section	.text.RC522_WriteBlock,"ax",%progbits
+ 2131              		.align	1
+ 2132              		.global	RC522_WriteBlock
+ 2133              		.syntax unified
+ 2134              		.thumb
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 52
+
+
+ 2135              		.thumb_func
+ 2137              	RC522_WriteBlock:
+ 2138              	.LVL238:
+ 2139              	.LFB23:
+ 576:BSP/rc522.c   **** 
+ 577:BSP/rc522.c   **** char RC522_WriteBlock(uint8_t secNum, uint8_t blkNum, uint8_t buf[16])
+ 578:BSP/rc522.c   **** {
+ 2140              		.loc 1 578 1 is_stmt 1 view -0
+ 2141              		.cfi_startproc
+ 2142              		@ args = 0, pretend = 0, frame = 0
+ 2143              		@ frame_needed = 0, uses_anonymous_args = 0
+ 579:BSP/rc522.c   ****     if (secNum > 15 || blkNum > 3) {
+ 2144              		.loc 1 579 5 view .LVU565
+ 2145              		.loc 1 579 8 is_stmt 0 view .LVU566
+ 2146 0000 0F28     		cmp	r0, #15
+ 2147 0002 0CD8     		bhi	.L150
+ 578:BSP/rc522.c   ****     if (secNum > 15 || blkNum > 3) {
+ 2148              		.loc 1 578 1 view .LVU567
+ 2149 0004 08B5     		push	{r3, lr}
+ 2150              	.LCFI43:
+ 2151              		.cfi_def_cfa_offset 8
+ 2152              		.cfi_offset 3, -8
+ 2153              		.cfi_offset 14, -4
+ 2154 0006 0B46     		mov	r3, r1
+ 2155 0008 1146     		mov	r1, r2
+ 2156              	.LVL239:
+ 2157              		.loc 1 579 21 discriminator 1 view .LVU568
+ 2158 000a 032B     		cmp	r3, #3
+ 2159 000c 09D8     		bhi	.L151
+ 580:BSP/rc522.c   ****         return RC522_ERR;
+ 581:BSP/rc522.c   ****     }
+ 582:BSP/rc522.c   ****     /* 扇区 0 块 0 为厂商数据块，通常不可写 */
+ 583:BSP/rc522.c   ****     if (secNum == 0 && blkNum == 0) {
+ 2160              		.loc 1 583 5 is_stmt 1 view .LVU569
+ 2161              		.loc 1 583 8 is_stmt 0 view .LVU570
+ 2162 000e 00B9     		cbnz	r0, .L149
+ 2163              		.loc 1 583 21 discriminator 1 view .LVU571
+ 2164 0010 4BB1     		cbz	r3, .L152
+ 2165              	.L149:
+ 584:BSP/rc522.c   ****         return RC522_ERR;
+ 585:BSP/rc522.c   ****     }
+ 586:BSP/rc522.c   ****     return RC522_Write((secNum * 4 + blkNum), buf);
+ 2166              		.loc 1 586 5 is_stmt 1 view .LVU572
+ 2167              		.loc 1 586 12 is_stmt 0 view .LVU573
+ 2168 0012 03EB8000 		add	r0, r3, r0, lsl #2
+ 2169              	.LVL240:
+ 2170              		.loc 1 586 12 view .LVU574
+ 2171 0016 C0B2     		uxtb	r0, r0
+ 2172 0018 FFF7FEFF 		bl	RC522_Write
+ 2173              	.LVL241:
+ 2174              	.L148:
+ 587:BSP/rc522.c   **** }
+ 2175              		.loc 1 587 1 view .LVU575
+ 2176 001c 08BD     		pop	{r3, pc}
+ 2177              	.LVL242:
+ 2178              	.L150:
+ 2179              	.LCFI44:
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 53
+
+
+ 2180              		.cfi_def_cfa_offset 0
+ 2181              		.cfi_restore 3
+ 2182              		.cfi_restore 14
+ 580:BSP/rc522.c   ****         return RC522_ERR;
+ 2183              		.loc 1 580 16 view .LVU576
+ 2184 001e FF20     		movs	r0, #255
+ 2185              	.LVL243:
+ 2186              		.loc 1 587 1 view .LVU577
+ 2187 0020 7047     		bx	lr
+ 2188              	.LVL244:
+ 2189              	.L151:
+ 2190              	.LCFI45:
+ 2191              		.cfi_def_cfa_offset 8
+ 2192              		.cfi_offset 3, -8
+ 2193              		.cfi_offset 14, -4
+ 580:BSP/rc522.c   ****         return RC522_ERR;
+ 2194              		.loc 1 580 16 view .LVU578
+ 2195 0022 FF20     		movs	r0, #255
+ 2196              	.LVL245:
+ 580:BSP/rc522.c   ****         return RC522_ERR;
+ 2197              		.loc 1 580 16 view .LVU579
+ 2198 0024 FAE7     		b	.L148
+ 2199              	.LVL246:
+ 2200              	.L152:
+ 584:BSP/rc522.c   ****         return RC522_ERR;
+ 2201              		.loc 1 584 16 view .LVU580
+ 2202 0026 FF20     		movs	r0, #255
+ 2203              	.LVL247:
+ 584:BSP/rc522.c   ****         return RC522_ERR;
+ 2204              		.loc 1 584 16 view .LVU581
+ 2205 0028 F8E7     		b	.L148
+ 2206              		.cfi_endproc
+ 2207              	.LFE23:
+ 2209              		.section	.text.RC522_ReadSector,"ax",%progbits
+ 2210              		.align	1
+ 2211              		.global	RC522_ReadSector
+ 2212              		.syntax unified
+ 2213              		.thumb
+ 2214              		.thumb_func
+ 2216              	RC522_ReadSector:
+ 2217              	.LVL248:
+ 2218              	.LFB24:
+ 588:BSP/rc522.c   **** 
+ 589:BSP/rc522.c   **** char RC522_ReadSector(uint8_t secNum, uint8_t buf[64])
+ 590:BSP/rc522.c   **** {
+ 2219              		.loc 1 590 1 is_stmt 1 view -0
+ 2220              		.cfi_startproc
+ 2221              		@ args = 0, pretend = 0, frame = 0
+ 2222              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2223              		.loc 1 590 1 is_stmt 0 view .LVU583
+ 2224 0000 70B5     		push	{r4, r5, r6, lr}
+ 2225              	.LCFI46:
+ 2226              		.cfi_def_cfa_offset 16
+ 2227              		.cfi_offset 4, -16
+ 2228              		.cfi_offset 5, -12
+ 2229              		.cfi_offset 6, -8
+ 2230              		.cfi_offset 14, -4
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 54
+
+
+ 2231 0002 0646     		mov	r6, r0
+ 2232 0004 0D46     		mov	r5, r1
+ 2233 0006 0023     		movs	r3, #0
+ 591:BSP/rc522.c   ****     char status;
+ 2234              		.loc 1 591 5 is_stmt 1 view .LVU584
+ 592:BSP/rc522.c   **** 
+ 593:BSP/rc522.c   ****     for (int i = 0; i < 4; i++) {
+ 2235              		.loc 1 593 5 view .LVU585
+ 2236              	.LBB2:
+ 2237              		.loc 1 593 10 view .LVU586
+ 2238              	.LVL249:
+ 2239              		.loc 1 593 14 is_stmt 0 view .LVU587
+ 2240 0008 1C46     		mov	r4, r3
+ 2241              	.LVL250:
+ 2242              	.L158:
+ 2243              		.loc 1 593 23 is_stmt 1 discriminator 1 view .LVU588
+ 2244 000a 032C     		cmp	r4, #3
+ 2245 000c 09DC     		bgt	.L159
+ 594:BSP/rc522.c   ****         status = RC522_ReadBlock(secNum, i, &buf[i * 16]);
+ 2246              		.loc 1 594 9 view .LVU589
+ 2247              		.loc 1 594 18 is_stmt 0 view .LVU590
+ 2248 000e 05EB0412 		add	r2, r5, r4, lsl #4
+ 2249 0012 E1B2     		uxtb	r1, r4
+ 2250 0014 3046     		mov	r0, r6
+ 2251 0016 FFF7FEFF 		bl	RC522_ReadBlock
+ 2252              	.LVL251:
+ 595:BSP/rc522.c   ****         if (status != RC522_OK) {
+ 2253              		.loc 1 595 9 is_stmt 1 view .LVU591
+ 2254              		.loc 1 595 12 is_stmt 0 view .LVU592
+ 2255 001a 0346     		mov	r3, r0
+ 2256 001c 08B9     		cbnz	r0, .L159
+ 593:BSP/rc522.c   ****         status = RC522_ReadBlock(secNum, i, &buf[i * 16]);
+ 2257              		.loc 1 593 29 is_stmt 1 discriminator 2 view .LVU593
+ 2258 001e 0134     		adds	r4, r4, #1
+ 2259              	.LVL252:
+ 593:BSP/rc522.c   ****         status = RC522_ReadBlock(secNum, i, &buf[i * 16]);
+ 2260              		.loc 1 593 29 is_stmt 0 discriminator 2 view .LVU594
+ 2261 0020 F3E7     		b	.L158
+ 2262              	.LVL253:
+ 2263              	.L159:
+ 593:BSP/rc522.c   ****         status = RC522_ReadBlock(secNum, i, &buf[i * 16]);
+ 2264              		.loc 1 593 29 discriminator 2 view .LVU595
+ 2265              	.LBE2:
+ 596:BSP/rc522.c   ****             break;
+ 597:BSP/rc522.c   ****         }
+ 598:BSP/rc522.c   ****     }
+ 599:BSP/rc522.c   **** 
+ 600:BSP/rc522.c   ****     return status;
+ 2266              		.loc 1 600 5 is_stmt 1 view .LVU596
+ 601:BSP/rc522.c   **** }
+ 2267              		.loc 1 601 1 is_stmt 0 view .LVU597
+ 2268 0022 1846     		mov	r0, r3
+ 2269 0024 70BD     		pop	{r4, r5, r6, pc}
+ 2270              		.loc 1 601 1 view .LVU598
+ 2271              		.cfi_endproc
+ 2272              	.LFE24:
+ 2274              		.section	.text.RC522_WriteSector,"ax",%progbits
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 55
+
+
+ 2275              		.align	1
+ 2276              		.global	RC522_WriteSector
+ 2277              		.syntax unified
+ 2278              		.thumb
+ 2279              		.thumb_func
+ 2281              	RC522_WriteSector:
+ 2282              	.LVL254:
+ 2283              	.LFB25:
+ 602:BSP/rc522.c   **** 
+ 603:BSP/rc522.c   **** char RC522_WriteSector(uint8_t secNum, uint8_t buf[48])
+ 604:BSP/rc522.c   **** {
+ 2284              		.loc 1 604 1 is_stmt 1 view -0
+ 2285              		.cfi_startproc
+ 2286              		@ args = 0, pretend = 0, frame = 0
+ 2287              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2288              		.loc 1 604 1 is_stmt 0 view .LVU600
+ 2289 0000 70B5     		push	{r4, r5, r6, lr}
+ 2290              	.LCFI47:
+ 2291              		.cfi_def_cfa_offset 16
+ 2292              		.cfi_offset 4, -16
+ 2293              		.cfi_offset 5, -12
+ 2294              		.cfi_offset 6, -8
+ 2295              		.cfi_offset 14, -4
+ 2296 0002 0646     		mov	r6, r0
+ 2297 0004 0D46     		mov	r5, r1
+ 2298 0006 0023     		movs	r3, #0
+ 605:BSP/rc522.c   ****     char status;
+ 2299              		.loc 1 605 5 is_stmt 1 view .LVU601
+ 606:BSP/rc522.c   **** 
+ 607:BSP/rc522.c   ****     for (int i = 0; i < 3; i++) {   /* 只写前 3 块，第 4 块为密钥区 */
+ 2300              		.loc 1 607 5 view .LVU602
+ 2301              	.LBB3:
+ 2302              		.loc 1 607 10 view .LVU603
+ 2303              	.LVL255:
+ 2304              		.loc 1 607 14 is_stmt 0 view .LVU604
+ 2305 0008 1C46     		mov	r4, r3
+ 2306              		.loc 1 607 5 view .LVU605
+ 2307 000a 00E0     		b	.L163
+ 2308              	.LVL256:
+ 2309              	.L167:
+ 2310              		.loc 1 607 29 is_stmt 1 discriminator 2 view .LVU606
+ 2311 000c 0134     		adds	r4, r4, #1
+ 2312              	.LVL257:
+ 2313              	.L163:
+ 2314              		.loc 1 607 23 discriminator 1 view .LVU607
+ 2315 000e 022C     		cmp	r4, #2
+ 2316 0010 08DC     		bgt	.L164
+ 608:BSP/rc522.c   ****         status = RC522_WriteBlock(secNum, i, &buf[i * 16]);
+ 2317              		.loc 1 608 9 view .LVU608
+ 2318              		.loc 1 608 18 is_stmt 0 view .LVU609
+ 2319 0012 05EB0412 		add	r2, r5, r4, lsl #4
+ 2320 0016 E1B2     		uxtb	r1, r4
+ 2321 0018 3046     		mov	r0, r6
+ 2322 001a FFF7FEFF 		bl	RC522_WriteBlock
+ 2323              	.LVL258:
+ 609:BSP/rc522.c   ****         if (status != RC522_OK) {
+ 2324              		.loc 1 609 9 is_stmt 1 view .LVU610
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 56
+
+
+ 2325              		.loc 1 609 12 is_stmt 0 view .LVU611
+ 2326 001e 0346     		mov	r3, r0
+ 2327 0020 0028     		cmp	r0, #0
+ 2328 0022 F3D0     		beq	.L167
+ 2329              	.LVL259:
+ 2330              	.L164:
+ 2331              		.loc 1 609 12 view .LVU612
+ 2332              	.LBE3:
+ 610:BSP/rc522.c   ****             break;
+ 611:BSP/rc522.c   ****         }
+ 612:BSP/rc522.c   ****     }
+ 613:BSP/rc522.c   **** 
+ 614:BSP/rc522.c   ****     return status;
+ 2333              		.loc 1 614 5 is_stmt 1 view .LVU613
+ 615:BSP/rc522.c   **** }
+ 2334              		.loc 1 615 1 is_stmt 0 view .LVU614
+ 2335 0024 1846     		mov	r0, r3
+ 2336 0026 70BD     		pop	{r4, r5, r6, pc}
+ 2337              		.loc 1 615 1 view .LVU615
+ 2338              		.cfi_endproc
+ 2339              	.LFE25:
+ 2341              		.section	.text.RC522_ScanCard,"ax",%progbits
+ 2342              		.align	1
+ 2343              		.global	RC522_ScanCard
+ 2344              		.syntax unified
+ 2345              		.thumb
+ 2346              		.thumb_func
+ 2348              	RC522_ScanCard:
+ 2349              	.LVL260:
+ 2350              	.LFB26:
+ 616:BSP/rc522.c   **** 
+ 617:BSP/rc522.c   **** char RC522_ScanCard(uint8_t cn[4])
+ 618:BSP/rc522.c   **** {
+ 2351              		.loc 1 618 1 is_stmt 1 view -0
+ 2352              		.cfi_startproc
+ 2353              		@ args = 0, pretend = 0, frame = 8
+ 2354              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2355              		.loc 1 618 1 is_stmt 0 view .LVU617
+ 2356 0000 10B5     		push	{r4, lr}
+ 2357              	.LCFI48:
+ 2358              		.cfi_def_cfa_offset 8
+ 2359              		.cfi_offset 4, -8
+ 2360              		.cfi_offset 14, -4
+ 2361 0002 82B0     		sub	sp, sp, #8
+ 2362              	.LCFI49:
+ 2363              		.cfi_def_cfa_offset 16
+ 2364 0004 0446     		mov	r4, r0
+ 619:BSP/rc522.c   ****     char status;
+ 2365              		.loc 1 619 5 is_stmt 1 view .LVU618
+ 620:BSP/rc522.c   ****     uint8_t tagType[2];
+ 2366              		.loc 1 620 5 view .LVU619
+ 621:BSP/rc522.c   **** 
+ 622:BSP/rc522.c   ****     /* 第 1 步：寻卡 */
+ 623:BSP/rc522.c   ****     status = RC522_Request(RC522_PICC_REQALL, tagType);
+ 2367              		.loc 1 623 5 view .LVU620
+ 2368              		.loc 1 623 14 is_stmt 0 view .LVU621
+ 2369 0006 01A9     		add	r1, sp, #4
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 57
+
+
+ 2370 0008 5220     		movs	r0, #82
+ 2371              	.LVL261:
+ 2372              		.loc 1 623 14 view .LVU622
+ 2373 000a FFF7FEFF 		bl	RC522_Request
+ 2374              	.LVL262:
+ 624:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2375              		.loc 1 624 5 is_stmt 1 view .LVU623
+ 2376              		.loc 1 624 8 is_stmt 0 view .LVU624
+ 2377 000e 0346     		mov	r3, r0
+ 2378 0010 10B1     		cbz	r0, .L171
+ 2379              	.LVL263:
+ 2380              	.L169:
+ 625:BSP/rc522.c   ****         return status;
+ 626:BSP/rc522.c   ****     }
+ 627:BSP/rc522.c   **** 
+ 628:BSP/rc522.c   ****     /* 第 2 步：防碰撞，获取 UID */
+ 629:BSP/rc522.c   ****     status = RC522_Anticoll(cn);
+ 630:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 631:BSP/rc522.c   ****         return status;
+ 632:BSP/rc522.c   ****     }
+ 633:BSP/rc522.c   **** 
+ 634:BSP/rc522.c   ****     /* 第 3 步：选卡 */
+ 635:BSP/rc522.c   ****     status = RC522_Select(cn);
+ 636:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 637:BSP/rc522.c   ****         return status;
+ 638:BSP/rc522.c   ****     }
+ 639:BSP/rc522.c   **** 
+ 640:BSP/rc522.c   ****     return RC522_OK;
+ 641:BSP/rc522.c   **** }
+ 2381              		.loc 1 641 1 view .LVU625
+ 2382 0012 1846     		mov	r0, r3
+ 2383 0014 02B0     		add	sp, sp, #8
+ 2384              	.LCFI50:
+ 2385              		.cfi_remember_state
+ 2386              		.cfi_def_cfa_offset 8
+ 2387              		@ sp needed
+ 2388 0016 10BD     		pop	{r4, pc}
+ 2389              	.LVL264:
+ 2390              	.L171:
+ 2391              	.LCFI51:
+ 2392              		.cfi_restore_state
+ 629:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2393              		.loc 1 629 5 is_stmt 1 view .LVU626
+ 629:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2394              		.loc 1 629 14 is_stmt 0 view .LVU627
+ 2395 0018 2046     		mov	r0, r4
+ 2396              	.LVL265:
+ 629:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2397              		.loc 1 629 14 view .LVU628
+ 2398 001a FFF7FEFF 		bl	RC522_Anticoll
+ 2399              	.LVL266:
+ 630:BSP/rc522.c   ****         return status;
+ 2400              		.loc 1 630 5 is_stmt 1 view .LVU629
+ 630:BSP/rc522.c   ****         return status;
+ 2401              		.loc 1 630 8 is_stmt 0 view .LVU630
+ 2402 001e 0346     		mov	r3, r0
+ 2403 0020 0028     		cmp	r0, #0
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 58
+
+
+ 2404 0022 F6D1     		bne	.L169
+ 635:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2405              		.loc 1 635 5 is_stmt 1 view .LVU631
+ 635:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2406              		.loc 1 635 14 is_stmt 0 view .LVU632
+ 2407 0024 2046     		mov	r0, r4
+ 2408              	.LVL267:
+ 635:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2409              		.loc 1 635 14 view .LVU633
+ 2410 0026 FFF7FEFF 		bl	RC522_Select
+ 2411              	.LVL268:
+ 635:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2412              		.loc 1 635 14 view .LVU634
+ 2413 002a 0346     		mov	r3, r0
+ 2414              	.LVL269:
+ 636:BSP/rc522.c   ****         return status;
+ 2415              		.loc 1 636 5 is_stmt 1 view .LVU635
+ 2416 002c F1E7     		b	.L169
+ 2417              		.cfi_endproc
+ 2418              	.LFE26:
+ 2420              		.section	.rodata.RC522_ReadAllSectors.str1.4,"aMS",%progbits,1
+ 2421              		.align	2
+ 2422              	.LC0:
+ 2423 0000 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\000"
+ 2423      FFFF00
+ 2424              		.section	.text.RC522_ReadAllSectors,"ax",%progbits
+ 2425              		.align	1
+ 2426              		.global	RC522_ReadAllSectors
+ 2427              		.syntax unified
+ 2428              		.thumb
+ 2429              		.thumb_func
+ 2431              	RC522_ReadAllSectors:
+ 2432              	.LVL270:
+ 2433              	.LFB27:
+ 642:BSP/rc522.c   **** 
+ 643:BSP/rc522.c   **** char RC522_ReadAllSectors(uint8_t data[64][16])
+ 644:BSP/rc522.c   **** {
+ 2434              		.loc 1 644 1 view -0
+ 2435              		.cfi_startproc
+ 2436              		@ args = 0, pretend = 0, frame = 16
+ 2437              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2438              		.loc 1 644 1 is_stmt 0 view .LVU637
+ 2439 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 2440              	.LCFI52:
+ 2441              		.cfi_def_cfa_offset 36
+ 2442              		.cfi_offset 4, -36
+ 2443              		.cfi_offset 5, -32
+ 2444              		.cfi_offset 6, -28
+ 2445              		.cfi_offset 7, -24
+ 2446              		.cfi_offset 8, -20
+ 2447              		.cfi_offset 9, -16
+ 2448              		.cfi_offset 10, -12
+ 2449              		.cfi_offset 11, -8
+ 2450              		.cfi_offset 14, -4
+ 2451 0004 85B0     		sub	sp, sp, #20
+ 2452              	.LCFI53:
+ 2453              		.cfi_def_cfa_offset 56
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 59
+
+
+ 2454 0006 0446     		mov	r4, r0
+ 645:BSP/rc522.c   ****     char status;
+ 2455              		.loc 1 645 5 is_stmt 1 view .LVU638
+ 646:BSP/rc522.c   ****     uint8_t cardID[4];
+ 2456              		.loc 1 646 5 view .LVU639
+ 647:BSP/rc522.c   ****     uint8_t defaultKey[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+ 2457              		.loc 1 647 5 view .LVU640
+ 2458              		.loc 1 647 13 is_stmt 0 view .LVU641
+ 2459 0008 3A4B     		ldr	r3, .L186
+ 2460 000a 93E80300 		ldm	r3, {r0, r1}
+ 2461              	.LVL271:
+ 2462              		.loc 1 647 13 view .LVU642
+ 2463 000e 0190     		str	r0, [sp, #4]
+ 2464 0010 ADF80810 		strh	r1, [sp, #8]	@ movhi
+ 648:BSP/rc522.c   ****     int sectorsRead = 0;
+ 2465              		.loc 1 648 5 is_stmt 1 view .LVU643
+ 2466              	.LVL272:
+ 649:BSP/rc522.c   **** 
+ 650:BSP/rc522.c   ****     /* ScanCard 已将卡置于 ACTIVE 状态，ACTIVE 下不响应 REQA/WUPA。
+ 651:BSP/rc522.c   ****      * 先 Halt 使卡进入 HALT 状态，再用 WUPA(0x52) 唤醒，确保从已知状态开始�
+ 652:BSP/rc522.c   ****     RC522_Halt();
+ 2467              		.loc 1 652 5 view .LVU644
+ 2468 0014 FFF7FEFF 		bl	RC522_Halt
+ 2469              	.LVL273:
+ 653:BSP/rc522.c   ****     s_io->delay_ms(5);
+ 2470              		.loc 1 653 5 view .LVU645
+ 2471              		.loc 1 653 9 is_stmt 0 view .LVU646
+ 2472 0018 374B     		ldr	r3, .L186+4
+ 2473 001a 1B68     		ldr	r3, [r3]
+ 2474 001c 1B69     		ldr	r3, [r3, #16]
+ 2475              		.loc 1 653 5 view .LVU647
+ 2476 001e 0520     		movs	r0, #5
+ 2477 0020 9847     		blx	r3
+ 2478              	.LVL274:
+ 654:BSP/rc522.c   **** 
+ 655:BSP/rc522.c   ****     /* 寻卡 + 防碰撞 + 选卡 */
+ 656:BSP/rc522.c   ****     status = RC522_Request(RC522_PICC_REQALL, cardID);
+ 2479              		.loc 1 656 5 is_stmt 1 view .LVU648
+ 2480              		.loc 1 656 14 is_stmt 0 view .LVU649
+ 2481 0022 03A9     		add	r1, sp, #12
+ 2482 0024 5220     		movs	r0, #82
+ 2483 0026 FFF7FEFF 		bl	RC522_Request
+ 2484              	.LVL275:
+ 657:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2485              		.loc 1 657 5 is_stmt 1 view .LVU650
+ 2486              		.loc 1 657 8 is_stmt 0 view .LVU651
+ 2487 002a 0646     		mov	r6, r0
+ 2488 002c 18B1     		cbz	r0, .L184
+ 2489              	.LVL276:
+ 2490              	.L173:
+ 658:BSP/rc522.c   ****         return status;
+ 659:BSP/rc522.c   ****     }
+ 660:BSP/rc522.c   **** 
+ 661:BSP/rc522.c   ****     status = RC522_Anticoll(cardID);
+ 662:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 663:BSP/rc522.c   ****         return status;
+ 664:BSP/rc522.c   ****     }
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 60
+
+
+ 665:BSP/rc522.c   **** 
+ 666:BSP/rc522.c   ****     status = RC522_Select(cardID);
+ 667:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 668:BSP/rc522.c   ****         return status;
+ 669:BSP/rc522.c   ****     }
+ 670:BSP/rc522.c   **** 
+ 671:BSP/rc522.c   ****     /* 逐个扇区读取 */
+ 672:BSP/rc522.c   ****     for (int sec = 0; sec < 16; sec++) {
+ 673:BSP/rc522.c   ****         /* 验证扇区密钥 (使用默认密钥 A) */
+ 674:BSP/rc522.c   ****         status = RC522_AuthState(RC522_PICC_AUTHENT1A,
+ 675:BSP/rc522.c   ****                                   (uint8_t)(sec * 4 + 3),
+ 676:BSP/rc522.c   ****                                   defaultKey, cardID);
+ 677:BSP/rc522.c   ****         if (status != RC522_OK) {
+ 678:BSP/rc522.c   ****             /* 密钥验证失败，跳过此扇区，清零数据。
+ 679:BSP/rc522.c   ****              * 认证失败后卡片安全状态不确定，需 Halt + WUPA 重新激活。 */
+ 680:BSP/rc522.c   ****             memset(data[sec * 4], 0, 64);
+ 681:BSP/rc522.c   ****             RC522_Halt();
+ 682:BSP/rc522.c   ****             s_io->delay_ms(2);
+ 683:BSP/rc522.c   ****             status = RC522_Request(RC522_PICC_REQALL, cardID);
+ 684:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 685:BSP/rc522.c   ****             status = RC522_Anticoll(cardID);
+ 686:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 687:BSP/rc522.c   ****             status = RC522_Select(cardID);
+ 688:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 689:BSP/rc522.c   ****             continue;
+ 690:BSP/rc522.c   ****         }
+ 691:BSP/rc522.c   **** 
+ 692:BSP/rc522.c   ****         /* 读取扇区的 4 个块 */
+ 693:BSP/rc522.c   ****         for (int blk = 0; blk < 4; blk++) {
+ 694:BSP/rc522.c   ****             status = RC522_ReadBlock((uint8_t)sec, (uint8_t)blk, data[sec * 4 + blk]);
+ 695:BSP/rc522.c   ****             if (status != RC522_OK) {
+ 696:BSP/rc522.c   ****                 memset(data[sec * 4 + blk], 0, 16);
+ 697:BSP/rc522.c   ****             }
+ 698:BSP/rc522.c   ****         }
+ 699:BSP/rc522.c   ****         sectorsRead++;
+ 700:BSP/rc522.c   ****     }
+ 701:BSP/rc522.c   **** 
+ 702:BSP/rc522.c   ****     /* 使卡进入休眠状态，方便后续重新检测 */
+ 703:BSP/rc522.c   ****     RC522_Halt();
+ 704:BSP/rc522.c   **** 
+ 705:BSP/rc522.c   ****     return (sectorsRead > 0) ? RC522_OK : RC522_ERR;
+ 706:BSP/rc522.c   **** }
+ 2491              		.loc 1 706 1 view .LVU652
+ 2492 002e 3046     		mov	r0, r6
+ 2493 0030 05B0     		add	sp, sp, #20
+ 2494              	.LCFI54:
+ 2495              		.cfi_remember_state
+ 2496              		.cfi_def_cfa_offset 36
+ 2497              		@ sp needed
+ 2498 0032 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 2499              	.LVL277:
+ 2500              	.L184:
+ 2501              	.LCFI55:
+ 2502              		.cfi_restore_state
+ 661:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2503              		.loc 1 661 5 is_stmt 1 view .LVU653
+ 661:BSP/rc522.c   ****     if (status != RC522_OK) {
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 61
+
+
+ 2504              		.loc 1 661 14 is_stmt 0 view .LVU654
+ 2505 0036 03A8     		add	r0, sp, #12
+ 2506              	.LVL278:
+ 661:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2507              		.loc 1 661 14 view .LVU655
+ 2508 0038 FFF7FEFF 		bl	RC522_Anticoll
+ 2509              	.LVL279:
+ 662:BSP/rc522.c   ****         return status;
+ 2510              		.loc 1 662 5 is_stmt 1 view .LVU656
+ 662:BSP/rc522.c   ****         return status;
+ 2511              		.loc 1 662 8 is_stmt 0 view .LVU657
+ 2512 003c 0646     		mov	r6, r0
+ 2513 003e 0028     		cmp	r0, #0
+ 2514 0040 F5D1     		bne	.L173
+ 666:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2515              		.loc 1 666 5 is_stmt 1 view .LVU658
+ 666:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2516              		.loc 1 666 14 is_stmt 0 view .LVU659
+ 2517 0042 03A8     		add	r0, sp, #12
+ 2518              	.LVL280:
+ 666:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2519              		.loc 1 666 14 view .LVU660
+ 2520 0044 FFF7FEFF 		bl	RC522_Select
+ 2521              	.LVL281:
+ 667:BSP/rc522.c   ****         return status;
+ 2522              		.loc 1 667 5 is_stmt 1 view .LVU661
+ 667:BSP/rc522.c   ****         return status;
+ 2523              		.loc 1 667 8 is_stmt 0 view .LVU662
+ 2524 0048 0646     		mov	r6, r0
+ 2525 004a 0028     		cmp	r0, #0
+ 2526 004c EFD1     		bne	.L173
+ 2527              	.LBB4:
+ 672:BSP/rc522.c   ****         /* 验证扇区密钥 (使用默认密钥 A) */
+ 2528              		.loc 1 672 14 view .LVU663
+ 2529 004e 0027     		movs	r7, #0
+ 2530              	.LBE4:
+ 648:BSP/rc522.c   **** 
+ 2531              		.loc 1 648 9 view .LVU664
+ 2532 0050 BA46     		mov	r10, r7
+ 2533 0052 1EE0     		b	.L174
+ 2534              	.LVL282:
+ 2535              	.L178:
+ 2536              	.LBB6:
+ 2537              	.LBB5:
+ 693:BSP/rc522.c   ****             status = RC522_ReadBlock((uint8_t)sec, (uint8_t)blk, data[sec * 4 + blk]);
+ 2538              		.loc 1 693 39 is_stmt 1 discriminator 2 view .LVU665
+ 2539 0054 0135     		adds	r5, r5, #1
+ 2540              	.LVL283:
+ 2541              	.L175:
+ 693:BSP/rc522.c   ****             status = RC522_ReadBlock((uint8_t)sec, (uint8_t)blk, data[sec * 4 + blk]);
+ 2542              		.loc 1 693 31 discriminator 1 view .LVU666
+ 2543 0056 032D     		cmp	r5, #3
+ 2544 0058 18DC     		bgt	.L185
+ 694:BSP/rc522.c   ****             if (status != RC522_OK) {
+ 2545              		.loc 1 694 13 view .LVU667
+ 694:BSP/rc522.c   ****             if (status != RC522_OK) {
+ 2546              		.loc 1 694 79 is_stmt 0 view .LVU668
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 62
+
+
+ 2547 005a 05EB8702 		add	r2, r5, r7, lsl #2
+ 694:BSP/rc522.c   ****             if (status != RC522_OK) {
+ 2548              		.loc 1 694 70 view .LVU669
+ 2549 005e 4FEA0219 		lsl	r9, r2, #4
+ 2550 0062 04EB021B 		add	fp, r4, r2, lsl #4
+ 694:BSP/rc522.c   ****             if (status != RC522_OK) {
+ 2551              		.loc 1 694 22 view .LVU670
+ 2552 0066 5A46     		mov	r2, fp
+ 2553 0068 E9B2     		uxtb	r1, r5
+ 2554 006a 4046     		mov	r0, r8
+ 2555              	.LVL284:
+ 694:BSP/rc522.c   ****             if (status != RC522_OK) {
+ 2556              		.loc 1 694 22 view .LVU671
+ 2557 006c FFF7FEFF 		bl	RC522_ReadBlock
+ 2558              	.LVL285:
+ 695:BSP/rc522.c   ****                 memset(data[sec * 4 + blk], 0, 16);
+ 2559              		.loc 1 695 13 is_stmt 1 view .LVU672
+ 695:BSP/rc522.c   ****                 memset(data[sec * 4 + blk], 0, 16);
+ 2560              		.loc 1 695 16 is_stmt 0 view .LVU673
+ 2561 0070 0028     		cmp	r0, #0
+ 2562 0072 EFD0     		beq	.L178
+ 696:BSP/rc522.c   ****             }
+ 2563              		.loc 1 696 17 is_stmt 1 view .LVU674
+ 2564 0074 0023     		movs	r3, #0
+ 2565 0076 44F80930 		str	r3, [r4, r9]	@ unaligned
+ 2566 007a CBF80430 		str	r3, [fp, #4]	@ unaligned
+ 2567 007e CBF80830 		str	r3, [fp, #8]	@ unaligned
+ 2568 0082 CBF80C30 		str	r3, [fp, #12]	@ unaligned
+ 2569 0086 E5E7     		b	.L178
+ 2570              	.LVL286:
+ 2571              	.L181:
+ 693:BSP/rc522.c   ****             status = RC522_ReadBlock((uint8_t)sec, (uint8_t)blk, data[sec * 4 + blk]);
+ 2572              		.loc 1 693 18 is_stmt 0 view .LVU675
+ 2573 0088 0025     		movs	r5, #0
+ 2574 008a E4E7     		b	.L175
+ 2575              	.LVL287:
+ 2576              	.L185:
+ 693:BSP/rc522.c   ****             status = RC522_ReadBlock((uint8_t)sec, (uint8_t)blk, data[sec * 4 + blk]);
+ 2577              		.loc 1 693 18 view .LVU676
+ 2578              	.LBE5:
+ 699:BSP/rc522.c   ****     }
+ 2579              		.loc 1 699 9 is_stmt 1 view .LVU677
+ 699:BSP/rc522.c   ****     }
+ 2580              		.loc 1 699 20 is_stmt 0 view .LVU678
+ 2581 008c 0AF1010A 		add	r10, r10, #1
+ 2582              	.LVL288:
+ 2583              	.L177:
+ 672:BSP/rc522.c   ****         /* 验证扇区密钥 (使用默认密钥 A) */
+ 2584              		.loc 1 672 36 is_stmt 1 discriminator 2 view .LVU679
+ 2585 0090 0137     		adds	r7, r7, #1
+ 2586              	.LVL289:
+ 2587              	.L174:
+ 672:BSP/rc522.c   ****         /* 验证扇区密钥 (使用默认密钥 A) */
+ 2588              		.loc 1 672 27 discriminator 1 view .LVU680
+ 2589 0092 0F2F     		cmp	r7, #15
+ 2590 0094 27DC     		bgt	.L176
+ 674:BSP/rc522.c   ****                                   (uint8_t)(sec * 4 + 3),
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 63
+
+
+ 2591              		.loc 1 674 9 view .LVU681
+ 674:BSP/rc522.c   ****                                   (uint8_t)(sec * 4 + 3),
+ 2592              		.loc 1 674 18 is_stmt 0 view .LVU682
+ 2593 0096 5FFA87F8 		uxtb	r8, r7
+ 2594 009a 4FEA8801 		lsl	r1, r8, #2
+ 2595 009e 0331     		adds	r1, r1, #3
+ 2596 00a0 03AB     		add	r3, sp, #12
+ 2597 00a2 01AA     		add	r2, sp, #4
+ 2598 00a4 C9B2     		uxtb	r1, r1
+ 2599 00a6 6020     		movs	r0, #96
+ 2600              	.LVL290:
+ 674:BSP/rc522.c   ****                                   (uint8_t)(sec * 4 + 3),
+ 2601              		.loc 1 674 18 view .LVU683
+ 2602 00a8 FFF7FEFF 		bl	RC522_AuthState
+ 2603              	.LVL291:
+ 677:BSP/rc522.c   ****             /* 密钥验证失败，跳过此扇区，清零数据。
+ 2604              		.loc 1 677 9 is_stmt 1 view .LVU684
+ 677:BSP/rc522.c   ****             /* 密钥验证失败，跳过此扇区，清零数据。
+ 2605              		.loc 1 677 12 is_stmt 0 view .LVU685
+ 2606 00ac 0028     		cmp	r0, #0
+ 2607 00ae EBD0     		beq	.L181
+ 680:BSP/rc522.c   ****             RC522_Halt();
+ 2608              		.loc 1 680 13 is_stmt 1 view .LVU686
+ 2609 00b0 4022     		movs	r2, #64
+ 2610 00b2 0021     		movs	r1, #0
+ 2611 00b4 04EB8710 		add	r0, r4, r7, lsl #6
+ 2612              	.LVL292:
+ 680:BSP/rc522.c   ****             RC522_Halt();
+ 2613              		.loc 1 680 13 is_stmt 0 view .LVU687
+ 2614 00b8 FFF7FEFF 		bl	memset
+ 2615              	.LVL293:
+ 681:BSP/rc522.c   ****             s_io->delay_ms(2);
+ 2616              		.loc 1 681 13 is_stmt 1 view .LVU688
+ 2617 00bc FFF7FEFF 		bl	RC522_Halt
+ 2618              	.LVL294:
+ 682:BSP/rc522.c   ****             status = RC522_Request(RC522_PICC_REQALL, cardID);
+ 2619              		.loc 1 682 13 view .LVU689
+ 682:BSP/rc522.c   ****             status = RC522_Request(RC522_PICC_REQALL, cardID);
+ 2620              		.loc 1 682 17 is_stmt 0 view .LVU690
+ 2621 00c0 0D4B     		ldr	r3, .L186+4
+ 2622 00c2 1B68     		ldr	r3, [r3]
+ 2623 00c4 1B69     		ldr	r3, [r3, #16]
+ 682:BSP/rc522.c   ****             status = RC522_Request(RC522_PICC_REQALL, cardID);
+ 2624              		.loc 1 682 13 view .LVU691
+ 2625 00c6 0220     		movs	r0, #2
+ 2626 00c8 9847     		blx	r3
+ 2627              	.LVL295:
+ 683:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2628              		.loc 1 683 13 is_stmt 1 view .LVU692
+ 683:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2629              		.loc 1 683 22 is_stmt 0 view .LVU693
+ 2630 00ca 03A9     		add	r1, sp, #12
+ 2631 00cc 5220     		movs	r0, #82
+ 2632 00ce FFF7FEFF 		bl	RC522_Request
+ 2633              	.LVL296:
+ 684:BSP/rc522.c   ****             status = RC522_Anticoll(cardID);
+ 2634              		.loc 1 684 13 is_stmt 1 view .LVU694
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 64
+
+
+ 684:BSP/rc522.c   ****             status = RC522_Anticoll(cardID);
+ 2635              		.loc 1 684 16 is_stmt 0 view .LVU695
+ 2636 00d2 40B9     		cbnz	r0, .L176
+ 685:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2637              		.loc 1 685 13 is_stmt 1 view .LVU696
+ 685:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2638              		.loc 1 685 22 is_stmt 0 view .LVU697
+ 2639 00d4 03A8     		add	r0, sp, #12
+ 2640              	.LVL297:
+ 685:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2641              		.loc 1 685 22 view .LVU698
+ 2642 00d6 FFF7FEFF 		bl	RC522_Anticoll
+ 2643              	.LVL298:
+ 686:BSP/rc522.c   ****             status = RC522_Select(cardID);
+ 2644              		.loc 1 686 13 is_stmt 1 view .LVU699
+ 686:BSP/rc522.c   ****             status = RC522_Select(cardID);
+ 2645              		.loc 1 686 16 is_stmt 0 view .LVU700
+ 2646 00da 20B9     		cbnz	r0, .L176
+ 687:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2647              		.loc 1 687 13 is_stmt 1 view .LVU701
+ 687:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2648              		.loc 1 687 22 is_stmt 0 view .LVU702
+ 2649 00dc 03A8     		add	r0, sp, #12
+ 2650              	.LVL299:
+ 687:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2651              		.loc 1 687 22 view .LVU703
+ 2652 00de FFF7FEFF 		bl	RC522_Select
+ 2653              	.LVL300:
+ 688:BSP/rc522.c   ****             continue;
+ 2654              		.loc 1 688 13 is_stmt 1 view .LVU704
+ 688:BSP/rc522.c   ****             continue;
+ 2655              		.loc 1 688 16 is_stmt 0 view .LVU705
+ 2656 00e2 0028     		cmp	r0, #0
+ 2657 00e4 D4D0     		beq	.L177
+ 2658              	.L176:
+ 688:BSP/rc522.c   ****             continue;
+ 2659              		.loc 1 688 16 view .LVU706
+ 2660              	.LBE6:
+ 703:BSP/rc522.c   **** 
+ 2661              		.loc 1 703 5 is_stmt 1 view .LVU707
+ 2662 00e6 FFF7FEFF 		bl	RC522_Halt
+ 2663              	.LVL301:
+ 705:BSP/rc522.c   **** }
+ 2664              		.loc 1 705 5 view .LVU708
+ 705:BSP/rc522.c   **** }
+ 2665              		.loc 1 705 41 is_stmt 0 view .LVU709
+ 2666 00ea BAF1000F 		cmp	r10, #0
+ 2667 00ee 9EDC     		bgt	.L173
+ 705:BSP/rc522.c   **** }
+ 2668              		.loc 1 705 41 discriminator 2 view .LVU710
+ 2669 00f0 FF26     		movs	r6, #255
+ 2670 00f2 9CE7     		b	.L173
+ 2671              	.L187:
+ 2672              		.align	2
+ 2673              	.L186:
+ 2674 00f4 00000000 		.word	.LC0
+ 2675 00f8 00000000 		.word	s_io
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 65
+
+
+ 2676              		.cfi_endproc
+ 2677              	.LFE27:
+ 2679              		.section	.text.RC522_WriteAllSectors,"ax",%progbits
+ 2680              		.align	1
+ 2681              		.global	RC522_WriteAllSectors
+ 2682              		.syntax unified
+ 2683              		.thumb
+ 2684              		.thumb_func
+ 2686              	RC522_WriteAllSectors:
+ 2687              	.LVL302:
+ 2688              	.LFB28:
+ 707:BSP/rc522.c   **** 
+ 708:BSP/rc522.c   **** char RC522_WriteAllSectors(uint8_t data[64][16])
+ 709:BSP/rc522.c   **** {
+ 2689              		.loc 1 709 1 is_stmt 1 view -0
+ 2690              		.cfi_startproc
+ 2691              		@ args = 0, pretend = 0, frame = 16
+ 2692              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2693              		.loc 1 709 1 is_stmt 0 view .LVU712
+ 2694 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 2695              	.LCFI56:
+ 2696              		.cfi_def_cfa_offset 32
+ 2697              		.cfi_offset 4, -32
+ 2698              		.cfi_offset 5, -28
+ 2699              		.cfi_offset 6, -24
+ 2700              		.cfi_offset 7, -20
+ 2701              		.cfi_offset 8, -16
+ 2702              		.cfi_offset 9, -12
+ 2703              		.cfi_offset 10, -8
+ 2704              		.cfi_offset 14, -4
+ 2705 0004 84B0     		sub	sp, sp, #16
+ 2706              	.LCFI57:
+ 2707              		.cfi_def_cfa_offset 48
+ 2708 0006 0546     		mov	r5, r0
+ 710:BSP/rc522.c   ****     char status;
+ 2709              		.loc 1 710 5 is_stmt 1 view .LVU713
+ 711:BSP/rc522.c   ****     uint8_t cardID[4];
+ 2710              		.loc 1 711 5 view .LVU714
+ 712:BSP/rc522.c   ****     uint8_t defaultKey[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+ 2711              		.loc 1 712 5 view .LVU715
+ 2712              		.loc 1 712 13 is_stmt 0 view .LVU716
+ 2713 0008 2E4B     		ldr	r3, .L202
+ 2714 000a 93E80300 		ldm	r3, {r0, r1}
+ 2715              	.LVL303:
+ 2716              		.loc 1 712 13 view .LVU717
+ 2717 000e 0190     		str	r0, [sp, #4]
+ 2718 0010 ADF80810 		strh	r1, [sp, #8]	@ movhi
+ 713:BSP/rc522.c   ****     int sectorsWritten = 0;
+ 2719              		.loc 1 713 5 is_stmt 1 view .LVU718
+ 2720              	.LVL304:
+ 714:BSP/rc522.c   **** 
+ 715:BSP/rc522.c   ****     /* 寻卡 + 防碰撞 + 选卡 */
+ 716:BSP/rc522.c   ****     status = RC522_Request(RC522_PICC_REQALL, cardID);
+ 2721              		.loc 1 716 5 view .LVU719
+ 2722              		.loc 1 716 14 is_stmt 0 view .LVU720
+ 2723 0014 03A9     		add	r1, sp, #12
+ 2724 0016 5220     		movs	r0, #82
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 66
+
+
+ 2725 0018 FFF7FEFF 		bl	RC522_Request
+ 2726              	.LVL305:
+ 717:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2727              		.loc 1 717 5 is_stmt 1 view .LVU721
+ 2728              		.loc 1 717 8 is_stmt 0 view .LVU722
+ 2729 001c 0446     		mov	r4, r0
+ 2730 001e 18B1     		cbz	r0, .L201
+ 2731              	.LVL306:
+ 2732              	.L189:
+ 718:BSP/rc522.c   ****         return status;
+ 719:BSP/rc522.c   ****     }
+ 720:BSP/rc522.c   **** 
+ 721:BSP/rc522.c   ****     status = RC522_Anticoll(cardID);
+ 722:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 723:BSP/rc522.c   ****         return status;
+ 724:BSP/rc522.c   ****     }
+ 725:BSP/rc522.c   **** 
+ 726:BSP/rc522.c   ****     status = RC522_Select(cardID);
+ 727:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 728:BSP/rc522.c   ****         return status;
+ 729:BSP/rc522.c   ****     }
+ 730:BSP/rc522.c   **** 
+ 731:BSP/rc522.c   ****     /* 逐个扇区写入 */
+ 732:BSP/rc522.c   ****     for (int sec = 0; sec < 16; sec++) {
+ 733:BSP/rc522.c   ****         /* 验证扇区密钥 */
+ 734:BSP/rc522.c   ****         status = RC522_AuthState(RC522_PICC_AUTHENT1A,
+ 735:BSP/rc522.c   ****                                   (uint8_t)(sec * 4 + 3),
+ 736:BSP/rc522.c   ****                                   defaultKey, cardID);
+ 737:BSP/rc522.c   ****         if (status != RC522_OK) {
+ 738:BSP/rc522.c   ****             /* 密钥验证失败，跳过此扇区 */
+ 739:BSP/rc522.c   ****             status = RC522_Request(RC522_PICC_REQALL, cardID);
+ 740:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 741:BSP/rc522.c   ****             status = RC522_Anticoll(cardID);
+ 742:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 743:BSP/rc522.c   ****             status = RC522_Select(cardID);
+ 744:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 745:BSP/rc522.c   ****             continue;
+ 746:BSP/rc522.c   ****         }
+ 747:BSP/rc522.c   **** 
+ 748:BSP/rc522.c   ****         /* 写入扇区前 3 块 (跳过第 4 块密钥区) */
+ 749:BSP/rc522.c   ****         for (int blk = 0; blk < 3; blk++) {
+ 750:BSP/rc522.c   ****             uint8_t bidx = (uint8_t)(sec * 4 + blk);
+ 751:BSP/rc522.c   ****             /* 跳过扇区 0 块 0 (厂商块) */
+ 752:BSP/rc522.c   ****             if (bidx == 0) continue;
+ 753:BSP/rc522.c   ****             status = RC522_WriteBlock((uint8_t)sec, (uint8_t)blk, data[bidx]);
+ 754:BSP/rc522.c   ****             if (status != RC522_OK) {
+ 755:BSP/rc522.c   ****                 break;
+ 756:BSP/rc522.c   ****             }
+ 757:BSP/rc522.c   ****         }
+ 758:BSP/rc522.c   ****         if (status == RC522_OK) {
+ 759:BSP/rc522.c   ****             sectorsWritten++;
+ 760:BSP/rc522.c   ****         }
+ 761:BSP/rc522.c   ****     }
+ 762:BSP/rc522.c   **** 
+ 763:BSP/rc522.c   ****     RC522_Halt();
+ 764:BSP/rc522.c   **** 
+ 765:BSP/rc522.c   ****     return (sectorsWritten > 0) ? RC522_OK : RC522_ERR;
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 67
+
+
+ 766:BSP/rc522.c   **** }
+ 2733              		.loc 1 766 1 view .LVU723
+ 2734 0020 2046     		mov	r0, r4
+ 2735 0022 04B0     		add	sp, sp, #16
+ 2736              	.LCFI58:
+ 2737              		.cfi_remember_state
+ 2738              		.cfi_def_cfa_offset 32
+ 2739              		@ sp needed
+ 2740 0024 BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 2741              	.LVL307:
+ 2742              	.L201:
+ 2743              	.LCFI59:
+ 2744              		.cfi_restore_state
+ 721:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2745              		.loc 1 721 5 is_stmt 1 view .LVU724
+ 721:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2746              		.loc 1 721 14 is_stmt 0 view .LVU725
+ 2747 0028 03A8     		add	r0, sp, #12
+ 2748              	.LVL308:
+ 721:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2749              		.loc 1 721 14 view .LVU726
+ 2750 002a FFF7FEFF 		bl	RC522_Anticoll
+ 2751              	.LVL309:
+ 722:BSP/rc522.c   ****         return status;
+ 2752              		.loc 1 722 5 is_stmt 1 view .LVU727
+ 722:BSP/rc522.c   ****         return status;
+ 2753              		.loc 1 722 8 is_stmt 0 view .LVU728
+ 2754 002e 0446     		mov	r4, r0
+ 2755 0030 0028     		cmp	r0, #0
+ 2756 0032 F5D1     		bne	.L189
+ 726:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2757              		.loc 1 726 5 is_stmt 1 view .LVU729
+ 726:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2758              		.loc 1 726 14 is_stmt 0 view .LVU730
+ 2759 0034 03A8     		add	r0, sp, #12
+ 2760              	.LVL310:
+ 726:BSP/rc522.c   ****     if (status != RC522_OK) {
+ 2761              		.loc 1 726 14 view .LVU731
+ 2762 0036 FFF7FEFF 		bl	RC522_Select
+ 2763              	.LVL311:
+ 727:BSP/rc522.c   ****         return status;
+ 2764              		.loc 1 727 5 is_stmt 1 view .LVU732
+ 727:BSP/rc522.c   ****         return status;
+ 2765              		.loc 1 727 8 is_stmt 0 view .LVU733
+ 2766 003a 0446     		mov	r4, r0
+ 2767 003c 0028     		cmp	r0, #0
+ 2768 003e EFD1     		bne	.L189
+ 2769              	.LBB7:
+ 732:BSP/rc522.c   ****         /* 验证扇区密钥 */
+ 2770              		.loc 1 732 14 view .LVU734
+ 2771 0040 4FF00008 		mov	r8, #0
+ 2772              	.LBE7:
+ 713:BSP/rc522.c   **** 
+ 2773              		.loc 1 713 9 view .LVU735
+ 2774 0044 C246     		mov	r10, r8
+ 2775 0046 14E0     		b	.L190
+ 2776              	.LVL312:
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 68
+
+
+ 2777              	.L194:
+ 2778              	.LBB11:
+ 2779              	.LBB8:
+ 749:BSP/rc522.c   ****             uint8_t bidx = (uint8_t)(sec * 4 + blk);
+ 2780              		.loc 1 749 39 is_stmt 1 discriminator 2 view .LVU736
+ 2781 0048 0136     		adds	r6, r6, #1
+ 2782              	.LVL313:
+ 2783              	.L191:
+ 749:BSP/rc522.c   ****             uint8_t bidx = (uint8_t)(sec * 4 + blk);
+ 2784              		.loc 1 749 31 discriminator 1 view .LVU737
+ 2785 004a 022E     		cmp	r6, #2
+ 2786 004c 0CDC     		bgt	.L195
+ 2787              	.LBB9:
+ 750:BSP/rc522.c   ****             /* 跳过扇区 0 块 0 (厂商块) */
+ 2788              		.loc 1 750 13 view .LVU738
+ 750:BSP/rc522.c   ****             /* 跳过扇区 0 块 0 (厂商块) */
+ 2789              		.loc 1 750 28 is_stmt 0 view .LVU739
+ 2790 004e F1B2     		uxtb	r1, r6
+ 750:BSP/rc522.c   ****             /* 跳过扇区 0 块 0 (厂商块) */
+ 2791              		.loc 1 750 21 view .LVU740
+ 2792 0050 7A18     		adds	r2, r7, r1
+ 2793              	.LVL314:
+ 752:BSP/rc522.c   ****             status = RC522_WriteBlock((uint8_t)sec, (uint8_t)blk, data[bidx]);
+ 2794              		.loc 1 752 13 is_stmt 1 view .LVU741
+ 752:BSP/rc522.c   ****             status = RC522_WriteBlock((uint8_t)sec, (uint8_t)blk, data[bidx]);
+ 2795              		.loc 1 752 16 is_stmt 0 view .LVU742
+ 2796 0052 12F0FF02 		ands	r2, r2, #255
+ 2797              	.LVL315:
+ 752:BSP/rc522.c   ****             status = RC522_WriteBlock((uint8_t)sec, (uint8_t)blk, data[bidx]);
+ 2798              		.loc 1 752 16 view .LVU743
+ 2799 0056 F7D0     		beq	.L194
+ 753:BSP/rc522.c   ****             if (status != RC522_OK) {
+ 2800              		.loc 1 753 13 is_stmt 1 view .LVU744
+ 753:BSP/rc522.c   ****             if (status != RC522_OK) {
+ 2801              		.loc 1 753 22 is_stmt 0 view .LVU745
+ 2802 0058 05EB0212 		add	r2, r5, r2, lsl #4
+ 2803 005c 4846     		mov	r0, r9
+ 2804 005e FFF7FEFF 		bl	RC522_WriteBlock
+ 2805              	.LVL316:
+ 754:BSP/rc522.c   ****                 break;
+ 2806              		.loc 1 754 13 is_stmt 1 view .LVU746
+ 754:BSP/rc522.c   ****                 break;
+ 2807              		.loc 1 754 16 is_stmt 0 view .LVU747
+ 2808 0062 0346     		mov	r3, r0
+ 2809 0064 0028     		cmp	r0, #0
+ 2810 0066 EFD0     		beq	.L194
+ 2811              	.LVL317:
+ 2812              	.L195:
+ 754:BSP/rc522.c   ****                 break;
+ 2813              		.loc 1 754 16 view .LVU748
+ 2814              	.LBE9:
+ 2815              	.LBE8:
+ 758:BSP/rc522.c   ****             sectorsWritten++;
+ 2816              		.loc 1 758 9 is_stmt 1 view .LVU749
+ 758:BSP/rc522.c   ****             sectorsWritten++;
+ 2817              		.loc 1 758 12 is_stmt 0 view .LVU750
+ 2818 0068 0BB9     		cbnz	r3, .L193
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 69
+
+
+ 759:BSP/rc522.c   ****         }
+ 2819              		.loc 1 759 13 is_stmt 1 view .LVU751
+ 759:BSP/rc522.c   ****         }
+ 2820              		.loc 1 759 27 is_stmt 0 view .LVU752
+ 2821 006a 0AF1010A 		add	r10, r10, #1
+ 2822              	.LVL318:
+ 2823              	.L193:
+ 732:BSP/rc522.c   ****         /* 验证扇区密钥 */
+ 2824              		.loc 1 732 36 is_stmt 1 discriminator 2 view .LVU753
+ 2825 006e 08F10108 		add	r8, r8, #1
+ 2826              	.LVL319:
+ 2827              	.L190:
+ 732:BSP/rc522.c   ****         /* 验证扇区密钥 */
+ 2828              		.loc 1 732 27 discriminator 1 view .LVU754
+ 2829 0072 B8F10F0F 		cmp	r8, #15
+ 2830 0076 1BDC     		bgt	.L192
+ 734:BSP/rc522.c   ****                                   (uint8_t)(sec * 4 + 3),
+ 2831              		.loc 1 734 9 view .LVU755
+ 734:BSP/rc522.c   ****                                   (uint8_t)(sec * 4 + 3),
+ 2832              		.loc 1 734 18 is_stmt 0 view .LVU756
+ 2833 0078 5FFA88F9 		uxtb	r9, r8
+ 2834 007c 4FEA8907 		lsl	r7, r9, #2
+ 2835 0080 FFB2     		uxtb	r7, r7
+ 2836 0082 F91C     		adds	r1, r7, #3
+ 2837 0084 03AB     		add	r3, sp, #12
+ 2838 0086 01AA     		add	r2, sp, #4
+ 2839 0088 C9B2     		uxtb	r1, r1
+ 2840 008a 6020     		movs	r0, #96
+ 2841 008c FFF7FEFF 		bl	RC522_AuthState
+ 2842              	.LVL320:
+ 737:BSP/rc522.c   ****             /* 密钥验证失败，跳过此扇区 */
+ 2843              		.loc 1 737 9 is_stmt 1 view .LVU757
+ 737:BSP/rc522.c   ****             /* 密钥验证失败，跳过此扇区 */
+ 2844              		.loc 1 737 12 is_stmt 0 view .LVU758
+ 2845 0090 0346     		mov	r3, r0
+ 2846 0092 A0B1     		cbz	r0, .L198
+ 739:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2847              		.loc 1 739 13 is_stmt 1 view .LVU759
+ 739:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2848              		.loc 1 739 22 is_stmt 0 view .LVU760
+ 2849 0094 03A9     		add	r1, sp, #12
+ 2850 0096 5220     		movs	r0, #82
+ 2851              	.LVL321:
+ 739:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2852              		.loc 1 739 22 view .LVU761
+ 2853 0098 FFF7FEFF 		bl	RC522_Request
+ 2854              	.LVL322:
+ 740:BSP/rc522.c   ****             status = RC522_Anticoll(cardID);
+ 2855              		.loc 1 740 13 is_stmt 1 view .LVU762
+ 740:BSP/rc522.c   ****             status = RC522_Anticoll(cardID);
+ 2856              		.loc 1 740 16 is_stmt 0 view .LVU763
+ 2857 009c 40B9     		cbnz	r0, .L192
+ 741:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2858              		.loc 1 741 13 is_stmt 1 view .LVU764
+ 741:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2859              		.loc 1 741 22 is_stmt 0 view .LVU765
+ 2860 009e 03A8     		add	r0, sp, #12
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 70
+
+
+ 2861              	.LVL323:
+ 741:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2862              		.loc 1 741 22 view .LVU766
+ 2863 00a0 FFF7FEFF 		bl	RC522_Anticoll
+ 2864              	.LVL324:
+ 742:BSP/rc522.c   ****             status = RC522_Select(cardID);
+ 2865              		.loc 1 742 13 is_stmt 1 view .LVU767
+ 742:BSP/rc522.c   ****             status = RC522_Select(cardID);
+ 2866              		.loc 1 742 16 is_stmt 0 view .LVU768
+ 2867 00a4 20B9     		cbnz	r0, .L192
+ 743:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2868              		.loc 1 743 13 is_stmt 1 view .LVU769
+ 743:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2869              		.loc 1 743 22 is_stmt 0 view .LVU770
+ 2870 00a6 03A8     		add	r0, sp, #12
+ 2871              	.LVL325:
+ 743:BSP/rc522.c   ****             if (status != RC522_OK) break;
+ 2872              		.loc 1 743 22 view .LVU771
+ 2873 00a8 FFF7FEFF 		bl	RC522_Select
+ 2874              	.LVL326:
+ 744:BSP/rc522.c   ****             continue;
+ 2875              		.loc 1 744 13 is_stmt 1 view .LVU772
+ 744:BSP/rc522.c   ****             continue;
+ 2876              		.loc 1 744 16 is_stmt 0 view .LVU773
+ 2877 00ac 0028     		cmp	r0, #0
+ 2878 00ae DED0     		beq	.L193
+ 2879              	.LVL327:
+ 2880              	.L192:
+ 744:BSP/rc522.c   ****             continue;
+ 2881              		.loc 1 744 16 view .LVU774
+ 2882              	.LBE11:
+ 763:BSP/rc522.c   **** 
+ 2883              		.loc 1 763 5 is_stmt 1 view .LVU775
+ 2884 00b0 FFF7FEFF 		bl	RC522_Halt
+ 2885              	.LVL328:
+ 765:BSP/rc522.c   **** }
+ 2886              		.loc 1 765 5 view .LVU776
+ 765:BSP/rc522.c   **** }
+ 2887              		.loc 1 765 44 is_stmt 0 view .LVU777
+ 2888 00b4 BAF1000F 		cmp	r10, #0
+ 2889 00b8 B2DC     		bgt	.L189
+ 765:BSP/rc522.c   **** }
+ 2890              		.loc 1 765 44 discriminator 2 view .LVU778
+ 2891 00ba FF24     		movs	r4, #255
+ 2892 00bc B0E7     		b	.L189
+ 2893              	.LVL329:
+ 2894              	.L198:
+ 2895              	.LBB12:
+ 2896              	.LBB10:
+ 749:BSP/rc522.c   ****             uint8_t bidx = (uint8_t)(sec * 4 + blk);
+ 2897              		.loc 1 749 18 view .LVU779
+ 2898 00be 0026     		movs	r6, #0
+ 2899 00c0 C3E7     		b	.L191
+ 2900              	.L203:
+ 2901 00c2 00BF     		.align	2
+ 2902              	.L202:
+ 2903 00c4 00000000 		.word	.LC0
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 71
+
+
+ 2904              	.LBE10:
+ 2905              	.LBE12:
+ 2906              		.cfi_endproc
+ 2907              	.LFE28:
+ 2909              		.section	.bss.s_io,"aw",%nobits
+ 2910              		.align	2
+ 2913              	s_io:
+ 2914 0000 00000000 		.space	4
+ 2915              		.section	.bss.s_commFailCount,"aw",%nobits
+ 2916              		.align	1
+ 2919              	s_commFailCount:
+ 2920 0000 0000     		.space	2
+ 2921              		.text
+ 2922              	.Letext0:
+ 2923              		.file 2 "E:/STM32/Tools/arm-none-eabi-gcc/14.2.1-1.1.1/.content/arm-none-eabi/include/machine/_def
+ 2924              		.file 3 "E:/STM32/Tools/arm-none-eabi-gcc/14.2.1-1.1.1/.content/arm-none-eabi/include/sys/_stdint.
+ 2925              		.file 4 "BSP/rc522.h"
+ 2926              		.file 5 "E:/STM32/Tools/arm-none-eabi-gcc/14.2.1-1.1.1/.content/arm-none-eabi/include/string.h"
+ 2927              		.file 6 "<built-in>"
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 72
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 rc522.c
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:21     .text.rc522_write_reg:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:26     .text.rc522_write_reg:00000000 rc522_write_reg
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:100    .text.rc522_write_reg:00000034 $d
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2913   .bss.s_io:00000000 s_io
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:105    .text.rc522_read_reg:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:110    .text.rc522_read_reg:00000000 rc522_read_reg
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:185    .text.rc522_read_reg:0000003c $d
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:190    .text.rc522_set_bit_mask:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:195    .text.rc522_set_bit_mask:00000000 rc522_set_bit_mask
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:231    .text.rc522_clear_bit_mask:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:236    .text.rc522_clear_bit_mask:00000000 rc522_clear_bit_mask
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:279    .text.rc522_calculate_crc:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:284    .text.rc522_calculate_crc:00000000 rc522_calculate_crc
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:396    .text.RC522_Reset:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:402    .text.RC522_Reset:00000000 RC522_Reset
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:510    .text.RC522_Reset:00000078 $d
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:515    .text.RC522_Init:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:521    .text.RC522_Init:00000000 RC522_Init
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:656    .text.RC522_Init:00000084 $d
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:661    .text.RC522_AntennaOn:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:667    .text.RC522_AntennaOn:00000000 RC522_AntennaOn
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:706    .text.RC522_ConfigISOType:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:712    .text.RC522_ConfigISOType:00000000 RC522_ConfigISOType
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:795    .text.RC522_ConfigISOType:00000060 $d
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:800    .text.rc522_communicate:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:805    .text.rc522_communicate:00000000 rc522_communicate
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1124   .text.rc522_communicate:0000014c $d
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2919   .bss.s_commFailCount:00000000 s_commFailCount
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1130   .text.RC522_AntennaOff:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1136   .text.RC522_AntennaOff:00000000 RC522_AntennaOff
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1158   .text.RC522_Request:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1164   .text.RC522_Request:00000000 RC522_Request
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1258   .text.RC522_Anticoll:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1264   .text.RC522_Anticoll:00000000 RC522_Anticoll
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1396   .text.RC522_Select:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1402   .text.RC522_Select:00000000 RC522_Select
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1517   .text.RC522_AuthState:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1523   .text.RC522_AuthState:00000000 RC522_AuthState
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1651   .text.RC522_Read:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1657   .text.RC522_Read:00000000 RC522_Read
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1759   .text.RC522_Write:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1765   .text.RC522_Write:00000000 RC522_Write
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1931   .text.RC522_Halt:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1937   .text.RC522_Halt:00000000 RC522_Halt
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1990   .text.RC522_WaitCardOff:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:1996   .text.RC522_WaitCardOff:00000000 RC522_WaitCardOff
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2060   .text.RC522_WaitCardOff:0000003c $d
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2065   .text.RC522_ReadBlock:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2071   .text.RC522_ReadBlock:00000000 RC522_ReadBlock
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2131   .text.RC522_WriteBlock:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2137   .text.RC522_WriteBlock:00000000 RC522_WriteBlock
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2210   .text.RC522_ReadSector:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2216   .text.RC522_ReadSector:00000000 RC522_ReadSector
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2275   .text.RC522_WriteSector:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2281   .text.RC522_WriteSector:00000000 RC522_WriteSector
+ARM GAS  C:\Users\24120\AppData\Local\Temp\cc8JRStv.s 			page 73
+
+
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2342   .text.RC522_ScanCard:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2348   .text.RC522_ScanCard:00000000 RC522_ScanCard
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2421   .rodata.RC522_ReadAllSectors.str1.4:00000000 $d
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2425   .text.RC522_ReadAllSectors:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2431   .text.RC522_ReadAllSectors:00000000 RC522_ReadAllSectors
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2674   .text.RC522_ReadAllSectors:000000f4 $d
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2680   .text.RC522_WriteAllSectors:00000000 $t
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2686   .text.RC522_WriteAllSectors:00000000 RC522_WriteAllSectors
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2903   .text.RC522_WriteAllSectors:000000c4 $d
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2910   .bss.s_io:00000000 $d
+C:\Users\24120\AppData\Local\Temp\cc8JRStv.s:2916   .bss.s_commFailCount:00000000 $d
+
+UNDEFINED SYMBOLS
+memset
