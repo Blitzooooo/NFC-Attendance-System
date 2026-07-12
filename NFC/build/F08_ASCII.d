@@ -1,2 +1,0 @@
-build/F08_ASCII.o: BSP/F08_ASCII.c BSP/GUI.H
-BSP/GUI.H:

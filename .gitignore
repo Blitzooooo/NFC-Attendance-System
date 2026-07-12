@@ -1,0 +1,43 @@
+# ===================
+# Build Output
+# ===================
+NFC/build/
+build/
+*.o
+*.d
+*.lst
+*.elf
+*.hex
+*.bin
+*.map
+
+# ===================
+# IDE / Editor
+# ===================
+.vscode/
+*.mxproject
+*.ioc.bak
+.idea/
+*.swp
+*.swo
+*~
+
+# ===================
+# OS Junk
+# ===================
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ===================
+# Debug / Logs
+# ===================
+build_log.txt
+debug*.log
+
+# ===================
+# Archive
+# ===================
+*.zip
+*.tar.gz
+*.rar
