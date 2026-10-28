@@ -41,3 +41,8 @@ debug*.log
 *.zip
 *.tar.gz
 *.rar
+
+# ===================
+# Stray generated CubeMX project (not tracked for now)
+# ===================
+1/
