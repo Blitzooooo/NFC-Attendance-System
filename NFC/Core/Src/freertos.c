@@ -351,7 +351,6 @@ void StartDefaultTask(void *argument)
 void StartTaskGui(void *argument)
 {
   /* USER CODE BEGIN StartTaskGui */
-  uint32_t flags;
   const DispCardInfo_t *pCard;
   uint32_t stateEnterTick = 0;
   uint32_t now;
@@ -382,18 +381,19 @@ void StartTaskGui(void *argument)
         }
       }
       DISP_ShowClock();
-      flags = osThreadFlagsWait(DISP_EVT_ALL_NFC, osFlagsWaitAny, DISP_FRAME_INTERVAL_MS);
-
-      /* ˢ���¼�: ����������Ա����, ����������? */
-      /* osThreadFlagsWait ��ʱʱ MSB=1, ���ų���ʱ���� */
-      if (!(flags & 0x80000000U) && (flags & DISP_EVT_ALL_NFC)) {
-        pCard = DISP_GetCardInfo();
-        if (pCard->event == DISP_EVT_CARD_ADMIN) {
-          DISP_SetState(DISP_STATE_ADMIN_SET);   /* ����ֱ������ */
+      {
+        uint32_t nfcEvt = DISP_CheckNfcEvent(myQueue04Handle);   /* poll NFC queue */
+        if (nfcEvt != DISP_EVT_NONE) {
+          pCard = DISP_GetCardInfo();
+          if (pCard->event == DISP_EVT_CARD_ADMIN) {
+            DISP_SetState(DISP_STATE_ADMIN_SET);
+          } else {
+            DISP_SetState(DISP_STATE_RESULT);
+          }
+          stateEnterTick = osKernelGetTickCount();
         } else {
-          DISP_SetState(DISP_STATE_RESULT);      /* ��ͨ��������? */
+          osDelay(DISP_FRAME_INTERVAL_MS);   /* keep frame pacing */
         }
-        stateEnterTick = osKernelGetTickCount();
       }
 
       /* K5 ����: ����ʱ������ */
@@ -712,7 +712,7 @@ void StartTaskNFC(void *argument)
 
             if (nfcEvent != NFC_EVT_INVALID) {
               /* λͼ��ˢ��, ֪ͨ GUI ������ʾ */
-              DISP_NotifyCardEvent( DISP_EVT_CARD_VALID, cardID, 4,
+              DISP_SendNfcEvent(myQueue04Handle,  DISP_EVT_CARD_VALID, cardID, 4,
                                    cardData.cardId, cardData.sid, cardData.points,
                                    cardData.cardType, cardData.statusFlag,
                                    cardData.swipeDT.hour,
@@ -733,7 +733,7 @@ void StartTaskNFC(void *argument)
 
             if (nfcEvent != NFC_EVT_INVALID) {
               /* ֪ͨ GUI ��ʾд�����? */
-              DISP_NotifyCardEvent( DISP_EVT_CARD_VALID, cardID, 4,
+              DISP_SendNfcEvent(myQueue04Handle,  DISP_EVT_CARD_VALID, cardID, 4,
                                    cardData.cardId, cardData.sid, cardData.points,
                                    cardData.cardType, cardData.statusFlag,
                                    cardData.swipeDT.hour,
@@ -820,7 +820,7 @@ void StartTaskNFC(void *argument)
         NFC_UnlockReader();
 
         if (nfcEvent != NFC_EVT_INVALID) {
-          DISP_NotifyCardEvent(DISP_EVT_CARD_VALID, cardID, 4,
+          DISP_SendNfcEvent(myQueue04Handle, DISP_EVT_CARD_VALID, cardID, 4,
                                cardData.cardId, cardData.sid, cardData.points,
                                cardData.cardType, cardData.statusFlag,
                                cardData.swipeDT.hour,
@@ -850,7 +850,7 @@ void StartTaskNFC(void *argument)
         if (elapsed < CARD_DEDUP_TIMEOUT_MS) {
           /* 3s ��ͬһ�ſ�: �ظ�ˢ�� (�� WaitCardOff ����) */
           MIDI_Beep(1, 50);
-          DISP_NotifyCardEvent(DISP_EVT_CARD_DUP, cardID, 4,
+          DISP_SendNfcEvent(myQueue04Handle, DISP_EVT_CARD_DUP, cardID, 4,
                                0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0);
           while (!NFC_LockReader()) { osDelay(50); }
           NFC_WaitCardOff();
@@ -1105,7 +1105,7 @@ void StartTaskNFC(void *argument)
     }
 
     /* ===== ֪ͨ GUI ===== */
-    DISP_NotifyCardEvent(dispEvent, cardID, 4,
+    DISP_SendNfcEvent(myQueue04Handle, dispEvent, cardID, 4,
                          cardData.cardId, cardData.sid, cardData.points,
                          cardData.cardType, cardData.statusFlag,
                          cardData.swipeDT.hour,
