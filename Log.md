@@ -53,3 +53,5 @@
 - 目的：把死队列 `myQueue04` 接线，让 guiTask 成为共享缓存的唯一写者，彻底消除 `s_cardInfo` / `s_cardBitmap` 的共享内存竞态
 - 实现：nfcTask 5 处 `DISP_NotifyCardEvent` → `DISP_SendNfcEvent(myQueue04Handle, ...)`；guiTask CLOCK 态改为 `DISP_CheckNfcEvent(myQueue04Handle)` 非阻塞轮询队列（无事件时 `osDelay(DISP_FRAME_INTERVAL_MS)` 保持帧节奏）；删除无用的 `uint32_t flags`
 - 收益：回收约 4KB FreeRTOS heap；消除无锁共享数据隐患；已编译通过 (NFCAttend.elf)
+- 修复竞态：新增 `s_producerBitmap` 生产缓冲（仅 nfcTask 写），`s_cardBitmap` 变为仅 guiTask 写，`DISP_GetBitmapBuf` 返回生产缓冲，避免两个任务同时写同一位图缓冲
+- 修复：`osMessageQueuePut` 队列满时计数 `s_nfcQueueDropCnt` 并打印，避免丢卡无声；删除 `DISP_CheckNfcEvent` 中多余的自我置标志 `osThreadFlagsSet`

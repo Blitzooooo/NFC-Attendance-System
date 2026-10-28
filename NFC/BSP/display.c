@@ -36,7 +36,9 @@ static const char *s_weekdays_cn[] = {
 
 /** 刷卡信息共享缓冲 (nfcTask 写入 -> guiTask 读取) */
 static DispCardInfo_t   s_cardInfo;
-static DispCardBitmap_t s_cardBitmap;  /* 卡片位图缓存 */
+static DispCardBitmap_t s_cardBitmap;       /* 卡片位图缓存 (仅 guiTask 写) */
+static DispCardBitmap_t s_producerBitmap;   /* 位图生产缓冲 (仅 nfcTask 写) */
+static volatile uint32_t s_nfcQueueDropCnt; /* NFC 队列满丢弃计数 */
 static DispState_t      s_state = DISP_STATE_CLOCK;
 static DispAdminCfg_t   s_adminCfg = {1, 2};  /* 默认设备1, 出入口模式 */
 
@@ -1074,10 +1076,15 @@ void DISP_SendNfcEvent(osMessageQueueId_t queue,
     msg.info.recordStatus = recStatus;
     msg.info.durationSec  = durationSec;
 
-    /* 拷贝当前位图缓存 (nfcTask 已通过 NFC_ReadCard 填充) */
-    msg.bitmap = s_cardBitmap;
+    /* 拷贝生产缓冲 (nfcTask 已通过 NFC_ReadCard 填充) */
+    msg.bitmap = s_producerBitmap;
 
-    osMessageQueuePut(queue, &msg, 0, 0);
+    /* 非阻塞入队; 队列满时计数, 避免丢卡无声 */
+    if (osMessageQueuePut(queue, &msg, 0, 0) != osOK) {
+        s_nfcQueueDropCnt++;
+        printf("[NFC] queue full, drop event=%lu total=%lu\r\n",
+               (unsigned long)event, (unsigned long)s_nfcQueueDropCnt);
+    }
 }
 
 /** NFC 队列接收 — guiTask 每轮循环调用, 非阻塞 */
@@ -1093,16 +1100,12 @@ uint32_t DISP_CheckNfcEvent(osMessageQueueId_t queue)
     s_cardInfo   = msg.info;
     s_cardBitmap = msg.bitmap;
 
-    /* 复用原有标志位机制驱动状态机 */
-    if (guiTaskHandle != NULL) {
-        osThreadFlagsSet(guiTaskHandle, msg.info.event);
-    }
     return msg.info.event;
 }
 
 DispCardBitmap_t *DISP_GetBitmapBuf(void)
 {
-    return &s_cardBitmap;
+    return &s_producerBitmap;
 }
 
 void DISP_SetWeatherCache(const char *line)
