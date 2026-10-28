@@ -3,18 +3,18 @@
 
 #include"main.h"
 
-#define  SkipROM    0xCC  //Ìø¹ıROM
-#define  SearchROM  0xF0  //ËÑË÷ROM
-#define  ReadROM    0x33  //¶ÁROM
-#define  MatchROM   0x55  //Æ¥ÅäROM
-#define  AlarmROM   0xEC  //¸æ¾¯ROM
+#define  SkipROM    0xCC  //è·³è¿‡ROM
+#define  SearchROM  0xF0  //æœç´¢ROM
+#define  ReadROM    0x33  //è¯»ROM
+#define  MatchROM   0x55  //åŒ¹é…ROM
+#define  AlarmROM   0xEC  //å‘Šè­¦ROM
 
-#define  StartConvert    0x44  //¿ªÊ¼ÎÂ¶È×ª»»£¬ÔÚÎÂ¶È×ª»»ÆÚ¼ä×ÜÏßÉÏÊä³ö0£¬×ª»»½áÊøºóÊä³ö1
-#define  ReadScratchpad  0xBE  //¶ÁÔİ´æÆ÷µÄ9¸ö×Ö½Ú
-#define  WriteScratchpad 0x4E  //Ğ´Ôİ´æÆ÷µÄÎÂ¶È¸æ¾¯THºÍTL
-#define  CopyScratchpad  0x48  //½«Ôİ´æÆ÷µÄÎÂ¶È¸æ¾¯¸´ÖÆµ½EEPROM£¬ÔÚ¸´ÖÆÆÚ¼ä×ÜÏßÉÏÊä³ö0£¬¸´ÖÆÍêºóÊä³ö1
-#define  RecallEEPROM    0xB8  //½«EEPROMµÄÎÂ¶È¸æ¾¯¸´ÖÆµ½Ôİ´æÆ÷ÖĞ£¬¸´ÖÆÆÚ¼äÊä³ö0£¬¸´ÖÆÍê³ÉºóÊä³ö1
-#define  ReadPower       0xB4  //¶ÁµçÔ´µÄ¹©µç·½Ê½£º0Îª¼ÄÉúµçÔ´¹©µç£»1ÎªÍâ²¿µçÔ´¹©µç
+#define  StartConvert    0x44  //å¼€å§‹æ¸©åº¦è½¬æ¢ï¼Œåœ¨æ¸©åº¦è½¬æ¢æœŸé—´æ€»çº¿ä¸Šè¾“å‡º0ï¼Œè½¬æ¢ç»“æŸåè¾“å‡º1
+#define  ReadScratchpad  0xBE  //è¯»æš‚å­˜å™¨çš„9ä¸ªå­—èŠ‚
+#define  WriteScratchpad 0x4E  //å†™æš‚å­˜å™¨çš„æ¸©åº¦å‘Šè­¦THå’ŒTL
+#define  CopyScratchpad  0x48  //å°†æš‚å­˜å™¨çš„æ¸©åº¦å‘Šè­¦å¤åˆ¶åˆ°EEPROMï¼Œåœ¨å¤åˆ¶æœŸé—´æ€»çº¿ä¸Šè¾“å‡º0ï¼Œå¤åˆ¶å®Œåè¾“å‡º1
+#define  RecallEEPROM    0xB8  //å°†EEPROMçš„æ¸©åº¦å‘Šè­¦å¤åˆ¶åˆ°æš‚å­˜å™¨ä¸­ï¼Œå¤åˆ¶æœŸé—´è¾“å‡º0ï¼Œå¤åˆ¶å®Œæˆåè¾“å‡º1
+#define  ReadPower       0xB4  //è¯»ç”µæºçš„ä¾›ç”µæ–¹å¼ï¼š0ä¸ºå¯„ç”Ÿç”µæºä¾›ç”µï¼›1ä¸ºå¤–éƒ¨ç”µæºä¾›ç”µ
 
 void ds18b20_init(void);
 float ds18b20_read(void);

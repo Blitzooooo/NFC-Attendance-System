@@ -21,7 +21,7 @@
 | `DISP_SetWeatherCache()` | 天气缓存 | 队列数据 | 中英混排宽度预计算 |
 | `DISP_SetTimeOffset/IsRtcCalibrated` | NTP 偏差 | — | OFS 机制 |
 | `DISP_EnterTimeSync/ExitTimeSync` | 时间同步锁 | — | 回写期间禁止刷卡/串口 |
-| `DISP_NotifyCardEvent()` | nfcTask→guiTask 事件 | 共享结构 | 任务标志 + 共享缓冲 |
+| `DISP_SendNfcEvent()/DISP_CheckNfcEvent()` | NFC 队列收发 | 消息队列 myQueue04 | 生产者/消费者分离，消除共享内存竞态 |
 
 ## 3. 状态机
 

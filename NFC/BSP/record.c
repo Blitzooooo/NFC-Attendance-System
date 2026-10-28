@@ -1,6 +1,6 @@
 /**
  * @file    record.c
- * @brief   ´ò¿¨¼ÇÂ¼´æ´¢Ä£¿éÊµÏÖ
+ * @brief   ï¿½ò¿¨¼ï¿½Â¼ï¿½æ´¢Ä£ï¿½ï¿½Êµï¿½ï¿½
  */
 
 #include "record.h"
@@ -10,13 +10,13 @@
 #include <string.h>
 #include <stddef.h>
 
-/* ====== Ä£¿éÄÚ²¿±äÁ¿ ====== */
+/* ====== Ä£ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½ ====== */
 
 static SysConfig_t    s_sysCfg;
 static RecordHeader_t s_recHead;
 static CardCache_t    s_cardCache[CARD_CACHE_SIZE];
 
-/* ¹ÜÀíÔ±ÅäÖÃÔËÐÐÊ±¸±±¾ (Óë display ¹²Ïí) */
+/* ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ display ï¿½ï¿½ï¿½ï¿½) */
 static uint16_t s_deviceId   = 1;
 static uint8_t  s_attendMode = 2;
 
@@ -36,9 +36,7 @@ uint16_t CRC16_Calc(const uint8_t *pData, uint16_t len)
     return crc;
 }
 
-/* ====== ÏµÍ³ÅäÖÃ ====== */
-
-void Config_Init(void) { }
+/* ====== ÏµÍ³ï¿½ï¿½ï¿½ï¿½ ====== */
 
 void Config_Load(void)
 {
@@ -53,7 +51,7 @@ void Config_Load(void)
             return;
         }
     }
-    /* ³¢ÊÔ±¸·Ý */
+    /* ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ */
     W25QXX_Read((uint8_t*)&cfg, CONFIG_BAK_ADDR, sizeof(cfg));
     if (cfg.magic == CONFIG_MAGIC) {
         uint16_t crc = CRC16_Calc((uint8_t*)&cfg, 14);
@@ -64,7 +62,7 @@ void Config_Load(void)
             return;
         }
     }
-    /* Ä¬ÈÏÖµ */
+    /* Ä¬ï¿½ï¿½Öµ */
     s_deviceId   = 1;
     s_attendMode = 2;
 }
@@ -91,7 +89,7 @@ void Config_SetAdmin(uint16_t deviceId, uint8_t attendMode)
 uint16_t Config_GetDeviceId(void)  { return s_deviceId; }
 uint8_t  Config_GetAttendMode(void) { return s_attendMode; }
 
-/* ====== Ë¢¿¨¼ÇÂ¼ ====== */
+/* ====== Ë¢ï¿½ï¿½ï¿½ï¿½Â¼ ====== */
 
 void Record_Init(void)
 {
@@ -200,7 +198,7 @@ void Record_List(uint32_t maxCount)
 void Record_MarkAllUploaded(void)
 {
     s_recHead.uploadOffset = s_recHead.totalCount;
-    /* »ØÐ´Í·²¿µ½ Flash */
+    /* ï¿½ï¿½Ð´Í·ï¿½ï¿½ï¿½ï¿½ Flash */
     W25QXX_Erase_Sector(RECHEAD_FLASH_ADDR / 4096);
     s_recHead.checksum = (uint16_t)(s_recHead.writeOffset ^ s_recHead.totalCount
                                     ^ s_recHead.uploadOffset);
@@ -248,7 +246,7 @@ void Record_FixAllTimeOffsets(int32_t deltaSecs)
     printf("[Record] Fixed %d records, OFS=%d\r\n", fixed, (int)deltaSecs);
 }
 
-/* ====== LRU »º´æ ====== */
+/* ====== LRU ï¿½ï¿½ï¿½ï¿½ ====== */
 
 uint8_t Cache_Find(uint32_t cardId, uint32_t *pEnterSecs)
 {
@@ -308,7 +306,7 @@ void Cache_Clear(void)
     memset(s_cardCache, 0, sizeof(s_cardCache));
 }
 
-/* ====== ºÚÃûµ¥¹ÜÀí ====== */
+/* ====== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ====== */
 
 static BlacklistData_t s_blacklist;
 
@@ -323,7 +321,7 @@ void Blacklist_Init(void)
             return;
         }
     }
-    /* ÎÞÓÐÐ§Êý¾ÝÔò³õÊ¼»¯Îª¿Õ */
+    /* ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½Îªï¿½ï¿½ */
     memset(&s_blacklist, 0, sizeof(s_blacklist));
     s_blacklist.magic = BLACKLIST_MAGIC;
 }
@@ -340,9 +338,9 @@ uint8_t Blacklist_Add(uint32_t uid)
 {
     uint16_t i;
     if (uid == 0) return 0;
-    /* ¼ì²éÊÇ·ñÒÑ´æÔÚ */
+    /* ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ñ´ï¿½ï¿½ï¿½ */
     for (i = 0; i < s_blacklist.count; i++) {
-        if (s_blacklist.uidList[i] == uid) return 1;  /* ÒÑ´æÔÚ */
+        if (s_blacklist.uidList[i] == uid) return 1;  /* ï¿½Ñ´ï¿½ï¿½ï¿½ */
     }
     if (s_blacklist.count >= MAX_BLACKLIST) return 0;
     s_blacklist.uidList[s_blacklist.count++] = uid;
@@ -355,13 +353,13 @@ uint8_t Blacklist_Remove(uint32_t uid)
     uint16_t i;
     for (i = 0; i < s_blacklist.count; i++) {
         if (s_blacklist.uidList[i] == uid) {
-            /* ÓÃ×îºóÒ»¸öÔªËØ¸²¸Çµ±Ç°, ¼õÉÙ count */
+            /* ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ôªï¿½Ø¸ï¿½ï¿½Çµï¿½Ç°, ï¿½ï¿½ï¿½ï¿½ count */
             s_blacklist.uidList[i] = s_blacklist.uidList[--s_blacklist.count];
             Blacklist_Save();
             return 1;
         }
     }
-    return 0;  /* Î´ÕÒµ½ */
+    return 0;  /* Î´ï¿½Òµï¿½ */
 }
 
 uint8_t Blacklist_IsBlocked(uint32_t uid)

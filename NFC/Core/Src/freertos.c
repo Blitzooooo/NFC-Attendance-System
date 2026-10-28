@@ -45,7 +45,7 @@
 #include <stdio.h>
 #include <string.h>
 
-/* ��֪���� API Key (����?��: https://www.seniverse.com) */
+/* 锟斤拷知锟斤拷锟斤拷 API Key (锟斤拷锟阶?锟斤拷: https://www.seniverse.com) */
 #define WEATHER_API_KEY  "SX5O_Nv09Ap1egenj"
 #define WEATHER_CITY     "hangzhou"
 #define WEATHER_LANG     "zh-Hans"
@@ -59,8 +59,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define HEARTBEAT_INTERVAL_MS      5000U    /* �������ͼ��? (ms) */
-#define WEATHER_UPDATE_INTERVAL_MS 3600000U /* ����ˢ�¼��? (ms, 1h) */
+#define HEARTBEAT_INTERVAL_MS      5000U    /* 锟斤拷锟斤拷锟斤拷锟酵硷拷锟? (ms) */
+#define WEATHER_UPDATE_INTERVAL_MS 3600000U /* 锟斤拷锟斤拷刷锟铰硷拷锟? (ms, 1h) */
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -73,7 +73,7 @@
 UartDrv_t g_uart1Drv;
 UartDrv_t g_uart6Drv;
 
-/* LED ����: L1~L7 (PE8~PE14), ������, �͵�ƽ���� */
+/* LED 锟斤拷锟斤拷: L1~L7 (PE8~PE14), 锟斤拷锟斤拷锟斤拷, 锟酵碉拷平锟斤拷锟斤拷 */
 static const Led_Config_t s_ledConfigs[] = {
     {GPIOE, L1_Pin, LED_ON_LOW},
     {GPIOE, L2_Pin, LED_ON_LOW},
@@ -84,7 +84,7 @@ static const Led_Config_t s_ledConfigs[] = {
     {GPIOE, L7_Pin, LED_ON_LOW},
 };
 
-/* ��������: K1~K4 ��������(�͵�ƽ��Ч), K5~K6 ��������(�ߵ�ƽ��Ч) */
+/* 锟斤拷锟斤拷锟斤拷锟斤拷: K1~K4 锟斤拷锟斤拷锟斤拷锟斤拷(锟酵碉拷平锟斤拷效), K5~K6 锟斤拷锟斤拷锟斤拷锟斤拷(锟竭碉拷平锟斤拷效) */
 static const Key_Config_t s_keyConfigs[] = {
     {GPIOE, K1_Pin, KEY_ACTIVE_LOW},
     {GPIOE, K2_Pin, KEY_ACTIVE_LOW},
@@ -94,13 +94,13 @@ static const Key_Config_t s_keyConfigs[] = {
     {GPIOE, K6_Pin, KEY_ACTIVE_HIGH},
 };
 
-/* USART1 ����˫���� (�ص�д�� �� uartTask ����, �ٽ�������) */
+/* USART1 锟斤拷锟斤拷双锟斤拷锟斤拷 (锟截碉拷写锟斤拷 锟斤拷 uartTask 锟斤拷锟斤拷, 锟劫斤拷锟斤拷锟斤拷锟斤拷) */
 static uint8_t  s_uart1_rx_buf[512];
 static uint8_t  s_uart1_proc_buf[512];
 static volatile uint16_t s_uart1_rx_len = 0;
 static volatile uint8_t  s_uart1_data_ready = 0;
 
-/* USART1 ���ջص����� */
+/* USART1 锟斤拷锟秸回碉拷锟斤拷锟斤拷 */
 static void UART1_RxCallback(UartDrv_RxData_t *pData, void *pUserCtx);
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
@@ -246,18 +246,18 @@ void StartDefaultTask(void *argument)
   /* Apply I2C clock config to match DISP_I2C_TARGET_HZ */
   DISP_ApplyI2CConfig();
 
-  /* --- BSP ������ʼ�� --- */
+  /* --- BSP 锟斤拷锟斤拷锟斤拷始锟斤拷 --- */
 
-  /* 1. OLED + GUI ���ȳ�ʼ��, �Ա���ʾ��ʼ������ */
+  /* 1. OLED + GUI 锟斤拷锟饺筹拷始锟斤拷, 锟皆憋拷锟斤拷示锟斤拷始锟斤拷锟斤拷锟斤拷 */
   GUI_Init();
   GUI_Clear();
   GUI_Update();
 
-  /* 2. DS18B20 �¶ȴ����� (�ڲ����� delay_us_init) */
+  /* 2. DS18B20 锟铰度达拷锟斤拷锟斤拷 (锟节诧拷锟斤拷锟斤拷 delay_us_init) */
   DISP_ShowInitMsg("Init DS18B20...");
   ds18b20_init();
 
-  /* 3. �������� (USART1 �� �������?, USART6 �� ESP01S) */
+  /* 3. 锟斤拷锟斤拷锟斤拷锟斤拷 (USART1 锟斤拷 锟斤拷锟斤拷锟斤拷锟?, USART6 锟斤拷 ESP01S) */
   UartDrv_Init(&g_uart1Drv, &huart1);
   UartDrv_SetDebugPort(&g_uart1Drv);
   UartDrv_RegisterRxCb(&g_uart1Drv, UART1_RxCallback, NULL);
@@ -265,35 +265,35 @@ void StartDefaultTask(void *argument)
   UartDrv_Init(&g_uart6Drv, &huart6);
   UartDrv_StartRecv(&g_uart6Drv);
 
-  /* 4. LED ���� (L1~L7) */
+  /* 4. LED 锟斤拷锟斤拷 (L1~L7) */
   LED_Init(s_ledConfigs, GUI_COUNTOF(s_ledConfigs));
 
-  /* 5. �������� (K1~K6) */
+  /* 5. 锟斤拷锟斤拷锟斤拷锟斤拷 (K1~K6) */
   Key_Init(s_keyConfigs, GUI_COUNTOF(s_keyConfigs));
 
   DISP_ShowInitMsg("Init MIDI...");
-  /* 6. MIDI ������ (TIM3 CH1 �� PB4) */
+  /* 6. MIDI 锟斤拷锟斤拷锟斤拷 (TIM3 CH1 锟斤拷 PB4) */
   MIDI_Init(&htim3, TIM_CHANNEL_1);
 
   DISP_ShowInitMsg("Init Flash...");
   /* 7. W25Qxx SPI Flash (SPI1) */
   W25QXX_Init();
-  /* ����ϵͳ���� + ��ʼ����¼�� + ������ */
+  /* 锟斤拷锟斤拷系统锟斤拷锟斤拷 + 锟斤拷始锟斤拷锟斤拷录锟斤拷 + 锟斤拷锟斤拷锟斤拷 */
   Config_Load();
   Record_Init();
   Blacklist_Init();
 
   DISP_ShowInitMsg("Init NFC...");
-  /* 8. RC522 NFC (GPIO ģ�� SPI, �ڲ����� delay_us_init �ݵȰ�ȫ) */
+  /* 8. RC522 NFC (GPIO 模锟斤拷 SPI, 锟节诧拷锟斤拷锟斤拷 delay_us_init 锟捷等帮拷全) */
   RC522_Platform_Init();
-  RC522_ConfigISOType('A');  /* ���� ISO14443A ���������� */
+  RC522_ConfigISOType('A');  /* 锟斤拷锟斤拷 ISO14443A 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷 */
 
   DISP_ShowInitMsg("Init WiFi...");
-  /* 9. ESP01S WiFi ģ�� (�ڲ��Զ�ע�� UartDrv �ص�) */
+  /* 9. ESP01S WiFi 模锟斤拷 (锟节诧拷锟皆讹拷注锟斤拷 UartDrv 锟截碉拷) */
   ESP01S_Init(&g_uart6Drv);
 
   DISP_ShowInitMsg("Init RTC...");
-  /* 10. RTC �״��ϵ��ʼ����? MX_RTC_Init() ͨ�����ݼĴ����ж����? */
+  /* 10. RTC 锟阶达拷锟较碉拷锟绞硷拷锟斤拷锟? MX_RTC_Init() 通锟斤拷锟斤拷锟捷寄达拷锟斤拷锟叫讹拷锟斤拷锟? */
 
   DISP_ShowInitMsg("Init Done");
   osDelay(300);
@@ -301,24 +301,24 @@ void StartDefaultTask(void *argument)
   /* --- LOGO 2s --- */
   DISP_ShowLogo();
 
-  /* --- ��Ϣҳ 2s --- */
+  /* --- 锟斤拷息页 2s --- */
   DISP_ShowInfoPage();
 
-  /* ֪ͨ guiTask �� networkTask �������? */
+  /* 通知 guiTask 锟斤拷 networkTask 锟斤拷锟斤拷锟斤拷锟? */
   osThreadFlagsSet(guiTaskHandle, 0x01);
   osThreadFlagsSet(otherTaskHandle, 0x01);
 
   /* Infinite loop */
   for(;;)
   {
-    DISP_UpdateTempCache();   /* �첽�����¶Ȼ���, guiTask ���������� OneWire */
+    DISP_UpdateTempCache();   /* 锟届步锟斤拷锟斤拷锟铰度伙拷锟斤拷, guiTask 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷 OneWire */
 
-    /* OLED ���������? (������ guiTask, ȷ����������ʱҲ�ָܻ�) */
+    /* OLED 锟斤拷锟斤拷锟斤拷锟斤拷锟? (锟斤拷锟斤拷锟斤拷 guiTask, 确锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷时也锟杰恢革拷) */
     if (DISP_CheckStuck()) {
       DISP_ResetOLED();
     }
 
-    /* ��������: ÿ 5s ����λ���ϱ��豸״̬ */
+    /* 锟斤拷锟斤拷锟斤拷锟斤拷: 每 5s 锟斤拷锟斤拷位锟斤拷锟较憋拷锟借备状态 */
     {
       static uint32_t s_lastHeartbeat = 0;
       uint32_t now = osKernelGetTickCount();
@@ -358,23 +358,23 @@ void StartTaskGui(void *argument)
 
   DISP_Init();
 
-  /* �ȴ� defaultTask �����������? */
+  /* 锟饺达拷 defaultTask 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟? */
   osThreadFlagsWait(0x01, osFlagsWaitAll, osWaitForever);
   DISP_SetState(DISP_STATE_CLOCK);
 
   /* Infinite loop */
   for (;;)
   {
-    DISP_FeedWatchdog();  /* ÿ��ѭ��ι��, defaultTask �����⿨������λ */
+    DISP_FeedWatchdog();  /* 每锟斤拷循锟斤拷喂锟斤拷, defaultTask 锟斤拷锟斤拷锟解卡锟斤拷锟斤拷锟斤拷位 */
     DispState_t state = DISP_GetState();
     now = osKernelGetTickCount();
 
     switch (state) {
 
-    /* ===== ʱ�Ӵ��� ===== */
+    /* ===== 时锟接达拷锟斤拷 ===== */
     case DISP_STATE_CLOCK:
       {
-        /* ������������������ (���� networkTask �Ķ�����Ϣ) */
+        /* 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷 (锟斤拷锟斤拷 networkTask 锟侥讹拷锟斤拷锟斤拷息) */
         char weatherMsg[DISP_WEATHER_LINE_LEN];
         if (osMessageQueueGet(myQueue01Handle, weatherMsg, NULL, 0) == osOK) {
           DISP_SetWeatherCache(weatherMsg);
@@ -396,38 +396,36 @@ void StartTaskGui(void *argument)
         }
       }
 
-      /* K5 ����: ����ʱ������ */
+      /* K5 锟斤拷锟斤拷: 锟斤拷锟斤拷时锟斤拷锟斤拷锟斤拷 */
       if (Key_IsLongPressed(4)) {
         DISP_SetState(DISP_STATE_TIME_SET);
         stateEnterTick = osKernelGetTickCount();
       }
       break;
 
-    /* ===== ˢ�����? ===== */
+    /* ===== 刷锟斤拷锟斤拷锟? ===== */
     case DISP_STATE_RESULT:
       pCard = DISP_GetCardInfo();
       {
         int countdown = 0;
-        int timeoutMs = 3000;
         if (pCard->event == DISP_EVT_CARD_DUP) {
-          timeoutMs = 2000;
           int elapsed = (int)(now - stateEnterTick);
           countdown = (elapsed < 2000) ? (2 - elapsed / 1000) : 0;
         }
         DISP_ShowCardResult(pCard, countdown);
       }
 
-      /* �Ȱ����ͳ�ʱ */
+      /* 锟饺帮拷锟斤拷锟酵筹拷时 */
       osThreadFlagsWait(DISP_EVT_KEY_PRESSED, osFlagsWaitAny, DISP_FRAME_INTERVAL_MS);
 
-      /* ���ⰴ�� �� ����ʱ�� */
+      /* 锟斤拷锟解按锟斤拷 锟斤拷 锟斤拷锟斤拷时锟斤拷 */
       if (Key_AnyPressed()) {
         Key_ClearAllEvents();
         DISP_SetState(DISP_STATE_CLOCK);
         break;
       }
 
-      /* ��ʱ �� ����ʱ�� (�ظ�ˢ�� 2s, ���� 3s) */
+      /* 锟斤拷时 锟斤拷 锟斤拷锟斤拷时锟斤拷 (锟截革拷刷锟斤拷 2s, 锟斤拷锟斤拷 3s) */
       {
         int timeoutMs = (pCard->event == DISP_EVT_CARD_DUP) ? 2000 : 3000;
         if (now - stateEnterTick >= (uint32_t)timeoutMs) {
@@ -436,11 +434,11 @@ void StartTaskGui(void *argument)
       }
       break;
 
-    /* ===== ʱ������ ===== */
+    /* ===== 时锟斤拷锟斤拷锟斤拷 ===== */
     case DISP_STATE_TIME_SET:
       DISP_ShowTimeSet();
 
-      /* ������ */
+      /* 锟斤拷锟斤拷锟斤拷 */
       for (i = 0; i < 6; i++) {
         if (Key_IsShortPressed(i))
           DISP_TimeSetKey(i, 1, 0);
@@ -448,21 +446,21 @@ void StartTaskGui(void *argument)
           DISP_TimeSetKey(i, 0, 1);
       }
 
-      /* ��һ֡����Ƿ����˳�? */
+      /* 锟斤拷一帧锟斤拷锟斤拷欠锟斤拷锟斤拷顺锟? */
       osThreadFlagsWait(DISP_EVT_KEY_PRESSED, osFlagsWaitAny, DISP_FRAME_INTERVAL_MS);
       osThreadFlagsClear(DISP_EVT_KEY_PRESSED);
 
-      /* 60 �볬ʱ�Զ��˳� */
+      /* 60 锟诫超时锟皆讹拷锟剿筹拷 */
       if (now - stateEnterTick >= 60000) {
         DISP_SetState(DISP_STATE_CLOCK);
       }
       break;
 
-    /* ===== ����Ա���� ===== */
+    /* ===== 锟斤拷锟斤拷员锟斤拷锟斤拷 ===== */
     case DISP_STATE_ADMIN_SET:
       DISP_ShowAdminSet();
 
-      /* ������ */
+      /* 锟斤拷锟斤拷锟斤拷 */
       for (i = 0; i < 6; i++) {
         if (Key_IsShortPressed(i))
           DISP_AdminSetKey(i, 1, 0);
@@ -470,11 +468,11 @@ void StartTaskGui(void *argument)
           DISP_AdminSetKey(i, 0, 1);
       }
 
-      /* ��һ֡����Ƿ����˳�? */
+      /* 锟斤拷一帧锟斤拷锟斤拷欠锟斤拷锟斤拷顺锟? */
       osThreadFlagsWait(DISP_EVT_KEY_PRESSED, osFlagsWaitAny, DISP_FRAME_INTERVAL_MS);
       osThreadFlagsClear(DISP_EVT_KEY_PRESSED);
 
-      /* 120 �볬ʱ�Զ��˳� */
+      /* 120 锟诫超时锟皆讹拷锟剿筹拷 */
       if (now - stateEnterTick >= 120000) {
         DISP_SetState(DISP_STATE_CLOCK);
       }
@@ -497,7 +495,7 @@ void StartTaskKey(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    Key_Scan();         /* ����ɨ��, ��ÿ 10ms ����һ�� */
+    Key_Scan();         /* 锟斤拷锟斤拷扫锟斤拷, 锟斤拷每 10ms 锟斤拷锟斤拷一锟斤拷 */
     osDelay(10);
   }
   /* USER CODE END StartTaskKey */
@@ -520,7 +518,7 @@ void StartTaskUart(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    /* ���? USART1 �Ƿ��������� (˫����: �ص�д�� �� �ٽ������� �� ����) */
+    /* 锟斤拷锟? USART1 锟角凤拷锟斤拷锟斤拷锟斤拷锟斤拷 (双锟斤拷锟斤拷: 锟截碉拷写锟斤拷 锟斤拷 锟劫斤拷锟斤拷锟斤拷锟斤拷 锟斤拷 锟斤拷锟斤拷) */
     if (s_uart1_data_ready) {
       uint16_t len;
       taskENTER_CRITICAL();
@@ -530,21 +528,21 @@ void StartTaskUart(void *argument)
       s_uart1_data_ready = 0;
       taskEXIT_CRITICAL();
 
-      /* ��������׷�ӵ��л��� (��ʱ�ص���ͬʱд�� s_uart1_rx_buf) */
+      /* 锟斤拷锟斤拷锟斤拷锟斤拷追锟接碉拷锟叫伙拷锟斤拷 (锟斤拷时锟截碉拷锟斤拷同时写锟斤拷 s_uart1_rx_buf) */
       for (uint16_t i = 0; i < len && lineLen < (int)sizeof(lineBuf) - 1; i++) {
         char ch = (char)s_uart1_proc_buf[i];
         lineBuf[lineLen++] = ch;
-        /* �������� �� ִ������ */
+        /* 锟斤拷锟斤拷锟斤拷锟斤拷 锟斤拷 执锟斤拷锟斤拷锟斤拷 */
         if (ch == '\n' || lineLen >= (int)sizeof(lineBuf) - 1) {
           lineBuf[lineLen] = '\0';
-          /* ʱ��ͬ���ڼ�ܾ���������? */
+          /* 时锟斤拷同锟斤拷锟节硷拷芫锟斤拷锟斤拷锟斤拷锟斤拷锟? */
           if (DISP_IsTimeSyncBusy()) {
             snprintf(respBuf, sizeof(respBuf), "ERR:SYNC\r\n");
           } else {
             NFC_ProcessCommand(lineBuf, respBuf, sizeof(respBuf));
           }
           UartDrv_SendStr(&g_uart1Drv, respBuf);
-          NFC_FlushCmdNotify();  /* �ȷ���Ӧ��֪ͨ nfcTask, ��֤�����������? */
+          NFC_FlushCmdNotify();  /* 锟饺凤拷锟斤拷应锟斤拷通知 nfcTask, 锟斤拷证锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟? */
           lineLen = 0;
         }
       }
@@ -561,7 +559,7 @@ void StartTaskUart(void *argument)
 * @retval None
 */
 /* USER CODE END Header_StartTaskOther */
-/* ������ѯ��������: ������֪���� API ��������ʾ���� */
+/* 天气查询辅助函数: 调用心知天气 API 并更新显示缓存 */
 static void UpdateWeather(void)
 {
     char city[32]    = {0};
@@ -591,10 +589,10 @@ void StartTaskOther(void *argument)
 {
   /* USER CODE BEGIN StartTaskOther */
 
-  /* �ȴ� defaultTask ���Ӳ����ʼ�� */
+  /* 等待 defaultTask 完成硬件初始化 */
   osThreadFlagsWait(0x01, osFlagsWaitAll, osWaitForever);
 
-  /* ===== �״� WiFi ���� + NTP ��ʱ + ���� ===== */
+  /* ===== 首次 WiFi 联网 + NTP 授时 + 天气 ===== */
   {
     int espRet = ESP01S_Start();
 
@@ -621,19 +619,19 @@ void StartTaskOther(void *argument)
     }
   }
 
-  /* ===== �״�������ѯ ===== */
+  /* ===== 首次天气查询 ===== */
   {
     UpdateWeather();
   }
 
-  /* ===== ��ѭ��: �������� + ��ʱ����ˢ�� ===== */
+  /* ===== 主循环: 断网重连 + 定时天气刷新 ===== */
   for(;;)
   {
     static uint32_t s_lastWeatherUpdate = 0;
     static uint32_t s_lastReconnectTry  = 0;
     uint32_t nowTick = osKernelGetTickCount();
 
-    /* --- �����Զ����� (ÿ 120s) --- */
+    /* --- 断网自动重连 (每 120s) --- */
     if (!ESP01S_IsWiFiConnected() && (nowTick - s_lastReconnectTry >= 120000U)) {
       s_lastReconnectTry = nowTick;
       printf("[ESP01S] WiFi lost, retry...\r\n");
@@ -650,7 +648,7 @@ void StartTaskOther(void *argument)
       }
     }
 
-    /* --- ÿ 1h ˢ������ --- */
+    /* --- 每 1h 刷新天气 --- */
     if (ESP01S_IsWiFiConnected() && (nowTick - s_lastWeatherUpdate >= WEATHER_UPDATE_INTERVAL_MS)) {
       s_lastWeatherUpdate = nowTick;
       UpdateWeather();
@@ -680,38 +678,38 @@ void StartTaskNFC(void *argument)
   int            missCount      = 0;
   uint32_t       dispEvent;
 
-  #define CARD_MISS_THRESHOLD    2     /* ���� 2 ��δ���? �� ���뿨 (2��200ms=400ms) */
-  #define CARD_SCAN_INTERVAL_MS  200   /* Ѱ�����? */
-  #define CARD_DEDUP_TIMEOUT_MS  3000  /* ���ظ���ʱ, �� OLED ����? 3s ͬ�� */
-  #define CARD_STABLE_DELAY_MS   300   /* ��⵽�����ȶ��ӳ�?, ȷ����Ƭ��ȫ������Ƶ�� */
+  #define CARD_MISS_THRESHOLD    2     /* 锟斤拷锟斤拷 2 锟斤拷未锟斤拷獾? 锟斤拷 锟斤拷锟诫卡 (2锟斤拷200ms=400ms) */
+  #define CARD_SCAN_INTERVAL_MS  200   /* 寻锟斤拷锟斤拷锟? */
+  #define CARD_DEDUP_TIMEOUT_MS  3000  /* 锟斤拷锟截革拷锟斤拷时, 锟斤拷 OLED 锟斤拷锟揭? 3s 同锟斤拷 */
+  #define CARD_STABLE_DELAY_MS   300   /* 锟斤拷獾斤拷锟斤拷锟斤拷榷锟斤拷映锟?, 确锟斤拷锟斤拷片锟斤拷全锟斤拷锟斤拷锟斤拷频锟斤拷 */
 
   /* Infinite loop */
   for (;;)
   {
-    /* ʱ��ͬ���ڼ���ͣˢ�� */
+    /* 时锟斤拷同锟斤拷锟节硷拷锟斤拷停刷锟斤拷 */
     if (DISP_IsTimeSyncBusy()) {
       osDelay(CARD_SCAN_INTERVAL_MS);
       continue;
     }
 
-    /* ===== �п�: �ȴ���λ������ + �����Լ����? (������) ===== */
+    /* ===== 锟叫匡拷: 锟饺达拷锟斤拷位锟斤拷锟斤拷锟斤拷 + 锟斤拷锟斤拷锟皆硷拷锟斤拷肟? (锟斤拷锟斤拷锟斤拷) ===== */
     if (cardPresent) {
-      /* ��λ���Ƿ������һ������? (����/����/����)? */
+      /* 锟斤拷位锟斤拷锟角凤拷锟斤拷锟斤拷锟揭伙拷锟斤拷锟斤拷锟? (锟斤拷锟斤拷/锟斤拷锟斤拷/锟斤拷锟斤拷)? */
       if (NFC_IsCmdDone()) {
         NFC_ClearCmdDone();
 
-        /* ����Ƿ����?ȫ���ض� (UPDATEIMG ��λͼ�ѱ�) */
+        /* 锟斤拷锟斤拷欠锟斤拷锟揭?全锟斤拷锟截讹拷 (UPDATEIMG 锟斤拷位图锟窖憋拷) */
         if (NFC_IsFullRereadNeeded()) {
           NFC_ClearFullReread();
 
-          /* ȫ���ض�: ��ͼ������, ˢ��λͼ���� */
+          /* 全锟斤拷锟截讹拷: 锟斤拷图锟斤拷锟斤拷锟斤拷, 刷锟斤拷位图锟斤拷锟斤拷 */
           if (!NFC_IsReaderLocked()) {
             while (!NFC_LockReader()) { osDelay(10); }
             nfcEvent = NFC_ReadCard(cardID, &cardData);
             NFC_UnlockReader();
 
             if (nfcEvent != NFC_EVT_INVALID) {
-              /* λͼ��ˢ��, ֪ͨ GUI ������ʾ */
+              /* 位图锟斤拷刷锟斤拷, 通知 GUI 锟斤拷锟斤拷锟斤拷示 */
               DISP_SendNfcEvent(myQueue04Handle,  DISP_EVT_CARD_VALID, cardID, 4,
                                    cardData.cardId, cardData.sid, cardData.points,
                                    cardData.cardType, cardData.statusFlag,
@@ -720,19 +718,19 @@ void StartTaskNFC(void *argument)
                                    cardData.swipeDT.second,
                                    0, 0, 0);
             }
-            /* �ó� CPU �� guiTask ˢ�� OLED */
+            /* 锟矫筹拷 CPU 锟斤拷 guiTask 刷锟斤拷 OLED */
             osDelay(50);
             NFC_Recover();
           }
         } else {
-          /* �����ض�: ���� Block1 �˻�ͷ (λͼδ��) */
+          /* 锟斤拷锟斤拷锟截讹拷: 锟斤拷锟斤拷 Block1 锟剿伙拷头 (位图未锟斤拷) */
           if (!NFC_IsReaderLocked()) {
             while (!NFC_LockReader()) { osDelay(10); }
             nfcEvent = NFC_ReadCardHeader(cardID, &cardData);
             NFC_UnlockReader();
 
             if (nfcEvent != NFC_EVT_INVALID) {
-              /* ֪ͨ GUI ��ʾд�����? */
+              /* 通知 GUI 锟斤拷示写锟斤拷锟斤拷锟? */
               DISP_SendNfcEvent(myQueue04Handle,  DISP_EVT_CARD_VALID, cardID, 4,
                                    cardData.cardId, cardData.sid, cardData.points,
                                    cardData.cardType, cardData.statusFlag,
@@ -744,15 +742,15 @@ void StartTaskNFC(void *argument)
             osDelay(50);
           }
         }
-        /* �Ѵ����� CmdDone, ��������������Ѱ��, �� GUI ��ʱ����Ⱦ */
+        /* 锟窖达拷锟斤拷锟斤拷 CmdDone, 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷寻锟斤拷, 锟斤拷 GUI 锟斤拷时锟斤拷锟斤拷染 */
         osDelay(50);
         continue;
       }
 
-      /* �����Լ��?�Ƿ��� (������: ���� 3 ��ʧ�ܲ����뿨) */
+      /* 锟斤拷锟斤拷锟皆硷拷饪?锟角凤拷锟斤拷 (锟斤拷锟斤拷锟斤拷: 锟斤拷锟斤拷 3 锟斤拷失锟杰诧拷锟斤拷锟诫卡) */
       if (NFC_IsReaderLocked()) {
         osDelay(CARD_SCAN_INTERVAL_MS);
-        continue;  /* uartTask ���ڲ���, �������ò� */
+        continue;  /* uartTask 锟斤拷锟节诧拷锟斤拷, 锟斤拷锟斤拷锟斤拷锟矫诧拷 */
       }
       if (!NFC_LockReader()) {
         osDelay(100);
@@ -780,40 +778,40 @@ void StartTaskNFC(void *argument)
       continue;
     }
 
-    /* ===== �޿�: ����Ѱ�� ===== */
+    /* ===== 锟睫匡拷: 锟斤拷锟斤拷寻锟斤拷 ===== */
     {
       char status;
-      /* �����λ�����ڲ���?, ֱ������������ */
+      /* 锟斤拷锟斤拷锟轿伙拷锟斤拷锟斤拷诓锟斤拷锟?, 直锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷 */
       if (NFC_IsReaderLocked()) {
         osDelay(CARD_SCAN_INTERVAL_MS);
         continue;
       }
-      /* ��������������, ����λ��ռ�������������� */
+      /* 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷, 锟斤拷锟斤拷位锟斤拷占锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷 */
       if (!NFC_LockReader()) {
         osDelay(CARD_SCAN_INTERVAL_MS);
         continue;
       }
       status = NFC_ScanCard(cardID);
-      NFC_UnlockReader();  /* Ѱ����������ͷ���? */
+      NFC_UnlockReader();  /* 寻锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷头锟斤拷锟? */
       if (status != RC522_OK) {
         osDelay(CARD_SCAN_INTERVAL_MS);
         continue;
       }
     }
 
-    /* �����?: ����Ƿ��?�մ�������?һ�ſ� (��λ������������) */
+    /* 锟斤拷锟斤拷獾?: 锟斤拷锟斤拷欠锟轿?锟秸达拷锟斤拷锟斤拷锟酵?一锟脚匡拷 (锟斤拷位锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷) */
     {
       uint32_t uid32 = ((uint32_t)cardID[0] << 24) |
                        ((uint32_t)cardID[1] << 16) |
                        ((uint32_t)cardID[2] << 8)  |
                         (uint32_t)cardID[3];
       if (uid32 == lastUID && lastUID != 0) {
-        /* ͬһ�ſ�����, ����ͷ(��ˢ��λͼ, ���⸲�� GUI ������ʾ��ͼ��) */
+        /* 同一锟脚匡拷锟斤拷锟斤拷, 锟斤拷锟斤拷头(锟斤拷刷锟斤拷位图, 锟斤拷锟解覆锟斤拷 GUI 锟斤拷锟斤拷锟斤拷示锟斤拷图锟斤拷) */
         cardPresent = 1;
         missCount   = 0;
         LED_On(0);
 
-        /* �ȶ��ӳٲ�����; while ѭ���Զ��ȴ���λ���ͷ��� */
+        /* 锟饺讹拷锟接迟诧拷锟斤拷锟斤拷; while 循锟斤拷锟皆讹拷锟饺达拷锟斤拷位锟斤拷锟酵凤拷锟斤拷 */
         osDelay(CARD_STABLE_DELAY_MS);
         while (!NFC_LockReader()) { osDelay(10); }
         nfcEvent = NFC_ReadCardHeader(cardID, &cardData);
@@ -834,12 +832,12 @@ void StartTaskNFC(void *argument)
       }
     }
 
-    /* �¿��״�ˢ��: �������� */
+    /* 锟铰匡拷锟阶达拷刷锟斤拷: 锟斤拷锟斤拷锟斤拷锟斤拷 */
     cardPresent = 1;
     missCount   = 0;
     LED_On(0);
 
-    /* ===== ȥ��: ͬһ�ſ��ڽ��ҳ��ʾ�ڼ�? (3s) �ڲ��ظ����� ===== */
+    /* ===== 去锟斤拷: 同一锟脚匡拷锟节斤拷锟揭筹拷锟绞撅拷诩锟? (3s) 锟节诧拷锟截革拷锟斤拷锟斤拷 ===== */
     {
       uint32_t uid32 = ((uint32_t)cardID[0] << 24) |
                        ((uint32_t)cardID[1] << 16) |
@@ -848,7 +846,7 @@ void StartTaskNFC(void *argument)
       if (uid32 == lastUID && lastUID != 0) {
         uint32_t elapsed = osKernelGetTickCount() - lastNotifyTick;
         if (elapsed < CARD_DEDUP_TIMEOUT_MS) {
-          /* 3s ��ͬһ�ſ�: �ظ�ˢ�� (�� WaitCardOff ����) */
+          /* 3s 锟斤拷同一锟脚匡拷: 锟截革拷刷锟斤拷 (锟斤拷 WaitCardOff 锟斤拷锟斤拷) */
           MIDI_Beep(1, 50);
           DISP_SendNfcEvent(myQueue04Handle, DISP_EVT_CARD_DUP, cardID, 4,
                                0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0);
@@ -860,29 +858,29 @@ void StartTaskNFC(void *argument)
           osDelay(200);
           continue;
         }
-        /* ��ʱ, �����ٴ�ˢ��, ������������ */
+        /* 锟斤拷时, 锟斤拷锟斤拷锟劫达拷刷锟斤拷, 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷 */
       }
       lastUID = uid32;
     }
 
-    /* Ѱ����: �ϸ������� */
+    /* 寻锟斤拷锟斤拷: 锟较革拷锟斤拷锟斤拷锟斤拷 */
     MIDI_Beep(6, 50);
 
-    /* �ȴ���Ƭ����Ƶ�����ȶ� (�������?) */
+    /* 锟饺达拷锟斤拷片锟斤拷锟斤拷频锟斤拷锟斤拷锟饺讹拷 (锟斤拷锟斤拷锟斤拷锟?) */
     osDelay(CARD_STABLE_DELAY_MS);
 
-    /* ���¼�����ȡ���� (����λ��ռ���� while �Զ��ȴ�) */
+    /* 锟斤拷锟铰硷拷锟斤拷锟斤拷取锟斤拷锟斤拷 (锟斤拷锟斤拷位锟斤拷占锟斤拷锟斤拷 while 锟皆讹拷锟饺达拷) */
     while (!NFC_LockReader()) { osDelay(50); }
 
-    /* ===== ����: ��ȡ������ =====
-     * GUI ������ʾ���ʱ�����?, ���⸲��λͼ���»���/���� */
+    /* ===== 锟斤拷锟斤拷: 锟斤拷取锟斤拷锟斤拷锟斤拷 =====
+     * GUI 锟斤拷锟斤拷锟斤拷示锟斤拷锟绞憋拷锟斤拷锟酵?, 锟斤拷锟解覆锟斤拷位图锟斤拷锟铰伙拷锟斤拷/锟斤拷锟斤拷 */
     if (DISP_GetState() == DISP_STATE_RESULT) {
       nfcEvent = NFC_ReadCardHeader(cardID, &cardData);
     } else {
       nfcEvent = NFC_ReadCard(cardID, &cardData);
     }
 
-    /* �������?, �ͷ� RC522 �� */
+    /* 锟斤拷锟斤拷锟斤拷锟?, 锟酵凤拷 RC522 锟斤拷 */
     NFC_UnlockReader();
 
     {
@@ -892,10 +890,10 @@ void StartTaskNFC(void *argument)
       uint32_t uidNfc    = ((uint32_t)cardID[0] << 24) | ((uint32_t)cardID[1] << 16) |
                             ((uint32_t)cardID[2] << 8)  |  (uint32_t)cardID[3];
 
-    /* ===== ����: LED + ���� + �¼����� ===== */
+    /* ===== 锟斤拷锟斤拷: LED + 锟斤拷锟斤拷 + 锟铰硷拷锟斤拷锟斤拷 ===== */
     switch (nfcEvent) {
     case NFC_EVT_ADMIN:
-      /* ����Ա��: L1+L3 ��, �ϸ�������, ���������ж� */
+      /* 锟斤拷锟斤拷员锟斤拷: L1+L3 锟斤拷, 锟较革拷锟斤拷锟斤拷锟斤拷, 锟斤拷锟斤拷锟斤拷锟斤拷锟叫讹拷 */
       dispEvent = DISP_EVT_CARD_ADMIN;
       LED_On(2);
       MIDI_Beep(6, 150);
@@ -903,19 +901,19 @@ void StartTaskNFC(void *argument)
 
     case NFC_EVT_VALID:
     {
-      /* ===== ���������?: ��ʧ���ܾ� ===== */
+      /* ===== 锟斤拷锟斤拷锟斤拷锟斤拷锟?: 锟斤拷失锟斤拷锟杰撅拷 ===== */
       if (Blacklist_IsBlocked(uidNfc)) {
         printf("[BL] BLOCKED UID=%08lX, count=%u\r\n",
                (unsigned long)uidNfc, (unsigned)Blacklist_GetCount());
         dispEvent = DISP_EVT_CARD_INVALID;
-        cardData.statusFlag = 0xFF;  /* ����?��ʧ, OLED ��ʾ"�ѹ�ʧ" */
+        cardData.statusFlag = 0xFF;  /* 锟斤拷锟轿?锟斤拷失, OLED 锟斤拷示"锟窖癸拷失" */
         MIDI_Beep(3, 100);
         osDelay(100);
         MIDI_Beep(3, 100);
-        /* �ϱ���ʧ����¼ */
+        /* 锟较憋拷锟斤拷失锟斤拷锟斤拷录 */
         printf("REC:UID=%08lX|SID=%lu|LOST\r\n",
                (unsigned long)uidNfc, (unsigned long)cardData.sid);
-        /* дһ�� LOST ��¼�� Flash */
+        /* 写一锟斤拷 LOST 锟斤拷录锟斤拷 Flash */
         {
           SwipeRecord_t rec;
           BSP_RTC_DateTime_t nowDT;
@@ -939,9 +937,9 @@ void StartTaskNFC(void *argument)
         break;
       }
 
-      /* ===== ����Աģʽ�¾ܾ���ͨ�� ===== */
+      /* ===== 锟斤拷锟斤拷员模式锟铰拒撅拷锟斤拷通锟斤拷 ===== */
       if (DISP_GetState() == DISP_STATE_ADMIN_SET) {
-        /* ����������ʾ�ܾ�, ��д��¼, ����LED, ��֪ͨGUI */
+        /* 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷示锟杰撅拷, 锟斤拷写锟斤拷录, 锟斤拷锟斤拷LED, 锟斤拷通知GUI */
         dispEvent = DISP_EVT_NONE;
         MIDI_Beep(3, 60);
         osDelay(60);
@@ -949,22 +947,22 @@ void StartTaskNFC(void *argument)
         break;
       }
 
-      /* ===== �����ж� ===== */
+      /* ===== 锟斤拷锟斤拷锟叫讹拷 ===== */
       const DispAdminCfg_t *pCfg = DISP_GetAdminCfg();
       uint8_t  mode      = pCfg->attendMode;
       uint8_t  ledMask   = 0;
 
-      /* ��ѯ���� (������ UID) */
+      /* 锟斤拷询锟斤拷锟斤拷 (锟斤拷锟斤拷锟斤拷 UID) */
       uint32_t enterSecs = 0;
       uint8_t cacheState = Cache_Find(uidNfc, &enterSecs);
 
-      /* ����δ������ɨ Flash */
+      /* 锟斤拷锟斤拷未锟斤拷锟斤拷锟斤拷扫 Flash */
       if (cacheState == CACHE_MISS) {
         SwipeRecord_t lastRec;
         if (Record_QueryLast(uidNfc, &lastRec)) {
-          cacheState = lastRec.eventType;  /* 0=�볡 1=�볡 */
+          cacheState = lastRec.eventType;  /* 0=锟诫场 1=锟诫场 */
           if (cacheState == 0) {
-            /* �Ӽ�¼�ؽ� enterSecs: ��ˢ��ʱ�̹��� (�뼶���ȿɽ���) */
+            /* 锟接硷拷录锟截斤拷 enterSecs: 锟斤拷刷锟斤拷时锟教癸拷锟斤拷 (锟诫级锟斤拷锟饺可斤拷锟斤拷) */
             BSP_RTC_DateTime_t dt;
             dt.year = 2000 + lastRec.year;
             dt.month = lastRec.month; dt.day = lastRec.day;
@@ -974,23 +972,23 @@ void StartTaskNFC(void *argument)
         }
       }
 
-      /* ��ģʽ�ж� */
+      /* 锟斤拷模式锟叫讹拷 */
       switch (mode) {
-      case 0: /* ���ģ�? */
+      case 0: /* 锟斤拷锟侥Ｊ? */
         if (cacheState == 0) {
-          /* ���볡 �� ��Ч�ظ� */
+          /* 锟斤拷锟诫场 锟斤拷 锟斤拷效锟截革拷 */
           evtType = 1; recStatus = 1;
         } else {
-          /* �볡 */
+          /* 锟诫场 */
           evtType = 0; recStatus = 0; ledMask = 0x08;  /* L4 */
         }
         break;
 
-      case 1: /* ����ģʽ */
+      case 1: /* 锟斤拷锟斤拷模式 */
         if (cacheState == 0) {
-          /* ���볡 �� �볡 + ��ʱ�� (RTC ���찲ȫ) */
+          /* 锟斤拷锟诫场 锟斤拷 锟诫场 + 锟斤拷时锟斤拷 (RTC 锟斤拷锟届安全) */
           evtType = 1; recStatus = 0; ledMask = 0x10;  /* L5 */
-          /* �� RTC ��ǰʱ�����ʱ��?, ��Ȼ֧�ֿ��� */
+          /* 锟斤拷 RTC 锟斤拷前时锟斤拷锟斤拷锟绞憋拷锟?, 锟斤拷然支锟街匡拷锟斤拷 */
           {
             BSP_RTC_DateTime_t nowDT;
             BSP_RTC_GetDateTime(&nowDT);
@@ -998,15 +996,15 @@ void StartTaskNFC(void *argument)
             durSec = (nowSecs > enterSecs) ? (nowSecs - enterSecs) : 0;
           }
         } else {
-          /* ���볡��¼ */
+          /* 锟斤拷锟诫场锟斤拷录 */
           evtType = 1; recStatus = 2;
         }
         break;
 
-      case 2: /* �����ģ�? */
+      case 2: /* 锟斤拷锟斤拷锟侥Ｊ? */
       default:
         if (cacheState == 0) {
-          /* ���볡 �� �볡 + ��ʱ�� (RTC ���찲ȫ) */
+          /* 锟斤拷锟诫场 锟斤拷 锟诫场 + 锟斤拷时锟斤拷 (RTC 锟斤拷锟届安全) */
           evtType = 1; recStatus = 0; ledMask = 0x40;  /* L7 */
           {
             BSP_RTC_DateTime_t nowDT;
@@ -1015,17 +1013,17 @@ void StartTaskNFC(void *argument)
             durSec = (nowSecs > enterSecs) ? (nowSecs - enterSecs) : 0;
           }
         } else {
-          /* �볡 */
+          /* 锟诫场 */
           evtType = 0; recStatus = 0; ledMask = 0x20;  /* L6 */
         }
         break;
       }
 
-      /* ���»��� (�볡ʱ��¼ RTC ��ʱ���?) */
+      /* 锟斤拷锟铰伙拷锟斤拷 (锟诫场时锟斤拷录 RTC 锟斤拷时锟斤拷锟?) */
       if (recStatus == 0) {
         uint32_t secs = 0;
         if (evtType == 0) {
-          /* �볡: ��¼��ǰ RTC ��ʱ���������?, ���볡ʱ�������ʱ��? */
+          /* 锟诫场: 锟斤拷录锟斤拷前 RTC 锟斤拷时锟斤拷锟斤拷锟斤拷锟斤拷锟?, 锟斤拷锟诫场时锟斤拷锟斤拷锟斤拷锟绞憋拷锟? */
           BSP_RTC_DateTime_t nowDT;
           BSP_RTC_GetDateTime(&nowDT);
           secs = DISP_DateTimeToSeconds(&nowDT);
@@ -1033,7 +1031,7 @@ void StartTaskNFC(void *argument)
         Cache_Update(uidNfc, evtType, secs);
       }
 
-      /* д SPI Flash ��¼ */
+      /* 写 SPI Flash 锟斤拷录 */
       {
         SwipeRecord_t rec;
         BSP_RTC_DateTime_t nowDT;
@@ -1056,7 +1054,7 @@ void StartTaskNFC(void *argument)
         Record_Add(&rec);
       }
 
-      /* LED + ���� */
+      /* LED + 锟斤拷锟斤拷 */
       if (recStatus == 0) {
         LED_SetLeds(ledMask | 0x01);
         MIDI_Beep(6, 100);
@@ -1075,7 +1073,7 @@ void StartTaskNFC(void *argument)
 
     case NFC_EVT_INVALID:
     default:
-      /* ��Ч��: ����Ӳ���ָ� RC522, ��ֹоƬ״̬����Ӱ�����Ѱ��? */
+      /* 锟斤拷效锟斤拷: 锟斤拷锟斤拷硬锟斤拷锟街革拷 RC522, 锟斤拷止芯片状态锟斤拷锟斤拷影锟斤拷锟斤拷锟窖帮拷锟? */
       NFC_Recover();
       dispEvent = DISP_EVT_CARD_INVALID;
       MIDI_Beep(3, 100);
@@ -1104,7 +1102,7 @@ void StartTaskNFC(void *argument)
       break;
     }
 
-    /* ===== ֪ͨ GUI ===== */
+    /* ===== 通知 GUI ===== */
     DISP_SendNfcEvent(myQueue04Handle, dispEvent, cardID, 4,
                          cardData.cardId, cardData.sid, cardData.points,
                          cardData.cardType, cardData.statusFlag,
@@ -1115,9 +1113,9 @@ void StartTaskNFC(void *argument)
     }
     lastNotifyTick = osKernelGetTickCount();
     NFC_ClearCmdDone();
-    /* �ó� CPU �� guiTask ˢ�� OLED */
+    /* 锟矫筹拷 CPU 锟斤拷 guiTask 刷锟斤拷 OLED */
     osDelay(50);
-    /* cardPresent=1, �ص�ѭ������: �ȴ���λ������ + �������뿨���? */
+    /* cardPresent=1, 锟截碉拷循锟斤拷锟斤拷锟斤拷: 锟饺达拷锟斤拷位锟斤拷锟斤拷锟斤拷 + 锟斤拷锟斤拷锟斤拷锟诫卡锟斤拷锟? */
   }
   /* USER CODE END StartTaskNFC */
 }
@@ -1126,7 +1124,7 @@ void StartTaskNFC(void *argument)
 /* USER CODE BEGIN Application */
 
 /**
- * @brief  USART1 ���ջص����� (�ж�������, �����ٿ�����˫������)
+ * @brief  USART1 锟斤拷锟秸回碉拷锟斤拷锟斤拷 (锟叫讹拷锟斤拷锟斤拷锟斤拷, 锟斤拷锟斤拷锟劫匡拷锟斤拷锟斤拷双锟斤拷锟斤拷锟斤拷)
  */
 static void UART1_RxCallback(UartDrv_RxData_t *pData, void *pUserCtx)
 {
@@ -1134,7 +1132,7 @@ static void UART1_RxCallback(UartDrv_RxData_t *pData, void *pUserCtx)
 
   if (!pData || pData->rx_len == 0) return;
 
-  /* �ۼ�д��˫������, ���ʱ�������������¿��? */
+  /* 锟桔硷拷写锟斤拷双锟斤拷锟斤拷锟斤拷, 锟斤拷锟绞憋拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷驴锟绞? */
   if (s_uart1_rx_len + pData->rx_len <= sizeof(s_uart1_rx_buf)) {
     memcpy(s_uart1_rx_buf + s_uart1_rx_len, pData->rx_buf, pData->rx_len);
     s_uart1_rx_len += pData->rx_len;

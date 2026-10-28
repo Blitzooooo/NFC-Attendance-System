@@ -1,16 +1,16 @@
 #include "ds18B20.h"
-#include "delay_us.h"   /* �?共微秒延时服�? */
-#include "FreeRTOS.h"   /* FreeRTOS 基�?�头文件，须在 task.h 之前 */
+#include "delay_us.h"   /* 鍏?鍏卞井绉掑欢鏃舵湇鍔? */
+#include "FreeRTOS.h"   /* FreeRTOS 鍩虹?€澶存枃浠讹紝椤诲湪 task.h 涔嬪墠 */
 #include "task.h"       /* taskENTER_CRITICAL / taskEXIT_CRITICAL */
 
-/* DS18B20 �������Ŷ��� (PE0 / TEMP) */
+/* DS18B20 数据引脚定义 (PE0 / TEMP) */
 #define DATA_GPIO_Port   GPIOE
 #define DATA_Pin         TEMP_Pin
 
 #define EnableINT()
 #define DisableINT()
 
-#define DS_PRECISION 		0x7f   //精度配置寄存�? 1f=9�?; 3f=10�?; 5f=11�?; 7f=12�?;
+#define DS_PRECISION 		0x7f   //绮惧害閰嶇疆瀵勫瓨鍣? 1f=9浣?; 3f=10浣?; 5f=11浣?; 7f=12浣?;
 #define DS_AlarmTH  		0x64
 #define DS_AlarmTL  		0x8a
 #define DS_CONVERT_TICK 1000
@@ -26,10 +26,10 @@ unsigned char ResetDS18B20(void)
 	delay_us(50);
 
 	ResetDQ();
-	delay_us(500);  //500us （�?�时间的时间范围�?以从480�?960�?秒）
+	delay_us(500);  //500us 锛堣?ユ椂闂寸殑鏃堕棿鑼冨洿鍙?浠ヤ粠480鍒?960寰?绉掞級
 	SetDQ();
 
-	/* 临界区：采样应答脉冲的窗口仅 15 µs，不能�??抢占 */
+	/* 涓寸晫鍖猴細閲囨牱搴旂瓟鑴夊啿鐨勭獥鍙ｄ粎 15 碌s锛屼笉鑳借??鎶㈠崰 */
 	taskENTER_CRITICAL();
 
 	delay_us(40);
@@ -56,8 +56,8 @@ void DS18B20WriteByte(unsigned char Dat)
 	unsigned char i;
 	for(i = 8; i > 0; i--)
 	{
-		/* 临界区：防�?�在�? '1' 时低电平�?拉长超过 15 µs
-		 * 保护时间�? 5-7 µs/bit�?8 bit 合�?�约 48 µs */
+		/* 涓寸晫鍖猴細闃叉?㈠湪鍐? '1' 鏃朵綆鐢靛钩琚?鎷夐暱瓒呰繃 15 碌s
+		 * 淇濇姢鏃堕棿绾? 5-7 碌s/bit锛?8 bit 鍚堣?＄害 48 碌s */
 		taskENTER_CRITICAL();
 
 		ResetDQ();
@@ -79,15 +79,15 @@ void DS18B20WriteByte(unsigned char Dat)
 
 unsigned char DS18B20ReadByte(void)
 {
-	unsigned char i,Dat;
+	unsigned char i, Dat = 0;
 	SetDQ();
 	delay_us(5);
 	for(i = 8; i > 0; i--)
 	{
 		Dat >>= 1;
 
-		/* 临界区：从拉低到采样必须�? 15 µs 内完�?
-		 * 保护时间�? 15 µs/bit�?8 bit 合�?�约 120 µs */
+		/* 涓寸晫鍖猴細浠庢媺浣庡埌閲囨牱蹇呴』鍦? 15 碌s 鍐呭畬鎴?
+		 * 淇濇姢鏃堕棿绾? 15 碌s/bit锛?8 bit 鍚堣?＄害 120 碌s */
 		taskENTER_CRITICAL();
 
 		ResetDQ();
@@ -135,7 +135,7 @@ void DS18B20Init(unsigned char Precision,unsigned char AlarmTH,unsigned char Ala
 	DS18B20WriteByte(CopyScratchpad);
 	EnableINT();
 
-	while(!GetDQ());  //等待复制完成 ///////////
+	while(!GetDQ());  //绛夊緟澶嶅埗瀹屾垚 ///////////
 }
 
 void DS18B20StartConvert(void)
@@ -191,7 +191,7 @@ float ds18b20_read(void)
 	TemperatureData <<= 8;
 	TemperatureData |= DL;
 
-	Temperature = (float)((float)TemperatureData * 0.0625); //分辨率为0.0625�?
+	Temperature = (float)((float)TemperatureData * 0.0625); //鍒嗚鲸鐜囦负0.0625搴?
 
 	return  Temperature;
 }

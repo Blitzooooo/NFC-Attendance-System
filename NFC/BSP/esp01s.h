@@ -1,55 +1,55 @@
 /**
  * @file    esp01s.h
- * @brief   ESP-01S WiFi模块驱动 - 基于UartDrv通用串口驱动的上层应用驱�?
+ * @brief   ESP-01S WiFi妯″潡椹卞姩 - 鍩轰簬UartDrv閫氱敤涓插彛椹卞姩鐨勪笂灞傚簲鐢ㄩ┍鍔?
  * @version 1.0
  *
- * @par 架构概述
- *   �?驱动采用"单例实例 + 状态机"架构,封�?�ESP-01S模块的完整工作流�?:
- *   - 驱动内部维护�?一的单例实�? s_esp01s,用户无需定义ESP01S_t变量
- *   - 通过状态机(ESP01S_State_t)管理连接生命周期: IDLE→AT_OK→WiFi→TCP→透传
- *   - 上层依赖UartDrv串口驱动,通过回调机制接收AT响应和数�?
- *   - �?持NTP网络授时(AT SNTP / UDP NTP双模式自动回退)
- *   - �?持RTC校时和时间字符串格式化输�?
+ * @par 鏋舵瀯姒傝堪
+ *   鏈?椹卞姩閲囩敤"鍗曚緥瀹炰緥 + 鐘舵€佹満"鏋舵瀯,灏佽?匛SP-01S妯″潡鐨勫畬鏁村伐浣滄祦绋?:
+ *   - 椹卞姩鍐呴儴缁存姢鍞?涓€鐨勫崟渚嬪疄渚? s_esp01s,鐢ㄦ埛鏃犻渶瀹氫箟ESP01S_t鍙橀噺
+ *   - 閫氳繃鐘舵€佹満(ESP01S_State_t)绠＄悊杩炴帴鐢熷懡鍛ㄦ湡: IDLE鈫扐T_OK鈫扺iFi鈫扵CP鈫掗€忎紶
+ *   - 涓婂眰渚濊禆UartDrv涓插彛椹卞姩,閫氳繃鍥炶皟鏈哄埗鎺ユ敹AT鍝嶅簲鍜屾暟鎹?
+ *   - 鏀?鎸丯TP缃戠粶鎺堟椂(AT SNTP / UDP NTP鍙屾ā寮忚嚜鍔ㄥ洖閫€)
+ *   - 鏀?鎸丷TC鏍℃椂鍜屾椂闂村瓧绗︿覆鏍煎紡鍖栬緭鍑?
  *
- * @par 连接流程
- *   ESP01S_Start() 完成以下步�??:
- *   1. 退出透传模式(防�??上�?�遗�?)
- *   2. AT通信测试
- *   3. 关闭回显和残留连�?
- *   4. 配置单连接模�?(CIPMUX=0,透传前提)
- *   5. 查�?�模块信�?和当前连接状�?
- *   6. 连接WiFi�?�?
- *   7. NTP授时(�?�?)
- *   8. 连接TCP服务�?
- *   9. 开�?透传模式
+ * @par 杩炴帴娴佺▼
+ *   ESP01S_Start() 瀹屾垚浠ヤ笅姝ラ??:
+ *   1. 閫€鍑洪€忎紶妯″紡(闃叉??涓婃?￠仐鐣?)
+ *   2. AT閫氫俊娴嬭瘯
+ *   3. 鍏抽棴鍥炴樉鍜屾畫鐣欒繛鎺?
+ *   4. 閰嶇疆鍗曡繛鎺ユā寮?(CIPMUX=0,閫忎紶鍓嶆彁)
+ *   5. 鏌ヨ?㈡ā鍧椾俊鎭?鍜屽綋鍓嶈繛鎺ョ姸鎬?
+ *   6. 杩炴帴WiFi鐑?鐐?
+ *   7. NTP鎺堟椂(鍙?閫?)
+ *   8. 杩炴帴TCP鏈嶅姟鍣?
+ *   9. 寮€鍚?閫忎紶妯″紡
  *
- * @par 使用方法
- *   1. 调用 UartDrv_Init() 初�?�化底层串口驱动
- *   2. 调用 ESP01S_Init() 初�?�化ESP01S驱动(使用默�?�配�?)
- *   3. (�?�?) 调用 ESP01S_SetWiFi/SetTcpServer/SetNtpServer �?改配�?
- *   4. 调用 ESP01S_RegisterDataCb() 注册数据接收回调(�?�?)
- *   5. 调用 ESP01S_Start() �?动WiFi连接和TCP连接
- *   6. 透传模式下调�? ESP01S_SendStr()/ESP01S_SendData() 发送数�?
- *   7. 调用 ESP01S_GetDateTime() 获取当前时间字�?�串
- *   8. 调用 ESP01S_SetRtcFromNtp() 将NTP时间写入RTC
+ * @par 浣跨敤鏂规硶
+ *   1. 璋冪敤 UartDrv_Init() 鍒濆?嬪寲搴曞眰涓插彛椹卞姩
+ *   2. 璋冪敤 ESP01S_Init() 鍒濆?嬪寲ESP01S椹卞姩(浣跨敤榛樿?ら厤缃?)
+ *   3. (鍙?閫?) 璋冪敤 ESP01S_SetWiFi/SetTcpServer/SetNtpServer 淇?鏀归厤缃?
+ *   4. 璋冪敤 ESP01S_RegisterDataCb() 娉ㄥ唽鏁版嵁鎺ユ敹鍥炶皟(鍙?閫?)
+ *   5. 璋冪敤 ESP01S_Start() 鍚?鍔╓iFi杩炴帴鍜孴CP杩炴帴
+ *   6. 閫忎紶妯″紡涓嬭皟鐢? ESP01S_SendStr()/ESP01S_SendData() 鍙戦€佹暟鎹?
+ *   7. 璋冪敤 ESP01S_GetDateTime() 鑾峰彇褰撳墠鏃堕棿瀛楃?︿覆
+ *   8. 璋冪敤 ESP01S_SetRtcFromNtp() 灏哊TP鏃堕棿鍐欏叆RTC
  *
- * @par 配置方式
- *   - 方式1: 直接�?�? esp01s.c �?�? s_defaultConfig 默�?��?(最简�?)
- *   - 方式2: 调用 ESP01S_SetConfig() 一次性�?�盖全部配置
- *   - 方式3: 调用 ESP01S_SetWiFi/SetTcpServer/SetNtpServer 分项�?�?
- *   注意: �?改配�?后需重新调用 ESP01S_Start() 才会生效
+ * @par 閰嶇疆鏂瑰紡
+ *   - 鏂瑰紡1: 鐩存帴淇?鏀? esp01s.c 涓?鐨? s_defaultConfig 榛樿?ゅ€?(鏈€绠€鍗?)
+ *   - 鏂瑰紡2: 璋冪敤 ESP01S_SetConfig() 涓€娆℃€ц?嗙洊鍏ㄩ儴閰嶇疆
+ *   - 鏂瑰紡3: 璋冪敤 ESP01S_SetWiFi/SetTcpServer/SetNtpServer 鍒嗛」淇?鏀?
+ *   娉ㄦ剰: 淇?鏀归厤缃?鍚庨渶閲嶆柊璋冪敤 ESP01S_Start() 鎵嶄細鐢熸晥
  *
- * @par NTP授时说明
- *   �?持两种NTP授时方式(�?动回退):
- *   - 方式1: AT指令SNTP (AT+CIPSNTPCFG + AT+CIPSNTPTIME),需固件v1.7.0+
- *   - 方式2: UDP NTP协�??,通过UDP直连NTP服务器发�?/解析NTP报文,通用方�??
- *   如果config.ntpServer为空字�?�串,则跳过NTP授时
+ * @par NTP鎺堟椂璇存槑
+ *   鏀?鎸佷袱绉峃TP鎺堟椂鏂瑰紡(鑷?鍔ㄥ洖閫€):
+ *   - 鏂瑰紡1: AT鎸囦护SNTP (AT+CIPSNTPCFG + AT+CIPSNTPTIME),闇€鍥轰欢v1.7.0+
+ *   - 鏂瑰紡2: UDP NTP鍗忚??,閫氳繃UDP鐩磋繛NTP鏈嶅姟鍣ㄥ彂閫?/瑙ｆ瀽NTP鎶ユ枃,閫氱敤鏂规??
+ *   濡傛灉config.ntpServer涓虹┖瀛楃?︿覆,鍒欒烦杩嘚TP鎺堟椂
  *
- * @par 透传模式注意事项
- *   - 透传模式下只能通过 ESP01S_SendStr/SendData 发送原始数�?
- *   - 退出透传模式需调用 ESP01S_ExitTransparent(),内部发�?"+++"命令
- *   - "+++"前后需�?500ms静默,不加换�?��??(ESP8266透传退出协�?要求)
- *   - 退出后�?重新发送AT指令或修改配�?后重新Start
+ * @par 閫忎紶妯″紡娉ㄦ剰浜嬮」
+ *   - 閫忎紶妯″紡涓嬪彧鑳介€氳繃 ESP01S_SendStr/SendData 鍙戦€佸師濮嬫暟鎹?
+ *   - 閫€鍑洪€忎紶妯″紡闇€璋冪敤 ESP01S_ExitTransparent(),鍐呴儴鍙戦€?"+++"鍛戒护
+ *   - "+++"鍓嶅悗闇€鍚?500ms闈欓粯,涓嶅姞鎹㈣?岀??(ESP8266閫忎紶閫€鍑哄崗璁?瑕佹眰)
+ *   - 閫€鍑哄悗鍙?閲嶆柊鍙戦€丄T鎸囦护鎴栦慨鏀归厤缃?鍚庨噸鏂癝tart
  */
 
 #ifndef __ESP01S_H
@@ -66,125 +66,125 @@ extern "C" {
 #include "cmsis_os.h"
 #endif
 
-/* ====== 导出类型定义 ====== */
+/* ====== 瀵煎嚭绫诲瀷瀹氫箟 ====== */
 
 /**
- * @brief  ESP01S连接状态枚�?
- * @note   状态转移顺�?(正常流程):
- *         IDLE �? AT_OK �? WIFI_CONNECTING �? WIFI_CONNECTED
- *              �? TCP_CONNECTING �? TCP_CONNECTED �? TRANSPARENT
+ * @brief  ESP01S杩炴帴鐘舵€佹灇涓?
+ * @note   鐘舵€佽浆绉婚『搴?(姝ｅ父娴佺▼):
+ *         IDLE 鈫? AT_OK 鈫? WIFI_CONNECTING 鈫? WIFI_CONNECTED
+ *              鈫? TCP_CONNECTING 鈫? TCP_CONNECTED 鈫? TRANSPARENT
  *
- *         状态判�?逻辑:
- *         - ESP01S_Start()�?通过 "state < ESP01S_STATE_xxx" 判断�?否达到某阶�??
- *         - 回调�?根据AT响应字�?�串推动状态前�?
- *         - 任何阶�?�失败则停留在当前状�?,Start()返回对应错�??�?
+ *         鐘舵€佸垽鏂?閫昏緫:
+ *         - ESP01S_Start()涓?閫氳繃 "state < ESP01S_STATE_xxx" 鍒ゆ柇鏄?鍚﹁揪鍒版煇闃舵??
+ *         - 鍥炶皟涓?鏍规嵁AT鍝嶅簲瀛楃?︿覆鎺ㄥ姩鐘舵€佸墠杩?
+ *         - 浠讳綍闃舵?靛け璐ュ垯鍋滅暀鍦ㄥ綋鍓嶇姸鎬?,Start()杩斿洖瀵瑰簲閿欒??鐮?
  */
 typedef enum {
-    ESP01S_STATE_IDLE = 0,          /**< 空闲,�?初�?�化或刚初�?�化 */
-    ESP01S_STATE_AT_OK,             /**< AT通信正常(模块响应AT指令) */
-    ESP01S_STATE_WIFI_CONNECTING,   /**< 正在连接WiFi(AT+CWJAP已发�?) */
-    ESP01S_STATE_WIFI_CONNECTED,    /**< WiFi已连�?(收到WIFI CONNECTED+OK) */
-    ESP01S_STATE_TCP_CONNECTING,    /**< 正在连接TCP服务�?(AT+CIPSTART已发�?) */
-    ESP01S_STATE_TCP_CONNECTED,     /**< TCP已连�?(收到CONNECT+OK) */
-    ESP01S_STATE_TRANSPARENT,       /**< 透传模式(AT+CIPSEND已发送并成功) */
+    ESP01S_STATE_IDLE = 0,          /**< 绌洪棽,鏈?鍒濆?嬪寲鎴栧垰鍒濆?嬪寲 */
+    ESP01S_STATE_AT_OK,             /**< AT閫氫俊姝ｅ父(妯″潡鍝嶅簲AT鎸囦护) */
+    ESP01S_STATE_WIFI_CONNECTING,   /**< 姝ｅ湪杩炴帴WiFi(AT+CWJAP宸插彂閫?) */
+    ESP01S_STATE_WIFI_CONNECTED,    /**< WiFi宸茶繛鎺?(鏀跺埌WIFI CONNECTED+OK) */
+    ESP01S_STATE_TCP_CONNECTING,    /**< 姝ｅ湪杩炴帴TCP鏈嶅姟鍣?(AT+CIPSTART宸插彂閫?) */
+    ESP01S_STATE_TCP_CONNECTED,     /**< TCP宸茶繛鎺?(鏀跺埌CONNECT+OK) */
+    ESP01S_STATE_TRANSPARENT,       /**< 閫忎紶妯″紡(AT+CIPSEND宸插彂閫佸苟鎴愬姛) */
 } ESP01S_State_t;
 
 /**
- * @brief  ESP01S配置结构
- * @note   配置方法:
- *         - 直接�?�? esp01s.c �?�? s_defaultConfig
- *         - 调用 ESP01S_SetConfig() / ESP01S_SetWiFi() / ESP01S_SetTcpServer() / ESP01S_SetNtpServer()
- *         �?改后需调用 ESP01S_Start() 重新连接才生�?
+ * @brief  ESP01S閰嶇疆缁撴瀯
+ * @note   閰嶇疆鏂规硶:
+ *         - 鐩存帴淇?鏀? esp01s.c 涓?鐨? s_defaultConfig
+ *         - 璋冪敤 ESP01S_SetConfig() / ESP01S_SetWiFi() / ESP01S_SetTcpServer() / ESP01S_SetNtpServer()
+ *         淇?鏀瑰悗闇€璋冪敤 ESP01S_Start() 閲嶆柊杩炴帴鎵嶇敓鏁?
  */
 typedef struct {
-    char     ssid[32];              /**< WiFi�?点名�?(SSID),最�?31字�?? */
-    char     password[64];          /**< WiFi密码,最�?63字�?? */
-    char     tcpServerIP[48];       /**< TCP服务器IP地址(点分十进制或域名) */
-    uint16_t tcpPort;               /**< TCP服务器�??口号(1~65535) */
-    char     ntpServer[48];         /**< NTP服务器域�?(�?"ntp.aliyun.com"),空字符串则不�?用NTP */
-    int8_t   ntpTimezone;           /**< 时区小时�?(�?国东�?�?=8),范围-12~14 */
+    char     ssid[32];              /**< WiFi鐑?鐐瑰悕绉?(SSID),鏈€闀?31瀛楃?? */
+    char     password[64];          /**< WiFi瀵嗙爜,鏈€闀?63瀛楃?? */
+    char     tcpServerIP[48];       /**< TCP鏈嶅姟鍣↖P鍦板潃(鐐瑰垎鍗佽繘鍒舵垨鍩熷悕) */
+    uint16_t tcpPort;               /**< TCP鏈嶅姟鍣ㄧ??鍙ｅ彿(1~65535) */
+    char     ntpServer[48];         /**< NTP鏈嶅姟鍣ㄥ煙鍚?(濡?"ntp.aliyun.com"),绌哄瓧绗︿覆鍒欎笉鍚?鐢∟TP */
+    int8_t   ntpTimezone;           /**< 鏃跺尯灏忔椂鏁?(涓?鍥戒笢鍏?鍖?=8),鑼冨洿-12~14 */
 } ESP01S_Config_t;
 
 /**
- * @brief  NTP时间结构
- * @note   时间为本地时�?(已含时区偏移),由NTP响应或UDP NTP报文解析得到�?
- *         通过 ESP01S_GetNtpTime() 获取,或由 ESP01S_GetDateTime() 间接使用�?
+ * @brief  NTP鏃堕棿缁撴瀯
+ * @note   鏃堕棿涓烘湰鍦版椂闂?(宸插惈鏃跺尯鍋忕Щ),鐢盢TP鍝嶅簲鎴朥DP NTP鎶ユ枃瑙ｆ瀽寰楀埌銆?
+ *         閫氳繃 ESP01S_GetNtpTime() 鑾峰彇,鎴栫敱 ESP01S_GetDateTime() 闂存帴浣跨敤銆?
  */
 typedef struct {
-    uint16_t year;      /**< �? (2024~) */
-    uint8_t  month;     /**< �? (1~12) */
-    uint8_t  day;       /**< �? (1~31) */
-    uint8_t  hour;      /**< �? (0~23, 已含时区偏移) */
-    uint8_t  minute;    /**< �? (0~59) */
-    uint8_t  second;    /**< �? (0~59) */
-    uint8_t  weekday;   /**< 星期 (1=Mon, 2=Tue, ..., 7=Sun) */
+    uint16_t year;      /**< 骞? (2024~) */
+    uint8_t  month;     /**< 鏈? (1~12) */
+    uint8_t  day;       /**< 鏃? (1~31) */
+    uint8_t  hour;      /**< 鏃? (0~23, 宸插惈鏃跺尯鍋忕Щ) */
+    uint8_t  minute;    /**< 鍒? (0~59) */
+    uint8_t  second;    /**< 绉? (0~59) */
+    uint8_t  weekday;   /**< 鏄熸湡 (1=Mon, 2=Tue, ..., 7=Sun) */
 } ESP01S_NtpTime_t;
 
 /**
- * @brief  日期时间格式枚举
- * @note   用于 ESP01S_GetDateTime() �? format 参数,控制输出格式
+ * @brief  鏃ユ湡鏃堕棿鏍煎紡鏋氫妇
+ * @note   鐢ㄤ簬 ESP01S_GetDateTime() 鐨? format 鍙傛暟,鎺у埗杈撳嚭鏍煎紡
  */
 typedef enum {
-    DT_DATE = 0,        /**< 仅日�?: "2026-04-12" */
-    DT_TIME,            /**< 仅时�?: "14:30:45" */
-    DT_ALL,             /**< 日期+时间: "2026-04-12 14:30:45" */
+    DT_DATE = 0,        /**< 浠呮棩鏈?: "2026-04-12" */
+    DT_TIME,            /**< 浠呮椂闂?: "14:30:45" */
+    DT_ALL,             /**< 鏃ユ湡+鏃堕棿: "2026-04-12 14:30:45" */
 } DT_Format_t;
 
 /**
- * @brief  ESP01S透传数据接收回调函数类型
- * @param  pData      接收到的原�?�数�?指针(透传模式下TCP服务器发来的数据)
- * @param  len        接收数据长度
- * @param  pUserCtx   用户上下文指�?(注册时传�?,回调时原样传�?)
- * @note   回调在中�?上下文中执�??,应尽�?返回
+ * @brief  ESP01S閫忎紶鏁版嵁鎺ユ敹鍥炶皟鍑芥暟绫诲瀷
+ * @param  pData      鎺ユ敹鍒扮殑鍘熷?嬫暟鎹?鎸囬拡(閫忎紶妯″紡涓婽CP鏈嶅姟鍣ㄥ彂鏉ョ殑鏁版嵁)
+ * @param  len        鎺ユ敹鏁版嵁闀垮害
+ * @param  pUserCtx   鐢ㄦ埛涓婁笅鏂囨寚閽?(娉ㄥ唽鏃朵紶鍏?,鍥炶皟鏃跺師鏍蜂紶鍥?)
+ * @note   鍥炶皟鍦ㄤ腑鏂?涓婁笅鏂囦腑鎵ц??,搴斿敖蹇?杩斿洖
  */
 typedef void (*ESP01S_DataCallback_t)(const uint8_t *pData, uint16_t len, void *pUserCtx);
 
-/* ====== 导出函数声明 ====== */
+/* ====== 瀵煎嚭鍑芥暟澹版槑 ====== */
 
-/* ---- 初�?�化与启�? ---- */
+/* ---- 鍒濆?嬪寲涓庡惎鍋? ---- */
 
 /**
- * @brief  初�?�化ESP01S驱动(使用esp01s.c�?的默认配�?)
- * @param  pUartDrv 底层串口驱动指针(需先初始化,�? UartDrv_Init(&g_uart4Drv, &huart4))
- * @note   初�?�化流程:
- *         1. 清零内部单例实例
- *         2. 绑定串口驱动
- *         3. 拷贝默�?�配�?到实�?
- *         4. 注册串口接收回调(ESP01S_RxCallback)
- *         调用后状态为 ESP01S_STATE_IDLE,需调用 ESP01S_Start() 开始连�?
+ * @brief  鍒濆?嬪寲ESP01S椹卞姩(浣跨敤esp01s.c涓?鐨勯粯璁ら厤缃?)
+ * @param  pUartDrv 搴曞眰涓插彛椹卞姩鎸囬拡(闇€鍏堝垵濮嬪寲,濡? UartDrv_Init(&g_uart4Drv, &huart4))
+ * @note   鍒濆?嬪寲娴佺▼:
+ *         1. 娓呴浂鍐呴儴鍗曚緥瀹炰緥
+ *         2. 缁戝畾涓插彛椹卞姩
+ *         3. 鎷疯礉榛樿?ら厤缃?鍒板疄渚?
+ *         4. 娉ㄥ唽涓插彛鎺ユ敹鍥炶皟(ESP01S_RxCallback)
+ *         璋冪敤鍚庣姸鎬佷负 ESP01S_STATE_IDLE,闇€璋冪敤 ESP01S_Start() 寮€濮嬭繛鎺?
  */
 void ESP01S_Init(UartDrv_t *pUartDrv);
 
 /**
- * @brief  �?动ESP01S完整流程: AT测试 �? 连WiFi �? NTP授时 �? 连TCP �? 透传
- * @retval 0:成功  -1:AT通信失败  -2:WiFi连接失败  -3:TCP连接失败
- * @note   �?函数为阻塞式,内部通过HAL_Delay等待AT响应,整个流程约需10~20秒�?
- *         调用前需�?�?:
- *         - ESP01S_Init() 已调�?
- *         - 配置参数(SSID/密码/TCP服务�?)已�?�确设置
- *         - 底层串口已初始化并启动接�?
- *         成功后进入透传模式,�?直接使用 SendStr/SendData 发送数�?
+ * @brief  鍚?鍔‥SP01S瀹屾暣娴佺▼: AT娴嬭瘯 鈫? 杩濿iFi 鈫? NTP鎺堟椂 鈫? 杩濼CP 鈫? 閫忎紶
+ * @retval 0:鎴愬姛  -1:AT閫氫俊澶辫触  -2:WiFi杩炴帴澶辫触  -3:TCP杩炴帴澶辫触
+ * @note   鏈?鍑芥暟涓洪樆濉炲紡,鍐呴儴閫氳繃HAL_Delay绛夊緟AT鍝嶅簲,鏁翠釜娴佺▼绾﹂渶10~20绉掋€?
+ *         璋冪敤鍓嶉渶纭?淇?:
+ *         - ESP01S_Init() 宸茶皟鐢?
+ *         - 閰嶇疆鍙傛暟(SSID/瀵嗙爜/TCP鏈嶅姟鍣?)宸叉?ｇ‘璁剧疆
+ *         - 搴曞眰涓插彛宸插垵濮嬪寲骞跺惎鍔ㄦ帴鏀?
+ *         鎴愬姛鍚庤繘鍏ラ€忎紶妯″紡,鍙?鐩存帴浣跨敤 SendStr/SendData 鍙戦€佹暟鎹?
  */
 int ESP01S_Start(void);
 
 /**
- * @brief  退出透传模式
- * @note   内部发�?"+++"命令退出透传,前后各等�?500ms静默(ESP8266协�??要求):
- *         - 前�??500ms: �?保之前的数据发送已完成
- *         - 发�?"+++": 不加换�?��??(否则会�??当作数据发�?)
- *         - 后续500ms: 等待模块识别退出命�?
- *         退出后状态回退�? ESP01S_STATE_TCP_CONNECTED,�?重新发AT指令
- *         或修改配�?后调�? ESP01S_Start() 重新连接
+ * @brief  閫€鍑洪€忎紶妯″紡
+ * @note   鍐呴儴鍙戦€?"+++"鍛戒护閫€鍑洪€忎紶,鍓嶅悗鍚勭瓑寰?500ms闈欓粯(ESP8266鍗忚??瑕佹眰):
+ *         - 鍓嶅??500ms: 纭?淇濅箣鍓嶇殑鏁版嵁鍙戦€佸凡瀹屾垚
+ *         - 鍙戦€?"+++": 涓嶅姞鎹㈣?岀??(鍚﹀垯浼氳??褰撲綔鏁版嵁鍙戦€?)
+ *         - 鍚庣画500ms: 绛夊緟妯″潡璇嗗埆閫€鍑哄懡浠?
+ *         閫€鍑哄悗鐘舵€佸洖閫€鍒? ESP01S_STATE_TCP_CONNECTED,鍙?閲嶆柊鍙慉T鎸囦护
+ *         鎴栦慨鏀归厤缃?鍚庤皟鐢? ESP01S_Start() 閲嶆柊杩炴帴
  */
 void ESP01S_ExitTransparent(void);
 
-/* ---- 配置API ---- */
+/* ---- 閰嶇疆API ---- */
 
 /**
- * @brief  一次性�?�置全部配置参数
- * @param  pConfig 配置参数指针(内�?�会�?拷贝,调用后可释放)
- * @note   �?改配�?后需调用ESP01S_Start()重新连接才生�?
- *         使用示例:
+ * @brief  涓€娆℃€ц?剧疆鍏ㄩ儴閰嶇疆鍙傛暟
+ * @param  pConfig 閰嶇疆鍙傛暟鎸囬拡(鍐呭?逛細琚?鎷疯礉,璋冪敤鍚庡彲閲婃斁)
+ * @note   淇?鏀归厤缃?鍚庨渶璋冪敤ESP01S_Start()閲嶆柊杩炴帴鎵嶇敓鏁?
+ *         浣跨敤绀轰緥:
  *         @code
  *         ESP01S_Config_t cfg = {
  *             .ssid = "MyWiFi", .password = "12345678",
@@ -197,155 +197,155 @@ void ESP01S_ExitTransparent(void);
 void ESP01S_SetConfig(const ESP01S_Config_t *pConfig);
 
 /**
- * @brief  获取当前配置(�?�?)
- * @retval 当前配置指针,指向驱动内部配置(不�?�修改返回的指针内�??)
- * @note   返回的是内部配置的地址,不�?�直接修改返回指针的内�??,
- *         应使�? ESP01S_SetConfig/SetWiFi/SetTcpServer/SetNtpServer 来修�?
+ * @brief  鑾峰彇褰撳墠閰嶇疆(鍙?璇?)
+ * @retval 褰撳墠閰嶇疆鎸囬拡,鎸囧悜椹卞姩鍐呴儴閰嶇疆(涓嶈?佷慨鏀硅繑鍥炵殑鎸囬拡鍐呭??)
+ * @note   杩斿洖鐨勬槸鍐呴儴閰嶇疆鐨勫湴鍧€,涓嶈?佺洿鎺ヤ慨鏀硅繑鍥炴寚閽堢殑鍐呭??,
+ *         搴斾娇鐢? ESP01S_SetConfig/SetWiFi/SetTcpServer/SetNtpServer 鏉ヤ慨鏀?
  */
 const ESP01S_Config_t *ESP01S_GetConfig(void);
 
 /**
- * @brief  设置WiFi�?点参�?
- * @param  ssid     WiFi�?点名�?(最�?31字�??,超出�?�?)
- * @param  password WiFi密码(最�?63字�??,超出�?�?)
- * @note   �?改后需调用ESP01S_Start()重新连接
+ * @brief  璁剧疆WiFi鐑?鐐瑰弬鏁?
+ * @param  ssid     WiFi鐑?鐐瑰悕绉?(鏈€闀?31瀛楃??,瓒呭嚭鎴?鏂?)
+ * @param  password WiFi瀵嗙爜(鏈€闀?63瀛楃??,瓒呭嚭鎴?鏂?)
+ * @note   淇?鏀瑰悗闇€璋冪敤ESP01S_Start()閲嶆柊杩炴帴
  */
 void ESP01S_SetWiFi(const char *ssid, const char *password);
 
 /**
- * @brief  设置TCP服务器参�?
- * @param  ip   TCP服务器IP地址(点分十进�?,�?"192.168.1.100")
- * @param  port TCP服务器�??口号(1~65535)
- * @note   �?改后需调用ESP01S_Start()重新连接
+ * @brief  璁剧疆TCP鏈嶅姟鍣ㄥ弬鏁?
+ * @param  ip   TCP鏈嶅姟鍣↖P鍦板潃(鐐瑰垎鍗佽繘鍒?,濡?"192.168.1.100")
+ * @param  port TCP鏈嶅姟鍣ㄧ??鍙ｅ彿(1~65535)
+ * @note   淇?鏀瑰悗闇€璋冪敤ESP01S_Start()閲嶆柊杩炴帴
  */
 void ESP01S_SetTcpServer(const char *ip, uint16_t port);
 
 /**
- * @brief  设置NTP授时服务器参�?
- * @param  server    NTP服务器域�?(�?"ntp.aliyun.com"),�?""或NULL则�?�用NTP授时
- * @param  timezone  时区小时�?(�?国东�?�?=8),范围-12~14
- * @note   �?改后需调用ESP01S_Start()重新连接
+ * @brief  璁剧疆NTP鎺堟椂鏈嶅姟鍣ㄥ弬鏁?
+ * @param  server    NTP鏈嶅姟鍣ㄥ煙鍚?(濡?"ntp.aliyun.com"),浼?""鎴朜ULL鍒欑?佺敤NTP鎺堟椂
+ * @param  timezone  鏃跺尯灏忔椂鏁?(涓?鍥戒笢鍏?鍖?=8),鑼冨洿-12~14
+ * @note   淇?鏀瑰悗闇€璋冪敤ESP01S_Start()閲嶆柊杩炴帴
  */
 void ESP01S_SetNtpServer(const char *server, int8_t timezone);
 
-/* ---- 数据收发 ---- */
+/* ---- 鏁版嵁鏀跺彂 ---- */
 
 /**
- * @brief  发送AT指令并等�?
- * @param  cmd     AT指令字�?�串(需包含\r\n结尾,�?"AT\r\n")
- * @param  waitMs  发送后等待时间(�?�?),用于等待模块响应,0则不�?
- * @note   �?函数为阻塞式,内部调用 UartDrv_SendStr 发�? + HAL_Delay 等待
- *         透传模式下�?�勿调用此函�?(数据会�??当作透传数据发�?)
+ * @brief  鍙戦€丄T鎸囦护骞剁瓑寰?
+ * @param  cmd     AT鎸囦护瀛楃?︿覆(闇€鍖呭惈\r\n缁撳熬,濡?"AT\r\n")
+ * @param  waitMs  鍙戦€佸悗绛夊緟鏃堕棿(姣?绉?),鐢ㄤ簬绛夊緟妯″潡鍝嶅簲,0鍒欎笉绛?
+ * @note   鏈?鍑芥暟涓洪樆濉炲紡,鍐呴儴璋冪敤 UartDrv_SendStr 鍙戦€? + HAL_Delay 绛夊緟
+ *         閫忎紶妯″紡涓嬭?峰嬁璋冪敤姝ゅ嚱鏁?(鏁版嵁浼氳??褰撲綔閫忎紶鏁版嵁鍙戦€?)
  */
 void ESP01S_SendATCmd(const char *cmd, uint32_t waitMs);
 
 /**
- * @brief  发送字符串(透传模式)
- * @param  str �?'\0'结尾的字符串
- * @note   仅在透传模式下使�?,数据将直接发送到TCP服务�?
+ * @brief  鍙戦€佸瓧绗︿覆(閫忎紶妯″紡)
+ * @param  str 浠?'\0'缁撳熬鐨勫瓧绗︿覆
+ * @note   浠呭湪閫忎紶妯″紡涓嬩娇鐢?,鏁版嵁灏嗙洿鎺ュ彂閫佸埌TCP鏈嶅姟鍣?
  */
 void ESP01S_SendStr(const char *str);
 
 /**
- * @brief  发送数�?(透传模式)
- * @param  pData 数据指针
- * @param  len   数据长度(字节)
- * @note   仅在透传模式下使�?,�?发送二进制数据(含\0的字�?)
+ * @brief  鍙戦€佹暟鎹?(閫忎紶妯″紡)
+ * @param  pData 鏁版嵁鎸囬拡
+ * @param  len   鏁版嵁闀垮害(瀛楄妭)
+ * @note   浠呭湪閫忎紶妯″紡涓嬩娇鐢?,鍙?鍙戦€佷簩杩涘埗鏁版嵁(鍚玕0鐨勫瓧鑺?)
  */
 void ESP01S_SendData(const uint8_t *pData, uint16_t len);
 
 /**
- * @brief  注册透传数据接收回调
- * @param  pCb       回调函数指针(函数原型�? ESP01S_DataCallback_t)
- * @param  pUserCtx  用户上下文指�?,回调时原样传�?,�?传NULL
- * @note   透传模式下收到TCP服务器数�?时触发回�?
- *         使用示例:
+ * @brief  娉ㄥ唽閫忎紶鏁版嵁鎺ユ敹鍥炶皟
+ * @param  pCb       鍥炶皟鍑芥暟鎸囬拡(鍑芥暟鍘熷瀷瑙? ESP01S_DataCallback_t)
+ * @param  pUserCtx  鐢ㄦ埛涓婁笅鏂囨寚閽?,鍥炶皟鏃跺師鏍蜂紶鍥?,鍙?浼燦ULL
+ * @note   閫忎紶妯″紡涓嬫敹鍒癟CP鏈嶅姟鍣ㄦ暟鎹?鏃惰Е鍙戝洖璋?
+ *         浣跨敤绀轰緥:
  *         @code
  *         void MyDataCb(const uint8_t *pData, uint16_t len, void *pCtx) {
- *             // 处理接收到的TCP数据
+ *             // 澶勭悊鎺ユ敹鍒扮殑TCP鏁版嵁
  *         }
  *         ESP01S_RegisterDataCb(MyDataCb, NULL);
  *         @endcode
  */
 void ESP01S_RegisterDataCb(ESP01S_DataCallback_t pCb, void *pUserCtx);
 
-/* ---- 状态查�? ---- */
+/* ---- 鐘舵€佹煡璇? ---- */
 
 /**
- * @brief  获取当前连接状�?
- * @retval 当前状�?(�? ESP01S_State_t 枚举定义)
- * @note   �?用于判断模块�?否就�?、是否在透传模式�?
+ * @brief  鑾峰彇褰撳墠杩炴帴鐘舵€?
+ * @retval 褰撳墠鐘舵€?(瑙? ESP01S_State_t 鏋氫妇瀹氫箟)
+ * @note   鍙?鐢ㄤ簬鍒ゆ柇妯″潡鏄?鍚﹀氨缁?銆佹槸鍚﹀湪閫忎紶妯″紡绛?
  */
 ESP01S_State_t ESP01S_GetState(void);
 
-/* ---- NTP授时 ---- */
+/* ---- NTP鎺堟椂 ---- */
 
 /**
- * @brief  配置SNTP服务器并获取NTP网络时间
- * @note   需在WiFi已连接、未进入透传模式时调用�?
- *         ESP01S_Start()�?已自动调用�?�函�?,一�?无需手动调用�?
- *         工作流程:
- *         1. 尝试AT指令SNTP (AT+CIPSNTPCFG + AT+CIPSNTPTIME)
- *         2. �?AT SNTP失败(固件不支�?),回退到UDP NTP协�??
- *         3. UDP方式: 关闭已有连接→建UDP→发NTP请求→解析响应→关UDP
- *         如果config.ntpServer为空字�?�串则跳�?
+ * @brief  閰嶇疆SNTP鏈嶅姟鍣ㄥ苟鑾峰彇NTP缃戠粶鏃堕棿
+ * @note   闇€鍦╓iFi宸茶繛鎺ャ€佹湭杩涘叆閫忎紶妯″紡鏃惰皟鐢ㄣ€?
+ *         ESP01S_Start()涓?宸茶嚜鍔ㄨ皟鐢ㄦ?ゅ嚱鏁?,涓€鑸?鏃犻渶鎵嬪姩璋冪敤銆?
+ *         宸ヤ綔娴佺▼:
+ *         1. 灏濊瘯AT鎸囦护SNTP (AT+CIPSNTPCFG + AT+CIPSNTPTIME)
+ *         2. 鑻?AT SNTP澶辫触(鍥轰欢涓嶆敮鎸?),鍥為€€鍒癠DP NTP鍗忚??
+ *         3. UDP鏂瑰紡: 鍏抽棴宸叉湁杩炴帴鈫掑缓UDP鈫掑彂NTP璇锋眰鈫掕В鏋愬搷搴斺啋鍏砋DP
+ *         濡傛灉config.ntpServer涓虹┖瀛楃?︿覆鍒欒烦杩?
  */
 void ESP01S_SyncNtpTime(void);
 
 /**
- * @brief  获取最近一�?NTP授时结果
- * @param  pTime 输出时间结构指针(由调用者分�?)
- * @retval 0:时间有效  -1:时间无效(�?获取或获取失�?)
- * @note   返回的是NTP授时时的�?间时�?,不是当前时间�?
- *         如需获取当前时间请使�? ESP01S_GetDateTime()
+ * @brief  鑾峰彇鏈€杩戜竴娆?NTP鎺堟椂缁撴灉
+ * @param  pTime 杈撳嚭鏃堕棿缁撴瀯鎸囬拡(鐢辫皟鐢ㄨ€呭垎閰?)
+ * @retval 0:鏃堕棿鏈夋晥  -1:鏃堕棿鏃犳晥(鏈?鑾峰彇鎴栬幏鍙栧け璐?)
+ * @note   杩斿洖鐨勬槸NTP鎺堟椂鏃剁殑鐬?闂存椂闂?,涓嶆槸褰撳墠鏃堕棿銆?
+ *         濡傞渶鑾峰彇褰撳墠鏃堕棿璇蜂娇鐢? ESP01S_GetDateTime()
  */
 int ESP01S_GetNtpTime(ESP01S_NtpTime_t *pTime);
 
 /**
- * @brief  检�?NTP时间�?否已同�?�成�?
- * @retval 1:已同�?  0:�?同�??
+ * @brief  妫€鏌?NTP鏃堕棿鏄?鍚﹀凡鍚屾?ユ垚鍔?
+ * @retval 1:宸插悓姝?  0:鏈?鍚屾??
  */
 uint8_t ESP01S_IsNtpSynced(void);
 
 /**
- * @brief  检查当前是否已连接WiFi(即ESP01S状态机已到达WIFI_CONNECTED及以�?)
- * @retval 1:已连�?  0:�?连接
+ * @brief  妫€鏌ュ綋鍓嶆槸鍚﹀凡杩炴帴WiFi(鍗矱SP01S鐘舵€佹満宸插埌杈網IFI_CONNECTED鍙婁互涓?)
+ * @retval 1:宸茶繛鎺?  0:鏈?杩炴帴
  */
 uint8_t ESP01S_IsWiFiConnected(void);
 
 /**
- * @brief  将NTP时间写入STM32的RTC(BCD格式)
- * @param  pRtc STM32 RTC句柄指针,传NULL则跳过RTC写入
- * @retval 0:成功  -1:NTP时间无效  -2:RTC写入失败
- * @note   调用前需�?保NTP时间已有�?(先调用ESP01S_Start或ESP01S_SyncNtpTime)
- *         内部会补偿从NTP授时到当前的时间�?(通过HAL_Tick计算),
- *         消除后续操作(TCP连接�?)带来的延迟�??�?�?
- *         写入后可通过 HAL_RTC_GetTime/GetDate 读取RTC时间
+ * @brief  灏哊TP鏃堕棿鍐欏叆STM32鐨凴TC(BCD鏍煎紡)
+ * @param  pRtc STM32 RTC鍙ユ焺鎸囬拡,浼燦ULL鍒欒烦杩嘡TC鍐欏叆
+ * @retval 0:鎴愬姛  -1:NTP鏃堕棿鏃犳晥  -2:RTC鍐欏叆澶辫触
+ * @note   璋冪敤鍓嶉渶纭?淇漀TP鏃堕棿宸叉湁鏁?(鍏堣皟鐢‥SP01S_Start鎴朎SP01S_SyncNtpTime)
+ *         鍐呴儴浼氳ˉ鍋夸粠NTP鎺堟椂鍒板綋鍓嶇殑鏃堕棿宸?(閫氳繃HAL_Tick璁＄畻),
+ *         娑堥櫎鍚庣画鎿嶄綔(TCP杩炴帴绛?)甯︽潵鐨勫欢杩熻??宸?銆?
+ *         鍐欏叆鍚庡彲閫氳繃 HAL_RTC_GetTime/GetDate 璇诲彇RTC鏃堕棿
  */
 int ESP01S_SetRtcFromNtp(RTC_HandleTypeDef *pRtc);
 
 /**
- * @brief  查�?�心知天气日报并解析出城市、白�?/夜间天气、温度及降雨�?
- * @param  apiKey          心知天气API Key
- * @param  location        城市,�? "hangzhou"
- * @param  language        �?言,�? "zh-Hans"
- * @param  unit            温度单位,"c"�?"f"
- * @param  outCity         输出城市名缓冲区
- * @param  cityBufSize     outCity缓冲区大�?(建�??>=16)
- * @param  outTextDay      输出白天天气现象文字缓冲�?
- * @param  textDayBufSize  outTextDay缓冲区大�?(建�??>=32)
- * @param  outHigh         输出白天最高温度字符串缓冲�?
- * @param  highBufSize     outHigh缓冲区大�?(建�??>=8)
- * @param  outTextNight    输出夜间天气现象文字缓冲�?
- * @param  textNightBufSize outTextNight缓冲区大�?(建�??>=32)
- * @param  outLow          输出夜间最低温度字符串缓冲�?
- * @param  lowBufSize      outLow缓冲区大�?(建�??>=8)
- * @param  outPrecip       输出降雨概率字�?�串缓冲�?
- * @param  precipBufSize   outPrecip缓冲区大�?(建�??>=8)
- * @retval 0:成功  -1:参数错�??  -2:�?连接WiFi  -3:网络请求失败  -4:解析失败
- * @note   �?函数会临时退出透传模式、关�?当前TCP连接,查�?�结束后�?动恢�?
- *         到配�?的中�?TCP服务器并重新进入透传模式(若配�?了TCP服务�?)�?
- *         使用 API: /v3/weather/daily.json?start=0&days=1
+ * @brief  鏌ヨ?㈠績鐭ュぉ姘旀棩鎶ュ苟瑙ｆ瀽鍑哄煄甯傘€佺櫧澶?/澶滈棿澶╂皵銆佹俯搴﹀強闄嶉洦閲?
+ * @param  apiKey          蹇冪煡澶╂皵API Key
+ * @param  location        鍩庡競,濡? "hangzhou"
+ * @param  language        璇?瑷€,濡? "zh-Hans"
+ * @param  unit            娓╁害鍗曚綅,"c"鎴?"f"
+ * @param  outCity         杈撳嚭鍩庡競鍚嶇紦鍐插尯
+ * @param  cityBufSize     outCity缂撳啿鍖哄ぇ灏?(寤鸿??>=16)
+ * @param  outTextDay      杈撳嚭鐧藉ぉ澶╂皵鐜拌薄鏂囧瓧缂撳啿鍖?
+ * @param  textDayBufSize  outTextDay缂撳啿鍖哄ぇ灏?(寤鸿??>=32)
+ * @param  outHigh         杈撳嚭鐧藉ぉ鏈€楂樻俯搴﹀瓧绗︿覆缂撳啿鍖?
+ * @param  highBufSize     outHigh缂撳啿鍖哄ぇ灏?(寤鸿??>=8)
+ * @param  outTextNight    杈撳嚭澶滈棿澶╂皵鐜拌薄鏂囧瓧缂撳啿鍖?
+ * @param  textNightBufSize outTextNight缂撳啿鍖哄ぇ灏?(寤鸿??>=32)
+ * @param  outLow          杈撳嚭澶滈棿鏈€浣庢俯搴﹀瓧绗︿覆缂撳啿鍖?
+ * @param  lowBufSize      outLow缂撳啿鍖哄ぇ灏?(寤鸿??>=8)
+ * @param  outPrecip       杈撳嚭闄嶉洦姒傜巼瀛楃?︿覆缂撳啿鍖?
+ * @param  precipBufSize   outPrecip缂撳啿鍖哄ぇ灏?(寤鸿??>=8)
+ * @retval 0:鎴愬姛  -1:鍙傛暟閿欒??  -2:鏈?杩炴帴WiFi  -3:缃戠粶璇锋眰澶辫触  -4:瑙ｆ瀽澶辫触
+ * @note   鏈?鍑芥暟浼氫复鏃堕€€鍑洪€忎紶妯″紡銆佸叧闂?褰撳墠TCP杩炴帴,鏌ヨ?㈢粨鏉熷悗鑷?鍔ㄦ仮澶?
+ *         鍒伴厤缃?鐨勪腑缁?TCP鏈嶅姟鍣ㄥ苟閲嶆柊杩涘叆閫忎紶妯″紡(鑻ラ厤缃?浜員CP鏈嶅姟鍣?)銆?
+ *         浣跨敤 API: /v3/weather/daily.json?start=0&days=1
  */
 int ESP01S_QueryWeather(const char *apiKey, const char *location,
                         const char *language, const char *unit,
@@ -356,42 +356,42 @@ int ESP01S_QueryWeather(const char *apiKey, const char *location,
                         char *outLow, uint16_t lowBufSize,
                         char *outPrecip, uint16_t precipBufSize);
 
-/* ---- 时间获取 ---- */
+/* ---- 鏃堕棿鑾峰彇 ---- */
 
 /**
- * @brief  获取当前时间字�?�串
- * @param  pRtc    STM32 RTC句柄指针,传NULL则不从RTC读取
- * @param  format  时间格式: DT_DATE/DT_TIME/DT_ALL
- * @param  pBuf    输出字�?�串缓冲�?(由调用者分�?)
- * @param  bufLen  缓冲区长�?(建�??>=24字节)
- * @retval 0:成功  -1:无可用时间源(NTP无效且RTC无效或未�?)
- * @note   时间来源优先�?:
- *         1. RTC(如果pRtc非NULL且RTC年份>2000) �? 最精确,掉电�?保持
- *         2. NTP时间+HAL_Tick�?值推�?(如果NTP已授�?) �? 有累�?�?�?
- *         格式示例:
+ * @brief  鑾峰彇褰撳墠鏃堕棿瀛楃?︿覆
+ * @param  pRtc    STM32 RTC鍙ユ焺鎸囬拡,浼燦ULL鍒欎笉浠嶳TC璇诲彇
+ * @param  format  鏃堕棿鏍煎紡: DT_DATE/DT_TIME/DT_ALL
+ * @param  pBuf    杈撳嚭瀛楃?︿覆缂撳啿鍖?(鐢辫皟鐢ㄨ€呭垎閰?)
+ * @param  bufLen  缂撳啿鍖洪暱搴?(寤鸿??>=24瀛楄妭)
+ * @retval 0:鎴愬姛  -1:鏃犲彲鐢ㄦ椂闂存簮(NTP鏃犳晥涓擱TC鏃犳晥鎴栨湭浼?)
+ * @note   鏃堕棿鏉ユ簮浼樺厛绾?:
+ *         1. RTC(濡傛灉pRtc闈濶ULL涓擱TC骞翠唤>2000) 鈥? 鏈€绮剧‘,鎺夌數鍙?淇濇寔
+ *         2. NTP鏃堕棿+HAL_Tick宸?鍊兼帹绠?(濡傛灉NTP宸叉巿鏃?) 鈥? 鏈夌疮绉?璇?宸?
+ *         鏍煎紡绀轰緥:
  *         DT_DATE: "2026-04-12"
  *         DT_TIME: "14:30:45"
  *         DT_ALL:  "2026-04-12 14:30:45"
- *         使用示例:
+ *         浣跨敤绀轰緥:
  *         @code
  *         char buf[24];
  *         if (ESP01S_GetDateTime(&hrtc, DT_ALL, buf, sizeof(buf)) == 0)
- *             printf("当前时间: %s\r\n", buf);
+ *             printf("褰撳墠鏃堕棿: %s\r\n", buf);
  *         @endcode
  */
 int ESP01S_GetDateTime(RTC_HandleTypeDef *pRtc, DT_Format_t format, char *pBuf, uint16_t bufLen);
 
-/* ---- ������ѯ (wttr.in ��� API, ���� Key) ---- */
+/* ---- 天气查询 (wttr.in 免费 API, 无需 Key) ---- */
 
 /**
- * @brief  ͨ�� wttr.in ��ѯ���� (���, ���� API Key)
- * @param  location    ������ (ƴ����Ӣ��, �� "hangzhou")
- * @param  outLine     �����ʽ���л��� (�� "Hangzhou Sunny 30C 10%")
- * @param  lineBufSize �����С (���� >= 128)
- * @retval 0:�ɹ�  -1:������  -2:WiFiδ��  -3:����ʧ��  -4:����ʧ��
- * @note   ʹ�� HTTP GET http://wttr.in/{location}?format="%l|%C|%t|%p"
- *         ��Ӧʾ��: "Hangzhou|Sunny|+28��C|15%"
- *         �ڲ�����ʱ�˳�͸�����ر�TCP����ѯ��ָ�TCP͸����
+ * @brief  通过 wttr.in 查询天气 (免费, 无需 API Key)
+ * @param  location    城市名 (拼音或英文, 如 "hangzhou")
+ * @param  outLine     输出格式化行缓冲 (如 "Hangzhou Sunny 30C 10%")
+ * @param  lineBufSize 缓冲大小 (建议 >= 128)
+ * @retval 0:成功  -1:参数错  -2:WiFi未连  -3:网络失败  -4:解析失败
+ * @note   使用 HTTP GET http://wttr.in/{location}?format="%l|%C|%t|%p"
+ *         响应示例: "Hangzhou|Sunny|+28°C|15%"
+ *         内部会临时退出透传、关闭TCP、查询后恢复TCP透传。
  */
 int ESP01S_QueryWeatherWttr(const char *location,
                             char *outLine, uint16_t lineBufSize);
@@ -402,21 +402,21 @@ int ESP01S_QueryWeatherWttr(const char *location,
 
 #ifndef ESP01S_NO_FREERTOS
 /**
- * @brief  注册ESP01S透传数据接收队列
- * @param  queue CMSIS-RTOS2 消息队列句柄
- * @note   注册队列�?,透传模式下接收到的TCP数据将直接发送到该队�?,
- *         不再通过 ESP01S_RegisterDataCb 注册的回调�?�理�?
- *         AT指令模式的响应仍由内部回调在ISR�?处理�?
+ * @brief  娉ㄥ唽ESP01S閫忎紶鏁版嵁鎺ユ敹闃熷垪
+ * @param  queue CMSIS-RTOS2 娑堟伅闃熷垪鍙ユ焺
+ * @note   娉ㄥ唽闃熷垪鍚?,閫忎紶妯″紡涓嬫帴鏀跺埌鐨凾CP鏁版嵁灏嗙洿鎺ュ彂閫佸埌璇ラ槦鍒?,
+ *         涓嶅啀閫氳繃 ESP01S_RegisterDataCb 娉ㄥ唽鐨勫洖璋冨?勭悊銆?
+ *         AT鎸囦护妯″紡鐨勫搷搴斾粛鐢卞唴閮ㄥ洖璋冨湪ISR涓?澶勭悊銆?
  */
 void ESP01S_RegisterRxQueue(osMessageQueueId_t queue);
 #endif
 
 /**
- * @brief  在任务上下文�?分发透传数据到用户回�?
- * @param  pData 接收到的TCP数据指针
- * @param  len   数据长度
- * @note   当使用消�?队列接收透传数据�?,应在 NetworkTask �?读取队列后调用本函数,
- *         或自行�?�理数据。本函数会调�? ESP01S_RegisterDataCb 注册的用户回调�?
+ * @brief  鍦ㄤ换鍔′笂涓嬫枃涓?鍒嗗彂閫忎紶鏁版嵁鍒扮敤鎴峰洖璋?
+ * @param  pData 鎺ユ敹鍒扮殑TCP鏁版嵁鎸囬拡
+ * @param  len   鏁版嵁闀垮害
+ * @note   褰撲娇鐢ㄦ秷鎭?闃熷垪鎺ユ敹閫忎紶鏁版嵁鏃?,搴斿湪 NetworkTask 涓?璇诲彇闃熷垪鍚庤皟鐢ㄦ湰鍑芥暟,
+ *         鎴栬嚜琛屽?勭悊鏁版嵁銆傛湰鍑芥暟浼氳皟鐢? ESP01S_RegisterDataCb 娉ㄥ唽鐨勭敤鎴峰洖璋冦€?
  */
 void ESP01S_DispatchTransparentData(const uint8_t *pData, uint16_t len);
 #endif /* __ESP01S_H */

@@ -1,12 +1,12 @@
 /**
  * @file    NFC.c
- * @brief   NFC ¿¨¶ÁĞ´·â×°Ä£¿éÊµÏÖ
- * @details ·â×°ÁËÒÔÏÂÁ÷³Ì:
- *          1. ÃÜÔ¿ÑéÖ¤ + ¶Á Block1 (´øÖØÊÔ)
- *          2. Ğ£ÑéºÍÑéÖ¤
- *          3. ¿¨Êı¾İ×Ö¶Î½âÎö
- *          4. ¿¨ÀàĞÍ·ÖÀà (ÆÕÍ¨/Í¼Ïñ/¹ÜÀíÔ±)
- *          5. ĞÕÃû/²¿ÃÅ/Í·ÏñÎ»Í¼¶ÁÈ¡
+ * @brief   NFC å¡è¯»å†™å°è£…æ¨¡å—å®ç°
+ * @details å°è£…äº†ä»¥ä¸‹æµç¨‹:
+ *          1. å¯†é’¥éªŒè¯ + è¯» Block1 (å¸¦é‡è¯•)
+ *          2. æ ¡éªŒå’ŒéªŒè¯
+ *          3. å¡æ•°æ®å­—æ®µè§£æ
+ *          4. å¡ç±»å‹åˆ†ç±» (æ™®é€š/å›¾åƒ/ç®¡ç†å‘˜)
+ *          5. å§“å/éƒ¨é—¨/å¤´åƒä½å›¾è¯»å–
  */
 
 #include "NFC.h"
@@ -18,28 +18,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* ====== ÄÚ²¿³£Á¿ ====== */
+/* ====== å†…éƒ¨å¸¸é‡ ====== */
 
-/** ¶Á¿¨ÖØÊÔ´ÎÊı */
+/** è¯»å¡é‡è¯•æ¬¡æ•° */
 #define NFC_READ_RETRY      3
 
-/** Mifare Ä¬ÈÏÃÜÔ¿ (³ö³§Öµ) */
-static const uint8_t s_defaultKey[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+/** Mifare é»˜è®¤å¯†é’¥ (å‡ºå‚å€¼) */
+static uint8_t s_defaultKey[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
-/** µ¥ÉÈÇøÊı¾İ¿éÊı (²»º¬ÃÜÔ¿¿é) */
+/** å•æ‰‡åŒºæ•°æ®å—æ•° (ä¸å«å¯†é’¥å—) */
 #define NFC_BLOCKS_PER_SEC  3
 
-/** Block Êı¾İ³¤¶È */
+/** Block æ•°æ®é•¿åº¦ */
 #define NFC_BLOCK_SIZE      16
 
-/* ====== ÄÚ²¿¸¨Öúºê: ¶ÁÒ»¸öÉÈÇøµÄ·ÇÃÜÔ¿¿éµ½»º³åÇø ====== */
+/* ====== å†…éƒ¨è¾…åŠ©å®: è¯»ä¸€ä¸ªæ‰‡åŒºçš„éå¯†é’¥å—åˆ°ç¼“å†²åŒº ====== */
 
 /**
- * @brief  ¶ÁÈ¡Ö¸¶¨ÉÈÇøÖĞÇ° 3 ¸öÊı¾İ¿éµ½Ä¿±ê»º³åÇø
- * @param  sec    ÉÈÇøºÅ (0~15)
- * @param  dst    Ä¿±ê»º³åÇøÖ¸Õë
- * @param  offset Ğ´ÈëÆ«ÒÆ (×Ö½Ú)
- * @note   ×Ô¶¯´¦ÀíÃÜÔ¿ÑéÖ¤, ÑéÖ¤Ê§°ÜÊ±¾²Ä¬Ìø¹ı¸ÃÉÈÇø
+ * @brief  è¯»å–æŒ‡å®šæ‰‡åŒºä¸­å‰ 3 ä¸ªæ•°æ®å—åˆ°ç›®æ ‡ç¼“å†²åŒº
+ * @param  sec    æ‰‡åŒºå· (0~15)
+ * @param  dst    ç›®æ ‡ç¼“å†²åŒºæŒ‡é’ˆ
+ * @param  offset å†™å…¥åç§» (å­—èŠ‚)
+ * @note   è‡ªåŠ¨å¤„ç†å¯†é’¥éªŒè¯, éªŒè¯å¤±è´¥æ—¶é™é»˜è·³è¿‡è¯¥æ‰‡åŒº
  */
 #define NFC_READ_SECTOR(sec, dst, offset) do {                                        \
     char _st;                                                                         \
@@ -51,23 +51,23 @@ static const uint8_t s_defaultKey[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
                             (dst) + (offset) + _b * NFC_BLOCK_SIZE);                  \
         }                                                                             \
     }                                                                                 \
-    osDelay(2);  /* ÈÎÎñÇĞ»»ÑÓÊ±, ÈÃ³ö CPU ¸ø guiTask Ë¢ĞÂ OLED */            \
+    osDelay(2);  /* ä»»åŠ¡åˆ‡æ¢å»¶æ—¶, è®©å‡º CPU ç»™ guiTask åˆ·æ–° OLED */            \
 } while(0)
 
 
-/* ====== ¹«¿ª API ====== */
+/* ====== å…¬å¼€ API ====== */
 
 /**
- * @brief  ³õÊ¼»¯ NFC Ä£¿é
+ * @brief  åˆå§‹åŒ– NFC æ¨¡å—
  */
 void NFC_Init(void)
 {
     RC522_Platform_Init();
-    RC522_ConfigISOType('A');   /* ISO14443A, ÄÚ²¿×Ô¶¯¿ªÆôÌìÏß */
+    RC522_ConfigISOType('A');   /* ISO14443A, å†…éƒ¨è‡ªåŠ¨å¼€å¯å¤©çº¿ */
 }
 
 /**
- * @brief  Ñ°¿¨
+ * @brief  å¯»å¡
  */
 char NFC_ScanCard(uint8_t uid[4])
 {
@@ -75,7 +75,7 @@ char NFC_ScanCard(uint8_t uid[4])
 }
 
 /**
- * @brief  µÈ´ı¿¨Àë¿ª
+ * @brief  ç­‰å¾…å¡ç¦»å¼€
  */
 void NFC_WaitCardOff(void)
 {
@@ -83,27 +83,27 @@ void NFC_WaitCardOff(void)
 }
 
 /**
- * @brief  RC522 Ó²¼ş»Ö¸´: ¸´Î»Ğ¾Æ¬ + ÖØÅäÖÃ ISO14443A + ÖØ¿ªÌìÏß
- * @note   ÔÚ UPDATEIMG/CLEAR µÈÃÜ¼¯²Ù×÷ºó¡¢»ò¶Á¿¨Á¬ĞøÊ§°Üºóµ÷ÓÃ,
- *         ·ÀÖ¹ RC522 ÄÚ²¿ FIFO/×´Ì¬»ú²ĞÁôµ¼ÖÂºóĞøÍ¨ĞÅÒì³£¡£
- *         ²Î¿¼ NFCWriter µÄ NFC_App_Recover()¡£
+ * @brief  RC522 ç¡¬ä»¶æ¢å¤: å¤ä½èŠ¯ç‰‡ + é‡é…ç½® ISO14443A + é‡å¼€å¤©çº¿
+ * @note   åœ¨ UPDATEIMG/CLEAR ç­‰å¯†é›†æ“ä½œåã€æˆ–è¯»å¡è¿ç»­å¤±è´¥åè°ƒç”¨,
+ *         é˜²æ­¢ RC522 å†…éƒ¨ FIFO/çŠ¶æ€æœºæ®‹ç•™å¯¼è‡´åç»­é€šä¿¡å¼‚å¸¸ã€‚
+ *         å‚è€ƒ NFCWriter çš„ NFC_App_Recover()ã€‚
  */
 void NFC_Recover(void)
 {
-    RC522_Reset();                 /* RST Òı½ÅÂö³å + CMD_RESETPHASE Èí¸´Î» */
+    RC522_Reset();                 /* RST å¼•è„šè„‰å†² + CMD_RESETPHASE è½¯å¤ä½ */
     osDelay(10);
-    RC522_ConfigISOType('A');      /* ÖØÅäÖÃ ISO14443A, ×Ô¶¯¿ªÌìÏß */
+    RC522_ConfigISOType('A');      /* é‡é…ç½® ISO14443A, è‡ªåŠ¨å¼€å¤©çº¿ */
 }
 
 /**
- * @brief  ¶ÁÈ¡²¢½âÎöÒ»ÕÅ¿¨µÄÈ«²¿Êı¾İ
- * @note   ´¦ÀíÁ÷³Ì:
- *          1. ²¶×½Ë¢¿¨Ê±¿Ì
- *          2. ÑéÖ¤ÉÈÇø0 + ¶ÁÈ¡ Block1 (º¬ÖØÊÔ)
- *          3. Ğ£ÑéºÍÑéÖ¤
- *          4. ½âÎö×Ö¶Î: ¿¨ºÅ/¹¤ºÅ/»ı·Ö/¿¨ÀàĞÍ/×´Ì¬
- *          5. ·ÖÀà (¹ÜÀíÔ±/Í¼Ïñ/ÆÕÍ¨)
- *          6. ¶ÔÓĞĞ§¿¨¶ÁÈ¡ĞÕÃû/²¿ÃÅ/Í·ÏñÎ»Í¼
+ * @brief  è¯»å–å¹¶è§£æä¸€å¼ å¡çš„å…¨éƒ¨æ•°æ®
+ * @note   å¤„ç†æµç¨‹:
+ *          1. æ•æ‰åˆ·å¡æ—¶åˆ»
+ *          2. éªŒè¯æ‰‡åŒº0 + è¯»å– Block1 (å«é‡è¯•)
+ *          3. æ ¡éªŒå’ŒéªŒè¯
+ *          4. è§£æå­—æ®µ: å¡å·/å·¥å·/ç§¯åˆ†/å¡ç±»å‹/çŠ¶æ€
+ *          5. åˆ†ç±» (ç®¡ç†å‘˜/å›¾åƒ/æ™®é€š)
+ *          6. å¯¹æœ‰æ•ˆå¡è¯»å–å§“å/éƒ¨é—¨/å¤´åƒä½å›¾
  */
 NFC_Event_t NFC_ReadCard(const uint8_t uid[4], NFC_CardData_t *outCard)
 {
@@ -115,17 +115,17 @@ NFC_Event_t NFC_ReadCard(const uint8_t uid[4], NFC_CardData_t *outCard)
         return NFC_EVT_INVALID;
     }
 
-    /* ---- ³õÊ¼»¯Êä³ö½á¹¹ ---- */
+    /* ---- åˆå§‹åŒ–è¾“å‡ºç»“æ„ ---- */
     memset(outCard, 0, sizeof(NFC_CardData_t));
     memcpy(outCard->uid, uid, 4);
 
-    /* ²¶»ñË¢¿¨Ê±¿Ì */
+    /* æ•è·åˆ·å¡æ—¶åˆ» */
     BSP_RTC_GetDateTime(&outCard->swipeDT);
 
-    /* ===== µÚ1²½: ÑéÖ¤ÉÈÇø0 + ¶Á Block1 (º¬ÖØÊÔ) ===== */
+    /* ===== ç¬¬1æ­¥: éªŒè¯æ‰‡åŒº0 + è¯» Block1 (å«é‡è¯•) ===== */
     for (int retry = 0; retry < NFC_READ_RETRY; retry++) {
         if (retry > 0) {
-            /* ÖØÊÔÇ°ÏÈ Halt + ÖØĞÂÑ°¿¨ */
+            /* é‡è¯•å‰å…ˆ Halt + é‡æ–°å¯»å¡ */
             RC522_Halt();
             osDelay(5);
             uint8_t reUID[4];
@@ -133,12 +133,12 @@ NFC_Event_t NFC_ReadCard(const uint8_t uid[4], NFC_CardData_t *outCard)
             if (status != RC522_OK) continue;
         }
 
-        /* ÑéÖ¤ÉÈÇø0 ÃÜÔ¿¿é (¿éµØÖ· 0*4+3 = 3) */
+        /* éªŒè¯æ‰‡åŒº0 å¯†é’¥å— (å—åœ°å€ 0*4+3 = 3) */
         status = RC522_AuthState(RC522_PICC_AUTHENT1A,
                                  3, (uint8_t *)s_defaultKey, outCard->uid);
         if (status != RC522_OK) continue;
 
-        /* ¶ÁÉÈÇø0 ¿é1 (ÕË»§Í·Êı¾İ) */
+        /* è¯»æ‰‡åŒº0 å—1 (è´¦æˆ·å¤´æ•°æ®) */
         status = RC522_ReadBlock(0, 1, blockData);
         if (status == RC522_OK) {
             readOk = 1;
@@ -150,7 +150,7 @@ NFC_Event_t NFC_ReadCard(const uint8_t uid[4], NFC_CardData_t *outCard)
         return NFC_EVT_INVALID;
     }
 
-    /* ===== µÚ2²½: Ğ£ÑéºÍÑéÖ¤ ===== */
+    /* ===== ç¬¬2æ­¥: æ ¡éªŒå’ŒéªŒè¯ ===== */
     uint16_t sum = 0;
     for (int i = 0; i < 14; i++) {
         sum += blockData[i];
@@ -159,12 +159,12 @@ NFC_Event_t NFC_ReadCard(const uint8_t uid[4], NFC_CardData_t *outCard)
 
     outCard->statusFlag = blockData[13];
 
-    /* Ğ£ÑéÊ§°Ü »ò ¹ÒÊ§¿¨ ¡ú ÎŞĞ§ */
+    /* æ ¡éªŒå¤±è´¥ æˆ– æŒ‚å¤±å¡ â†’ æ— æ•ˆ */
     if (sum != checksum || outCard->statusFlag == 0xFF) {
         return NFC_EVT_INVALID;
     }
 
-    /* ===== µÚ3²½: ½âÎö¿¨Êı¾İ×Ö¶Î ===== */
+    /* ===== ç¬¬3æ­¥: è§£æå¡æ•°æ®å­—æ®µ ===== */
     outCard->cardId =  (uint32_t)blockData[0]        |
                       ((uint32_t)blockData[1] << 8)  |
                       ((uint32_t)blockData[2] << 16) |
@@ -182,12 +182,12 @@ NFC_Event_t NFC_ReadCard(const uint8_t uid[4], NFC_CardData_t *outCard)
 
     outCard->cardType = blockData[12];
 
-    /* È«ÁãÊı¾İ¿éÊÓÎª¿Õ¿¨ (Ïú¿¨ºó), ÎŞĞè¶ÁÈ¡Í¼ÏñÉÈÇø */
+    /* å…¨é›¶æ•°æ®å—è§†ä¸ºç©ºå¡ (é”€å¡å), æ— éœ€è¯»å–å›¾åƒæ‰‡åŒº */
     if (outCard->cardId == 0 && outCard->cardType == 0) {
         return NFC_EVT_INVALID;
     }
 
-    /* ===== µÚ4²½: ¿¨ÀàĞÍ·ÖÀà ===== */
+    /* ===== ç¬¬4æ­¥: å¡ç±»å‹åˆ†ç±» ===== */
     NFC_Event_t event;
     switch (outCard->cardType) {
     case 0x02:
@@ -199,12 +199,12 @@ NFC_Event_t NFC_ReadCard(const uint8_t uid[4], NFC_CardData_t *outCard)
         break;
     }
 
-    /* ===== µÚ5²½: ¶ÁÈ¡ĞÕÃû/²¿ÃÅ/Í·ÏñÎ»Í¼ (¹ÜÀíÔ±¿¨Ìø¹ı, ½ÚÊ¡ ~200ms) ===== */
+    /* ===== ç¬¬5æ­¥: è¯»å–å§“å/éƒ¨é—¨/å¤´åƒä½å›¾ (ç®¡ç†å‘˜å¡è·³è¿‡, èŠ‚çœ ~200ms) ===== */
     if (event != NFC_EVT_ADMIN) {
         DispCardBitmap_t *bm = DISP_GetBitmapBuf();
         memset(bm, 0, sizeof(DispCardBitmap_t));
 
-        /* -- ĞÕÃû: 10 ¿é = 160 ×Ö½Ú (ÉÈÇø 9~11 È« 3 ¿é + ÉÈÇø 12 ¿é 0) -- */
+        /* -- å§“å: 10 å— = 160 å­—èŠ‚ (æ‰‡åŒº 9~11 å…¨ 3 å— + æ‰‡åŒº 12 å— 0) -- */
         NFC_READ_SECTOR(9,  bm->name, 0);
         NFC_READ_SECTOR(10, bm->name, 48);
         NFC_READ_SECTOR(11, bm->name, 96);
@@ -218,7 +218,7 @@ NFC_Event_t NFC_ReadCard(const uint8_t uid[4], NFC_CardData_t *outCard)
         }
         osDelay(2);
 
-        /* -- ²¿ÃÅ: 10 ¿é = 160 ×Ö½Ú (ÉÈÇø 12 ¿é 1~2 + ÉÈÇø 13~14 È« + ÉÈÇø 15 ¿é 0~1) -- */
+        /* -- éƒ¨é—¨: 10 å— = 160 å­—èŠ‚ (æ‰‡åŒº 12 å— 1~2 + æ‰‡åŒº 13~14 å…¨ + æ‰‡åŒº 15 å— 0~1) -- */
         {
             char _st = RC522_AuthState(RC522_PICC_AUTHENT1A,
                                        (uint8_t)(12 * 4 + 3),
@@ -242,7 +242,7 @@ NFC_Event_t NFC_ReadCard(const uint8_t uid[4], NFC_CardData_t *outCard)
         }
         osDelay(2);
 
-        /* -- Í·Ïñ: ½öÍ¼Ïñ¿¨ (ÉÈÇø 1~8, ¹² 24 ¿é = 384 ×Ö½ÚÎ»Í¼) -- */
+        /* -- å¤´åƒ: ä»…å›¾åƒå¡ (æ‰‡åŒº 1~8, å…± 24 å— = 384 å­—èŠ‚ä½å›¾) -- */
         if (outCard->cardType == 0x01) {
             NFC_READ_SECTOR(1, bm->avatar, 0);
             NFC_READ_SECTOR(2, bm->avatar, 48);
@@ -252,7 +252,7 @@ NFC_Event_t NFC_ReadCard(const uint8_t uid[4], NFC_CardData_t *outCard)
             NFC_READ_SECTOR(6, bm->avatar, 240);
             NFC_READ_SECTOR(7, bm->avatar, 288);
             NFC_READ_SECTOR(8, bm->avatar, 336);
-            /* É¨ÃèÈ«²¿ 384 ×Ö½ÚÅĞ¶ÏÍ·ÏñÊÇ·ñ´æÔÚ (½ö 32 ×Ö½ÚÒ×ÒòºÚ±ßÉÏ½ÇÎóÅĞ) */
+            /* æ‰«æå…¨éƒ¨ 384 å­—èŠ‚åˆ¤æ–­å¤´åƒæ˜¯å¦å­˜åœ¨ (ä»… 32 å­—èŠ‚æ˜“å› é»‘è¾¹ä¸Šè§’è¯¯åˆ¤) */
             bm->hasAvatar = 0;
             for (int _j = 0; _j < (int)sizeof(bm->avatar); _j++) {
                 if (bm->avatar[_j] != 0) { bm->hasAvatar = 1; break; }
@@ -264,10 +264,10 @@ NFC_Event_t NFC_ReadCard(const uint8_t uid[4], NFC_CardData_t *outCard)
 }
 
 /**
- * @brief  ÇáÁ¿¶Á¿¨: ½ö¶Á Block1 ÕË»§Í·, ²»¶ÁÍ¼ÏñÉÈÇø
- * @note   ÓÃÓÚ CmdDone ¿ìËÙÖØ¶Á (printf ÉÏ±¨½öĞèÕË»§Í·×Ö¶Î),
- *         ´ó·ùËõ¶Ì³ÖËøÊ±¼ä (Ô¼ 10ms vs È«Á¿¶ÁµÄ ~1s)¡£
- *         ²»µ÷ÓÃ DISP_GetBitmapBuf(), ²»ĞŞ¸Ä s_cardBitmap¡£
+ * @brief  è½»é‡è¯»å¡: ä»…è¯» Block1 è´¦æˆ·å¤´, ä¸è¯»å›¾åƒæ‰‡åŒº
+ * @note   ç”¨äº CmdDone å¿«é€Ÿé‡è¯» (printf ä¸ŠæŠ¥ä»…éœ€è´¦æˆ·å¤´å­—æ®µ),
+ *         å¤§å¹…ç¼©çŸ­æŒé”æ—¶é—´ (çº¦ 10ms vs å…¨é‡è¯»çš„ ~1s)ã€‚
+ *         ä¸è°ƒç”¨ DISP_GetBitmapBuf(), ä¸ä¿®æ”¹ s_cardBitmapã€‚
  */
 NFC_Event_t NFC_ReadCardHeader(const uint8_t uid[4], NFC_CardData_t *outCard)
 {
@@ -283,7 +283,7 @@ NFC_Event_t NFC_ReadCardHeader(const uint8_t uid[4], NFC_CardData_t *outCard)
     memcpy(outCard->uid, uid, 4);
     BSP_RTC_GetDateTime(&outCard->swipeDT);
 
-    /* ¶ÁÉÈÇø0 Block1 (º¬ÖØÊÔ) */
+    /* è¯»æ‰‡åŒº0 Block1 (å«é‡è¯•) */
     for (int retry = 0; retry < NFC_READ_RETRY; retry++) {
         if (retry > 0) {
             RC522_Halt();
@@ -301,7 +301,7 @@ NFC_Event_t NFC_ReadCardHeader(const uint8_t uid[4], NFC_CardData_t *outCard)
 
     if (!readOk) return NFC_EVT_INVALID;
 
-    /* Ğ£ÑéºÍ */
+    /* æ ¡éªŒå’Œ */
     uint16_t sum = 0;
     for (int i = 0; i < 14; i++) sum += blockData[i];
     uint16_t checksum = blockData[14] | ((uint16_t)blockData[15] << 8);
@@ -309,7 +309,7 @@ NFC_Event_t NFC_ReadCardHeader(const uint8_t uid[4], NFC_CardData_t *outCard)
     if (sum != checksum || outCard->statusFlag == 0xFF)
         return NFC_EVT_INVALID;
 
-    /* ½âÎö×Ö¶Î */
+    /* è§£æå­—æ®µ */
     outCard->cardId =  (uint32_t)blockData[0]        |
                       ((uint32_t)blockData[1] << 8)  |
                       ((uint32_t)blockData[2] << 16) |
@@ -334,18 +334,18 @@ NFC_Event_t NFC_ReadCardHeader(const uint8_t uid[4], NFC_CardData_t *outCard)
     }
 }
 
-/* ====== ´®¿Ú·¢¿¨Ğ­ÒéÊµÏÖ ====== */
+/* ====== ä¸²å£å‘å¡åè®®å®ç° ====== */
 
-/** Í¼Ïñ¿é»º´æ */
+/** å›¾åƒå—ç¼“å­˜ */
 static uint8_t s_imgAvatar[NFC_IMG_AVATAR_BLOCKS][NFC_IMG_BLOCK_SIZE];
 static uint8_t s_imgName[NFC_IMG_NAME_BLOCKS][NFC_IMG_BLOCK_SIZE];
 static uint8_t s_imgDept[NFC_IMG_DEPT_BLOCKS][NFC_IMG_BLOCK_SIZE];
 
-/** ×î½üÒ»´Î¶Á¿¨ UID »º´æ (ÓÃÓÚ READ ÏìÓ¦) */
+/** æœ€è¿‘ä¸€æ¬¡è¯»å¡ UID ç¼“å­˜ (ç”¨äº READ å“åº”) */
 static uint8_t s_lastUID[4];
 static char    s_lastUIDStr[16];
 
-/** RC522 ²¢·¢Ëø (0=¿ÕÏĞ, 1=±»Õ¼ÓÃ) */
+/** RC522 å¹¶å‘é” (0=ç©ºé—², 1=è¢«å ç”¨) */
 static volatile uint8_t s_readerLocked = 0;
 
 uint8_t NFC_LockReader(void)   {
@@ -358,9 +358,9 @@ uint8_t NFC_LockReader(void)   {
 void    NFC_UnlockReader(void) { s_readerLocked = 0; }
 uint8_t NFC_IsReaderLocked(void) { return s_readerLocked; }
 
-/** ÃüÁîÍê³ÉÍ¨Öª±êÖ¾ (uartTask ÉèÖÃ, nfcTask ÂÖÑ¯²¢Çå³ı) */
+/** å‘½ä»¤å®Œæˆé€šçŸ¥æ ‡å¿— (uartTask è®¾ç½®, nfcTask è½®è¯¢å¹¶æ¸…é™¤) */
 static volatile uint8_t s_cmdDone = 0;
-/** ÑÓ³ÙÍ¨Öª±êÖ¾: uartTask ÏÈ·¢ÏìÓ¦ÔÙÖÃÎ» s_cmdDone, ±£Ö¤´®¿ÚÊä³öÓĞĞò */
+/** å»¶è¿Ÿé€šçŸ¥æ ‡å¿—: uartTask å…ˆå‘å“åº”å†ç½®ä½ s_cmdDone, ä¿è¯ä¸²å£è¾“å‡ºæœ‰åº */
 static volatile uint8_t s_pendingNotify = 0;
 
 void NFC_NotifyCmdDone(void) { s_cmdDone = 1; }
@@ -368,7 +368,7 @@ void NFC_ClearCmdDone(void)  { s_cmdDone = 0; }
 uint8_t NFC_IsCmdDone(void)  { return s_cmdDone; }
 
 /**
- * @brief  ³åË¢ÑÓ³ÙÍ¨Öª: uartTask ÔÚ·¢ËÍÍêÏìÓ¦ºóµ÷ÓÃ, ½«´ı´¦ÀíÍ¨ÖªÌá½»¸ø nfcTask
+ * @brief  å†²åˆ·å»¶è¿Ÿé€šçŸ¥: uartTask åœ¨å‘é€å®Œå“åº”åè°ƒç”¨, å°†å¾…å¤„ç†é€šçŸ¥æäº¤ç»™ nfcTask
  */
 void NFC_FlushCmdNotify(void)
 {
@@ -378,16 +378,16 @@ void NFC_FlushCmdNotify(void)
     }
 }
 
-/** È«Á¿ÖØ¶Á±êÖ¾: ISSUE Í¼Ïñ¿¨ / UPDATEIMG ºóÖÃÎ», nfcTask CmdDone ´¦ÀíÊ±¼ì²é */
+/** å…¨é‡é‡è¯»æ ‡å¿—: ISSUE å›¾åƒå¡ / UPDATEIMG åç½®ä½, nfcTask CmdDone å¤„ç†æ—¶æ£€æŸ¥ */
 static volatile uint8_t s_needFullReread = 0;
 
 void NFC_SetFullReread(void)        { s_needFullReread = 1; }
 uint8_t NFC_IsFullRereadNeeded(void) { return s_needFullReread; }
 void NFC_ClearFullReread(void)      { s_needFullReread = 0; }
 
-/* ====== ÄÚ²¿¸¨Öú ====== */
+/* ====== å†…éƒ¨è¾…åŠ© ====== */
 
-/** ½âÎö HEX ×Ö·û´® (2×Ö·û¡ú1×Ö½Ú) */
+/** è§£æ HEX å­—ç¬¦ä¸² (2å­—ç¬¦â†’1å­—èŠ‚) */
 static int HexToByte(char hi, char lo, uint8_t *out)
 {
     int val = 0;
@@ -403,7 +403,7 @@ static int HexToByte(char hi, char lo, uint8_t *out)
     return 0;
 }
 
-/** ½âÎö 32 ×Ö½Ú HEX ×Ö·û´® ¡ú 16 ×Ö½ÚÊı¾İ */
+/** è§£æ 32 å­—èŠ‚ HEX å­—ç¬¦ä¸² â†’ 16 å­—èŠ‚æ•°æ® */
 static int ParseHex32(const char *hex, uint8_t buf[16])
 {
     for (int i = 0; i < 16; i++) {
@@ -413,21 +413,21 @@ static int ParseHex32(const char *hex, uint8_t buf[16])
     return 0;
 }
 
-/** ½« UID 4 ×Ö½Ú×ªÎª HEX ×Ö·û´® */
+/** å°† UID 4 å­—èŠ‚è½¬ä¸º HEX å­—ç¬¦ä¸² */
 static void UIDToStr(const uint8_t uid[4], char *str)
 {
     sprintf(str, "%02X%02X%02X%02X", uid[0], uid[1], uid[2], uid[3]);
 }
 
-/* ====== ÃüÁî´¦Àí ====== */
+/* ====== å‘½ä»¤å¤„ç† ====== */
 
 /**
- * @brief  Ğ´ÕË»§Í·µ½¿¨ Block1
- * @param  cardId   ¿¨ºÅ (4B HEX)
- * @param  sid      Ñ§ºÅ/¹¤ºÅ (Ê®½øÖÆ, 8 Î»Èç 23041036)
- * @param  points   »ı·Ö
- * @param  cardType ¿¨ÀàĞÍ
- * @return ÏìÓ¦×Ö·û´®
+ * @brief  å†™è´¦æˆ·å¤´åˆ°å¡ Block1
+ * @param  cardId   å¡å· (4B HEX)
+ * @param  sid      å­¦å·/å·¥å· (åè¿›åˆ¶, 8 ä½å¦‚ 23041036)
+ * @param  points   ç§¯åˆ†
+ * @param  cardType å¡ç±»å‹
+ * @return å“åº”å­—ç¬¦ä¸²
  */
 static const char *NFC_CmdIssue(const char *args)
 {
@@ -437,18 +437,18 @@ static const char *NFC_CmdIssue(const char *args)
     uint8_t  uid[4];
     char     status;
 
-    if (sscanf(args, "%x,%u,%u,%d", &cardId, &sid, &points, &cardType) < 4) {
+    if (sscanf(args, "%lx,%lu,%lu,%d", &cardId, &sid, &points, &cardType) < 4) {
         return "ERR:PARSE\n";
     }
     if (cardType < 0 || cardType > 2) return "ERR:PARSE\n";
 
-    /* Ñ°¿¨ (ÏÈ Halt ¸´Î», ±ÜÃâ¿¨ÁôÔÚ ACTIVE Ì¬) */
+    /* å¯»å¡ (å…ˆ Halt å¤ä½, é¿å…å¡ç•™åœ¨ ACTIVE æ€) */
     RC522_Halt();
     osDelay(2);
     status = RC522_ScanCard(uid);
     if (status != RC522_OK) return "ERR:NOCARD\n";
 
-    /* ¹¹Ôì Block1 Êı¾İ */
+    /* æ„é€  Block1 æ•°æ® */
     memset(blockData, 0, sizeof(blockData));
     blockData[0]  = (uint8_t)(cardId);
     blockData[1]  = (uint8_t)(cardId >> 8);
@@ -463,25 +463,25 @@ static const char *NFC_CmdIssue(const char *args)
     blockData[10] = (uint8_t)(points >> 16);
     blockData[11] = (uint8_t)(points >> 24);
     blockData[12] = (uint8_t)cardType;
-    blockData[13] = 0x00;  /* statusFlag: Õı³£ */
+    blockData[13] = 0x00;  /* statusFlag: æ­£å¸¸ */
 
-    /* Ğ£ÑéºÍ (Ç°14×Ö½ÚÀÛ¼Ó) */
+    /* æ ¡éªŒå’Œ (å‰14å­—èŠ‚ç´¯åŠ ) */
     uint16_t sum = 0;
     for (int i = 0; i < 14; i++) sum += blockData[i];
     blockData[14] = (uint8_t)(sum);
     blockData[15] = (uint8_t)(sum >> 8);
 
-    /* ÈÏÖ¤ + Ğ´Èë */
+    /* è®¤è¯ + å†™å…¥ */
     status = RC522_AuthState(RC522_PICC_AUTHENT1A, 3, (uint8_t*)s_defaultKey, uid);
     if (status != RC522_OK) { NFC_Recover(); return "ERR:AUTH\n"; }
 
     status = RC522_WriteBlock(0, 1, blockData);
     if (status != RC522_OK) { NFC_Recover(); return "ERR:WRITE_B1\n"; }
 
-    /* Ğ´Íêºó Halt ¿¨, Ê¹¿¨»ØĞİÃßÌ¬ */
+    /* å†™å®Œå Halt å¡, ä½¿å¡å›ä¼‘çœ æ€ */
     RC522_Halt();
 
-    /* »º´æ UID */
+    /* ç¼“å­˜ UID */
     memcpy(s_lastUID, uid, 4);
     UIDToStr(uid, s_lastUIDStr);
 
@@ -489,7 +489,7 @@ static const char *NFC_CmdIssue(const char *args)
 }
 
 /**
- * @brief  ¶Á¿¨ÑéÖ¤²¢·µ»ØÊı¾İ
+ * @brief  è¯»å¡éªŒè¯å¹¶è¿”å›æ•°æ®
  */
 static const char *NFC_CmdRead(char *respBuf, uint16_t bufSize)
 {
@@ -508,7 +508,7 @@ static const char *NFC_CmdRead(char *respBuf, uint16_t bufSize)
     status = RC522_ReadBlock(0, 1, blockData);
     if (status != RC522_OK) return "ERR:WRITE_B1\n";
 
-    /* »º´æ UID */
+    /* ç¼“å­˜ UID */
     memcpy(s_lastUID, uid, 4);
     UIDToStr(uid, s_lastUIDStr);
 
@@ -522,11 +522,11 @@ static const char *NFC_CmdRead(char *respBuf, uint16_t bufSize)
 }
 
 /**
- * @brief  IMGA/IMGN/IMGD Í¼Ïñ¿é»º´æ
- * @param  hex32  32 ×Ö·û HEX
- * @param  idx    ¿éË÷Òı
- * @param  cache  Ä¿±ê»º´æÊı×é
- * @param  maxIdx ×î´óË÷Òı
+ * @brief  IMGA/IMGN/IMGD å›¾åƒå—ç¼“å­˜
+ * @param  hex32  32 å­—ç¬¦ HEX
+ * @param  idx    å—ç´¢å¼•
+ * @param  cache  ç›®æ ‡ç¼“å­˜æ•°ç»„
+ * @param  maxIdx æœ€å¤§ç´¢å¼•
  */
 static const char *NFC_CmdImageBlock(const char *hex32, int idx,
                                       uint8_t cache[][16], int maxIdx)
@@ -538,10 +538,10 @@ static const char *NFC_CmdImageBlock(const char *hex32, int idx,
 }
 
 /**
- * @brief  UPDATEIMG: ½«»º´æµÄÍ¼Ïñ¿éĞ´Èë¿¨Æ¬
- *         Í·Ïñ: ÉÈÇø1~8 (1*4+3=7 ~ 8*4+3=35)
- *         ĞÕÃû: ÉÈÇø9~12¿é0
- *         ²¿ÃÅ: ÉÈÇø12¿é1~15¿é1
+ * @brief  UPDATEIMG: å°†ç¼“å­˜çš„å›¾åƒå—å†™å…¥å¡ç‰‡
+ *         å¤´åƒ: æ‰‡åŒº1~8 (1*4+3=7 ~ 8*4+3=35)
+ *         å§“å: æ‰‡åŒº9~12å—0
+ *         éƒ¨é—¨: æ‰‡åŒº12å—1~15å—1
  */
 static const char *NFC_CmdUpdateImg(void)
 {
@@ -554,7 +554,7 @@ static const char *NFC_CmdUpdateImg(void)
     status = RC522_ScanCard(uid);
     if (status != RC522_OK) return "ERR:NOCARD\n";
 
-    /* ---- Ğ´Í·Ïñ (ÉÈÇø 1~8, Ã¿ÉÈÇø 3 ¿é) ---- */
+    /* ---- å†™å¤´åƒ (æ‰‡åŒº 1~8, æ¯æ‰‡åŒº 3 å—) ---- */
     for (i = 0; i < NFC_IMG_AVATAR_BLOCKS; i++) {
         sec = 1 + i / 3;
         blk = i % 3;
@@ -564,10 +564,10 @@ static const char *NFC_CmdUpdateImg(void)
         if (status != RC522_OK) { NFC_Recover(); return "ERR:AUTH\n"; }
         status = RC522_WriteBlock(sec, blk, s_imgAvatar[i]);
         if (status != RC522_OK) { NFC_Recover(); return "ERR:WRITE_B1\n"; }
-        osDelay(10);  /* µÈ´ı¿¨ EEPROM Ğ´ÈëÍê³É, Í¬Ê±ÈÃ³ö CPU ¸ø guiTask Ë¢ĞÂ OLED */
+        osDelay(10);  /* ç­‰å¾…å¡ EEPROM å†™å…¥å®Œæˆ, åŒæ—¶è®©å‡º CPU ç»™ guiTask åˆ·æ–° OLED */
     }
 
-    /* ---- Ğ´ĞÕÃû (ÉÈÇø 9~11 È« + ÉÈÇø12 ¿é0) ---- */
+    /* ---- å†™å§“å (æ‰‡åŒº 9~11 å…¨ + æ‰‡åŒº12 å—0) ---- */
     for (i = 0; i < NFC_IMG_NAME_BLOCKS; i++) {
         sec = 9 + i / 3;
         blk = i % 3;
@@ -580,12 +580,12 @@ static const char *NFC_CmdUpdateImg(void)
         osDelay(10);
     }
 
-    /* ---- Ğ´²¿ÃÅ (ÉÈÇø 12 ¿é1~2 + ÉÈÇø 13~14 È« + ÉÈÇø 15 ¿é0~1) ---- */
+    /* ---- å†™éƒ¨é—¨ (æ‰‡åŒº 12 å—1~2 + æ‰‡åŒº 13~14 å…¨ + æ‰‡åŒº 15 å—0~1) ---- */
     for (i = 0; i < NFC_IMG_DEPT_BLOCKS; i++) {
-        if (i < 2) { sec = 12; blk = 1 + i; }           /* ÉÈÇø12 ¿é1,2 */
-        else if (i < 5) { sec = 13; blk = i - 2; }       /* ÉÈÇø13 ¿é0,1,2 */
-        else if (i < 8) { sec = 14; blk = i - 5; }       /* ÉÈÇø14 ¿é0,1,2 */
-        else             { sec = 15; blk = i - 8; }       /* ÉÈÇø15 ¿é0,1 */
+        if (i < 2) { sec = 12; blk = 1 + i; }           /* æ‰‡åŒº12 å—1,2 */
+        else if (i < 5) { sec = 13; blk = i - 2; }       /* æ‰‡åŒº13 å—0,1,2 */
+        else if (i < 8) { sec = 14; blk = i - 5; }       /* æ‰‡åŒº14 å—0,1,2 */
+        else             { sec = 15; blk = i - 8; }       /* æ‰‡åŒº15 å—0,1 */
         status = RC522_AuthState(RC522_PICC_AUTHENT1A,
                                  (uint8_t)(sec * 4 + 3),
                                  (uint8_t*)s_defaultKey, uid);
@@ -595,24 +595,19 @@ static const char *NFC_CmdUpdateImg(void)
         osDelay(10);
     }
 
-    /* Ğ´Íêºó Halt ¿¨ + Ó²¼ş»Ö¸´ RC522 (ÃÜ¼¯Ğ´Èë¿ÉÄÜ¸¯°ÜĞ¾Æ¬×´Ì¬) */
+    /* å†™å®Œå Halt å¡ + ç¡¬ä»¶æ¢å¤ RC522 (å¯†é›†å†™å…¥å¯èƒ½è…è´¥èŠ¯ç‰‡çŠ¶æ€) */
     RC522_Halt();
     osDelay(5);
     NFC_Recover();
-    NFC_ClearImageCache();  /* ÊÍ·Å 704 ×Ö½Ú¾²Ì¬»º´æ */
+    NFC_ClearImageCache();  /* é‡Šæ”¾ 704 å­—èŠ‚é™æ€ç¼“å­˜ */
 
-    /* Í¨Öª nfcTask È«Á¿ÖØ¶ÁÒÔË¢ĞÂ OLED Î»Í¼ */
+    /* é€šçŸ¥ nfcTask å…¨é‡é‡è¯»ä»¥åˆ·æ–° OLED ä½å›¾ */
     NFC_SetFullReread();
 
     return "OK\n";
 }
 
-/* ====== ¹«¿ª API ====== */
-
-const char *NFC_GetLastUID(void)
-{
-    return s_lastUIDStr;
-}
+/* ====== å…¬å¼€ API ====== */
 
 void NFC_ClearImageCache(void)
 {
@@ -622,7 +617,7 @@ void NFC_ClearImageCache(void)
 }
 
 /**
- * @brief  ´¦ÀíÉÏÎ»»úÏÂ·¢µÄÒ»ÌõÃüÁî
+ * @brief  å¤„ç†ä¸Šä½æœºä¸‹å‘çš„ä¸€æ¡å‘½ä»¤
  */
 char *NFC_ProcessCommand(const char *cmd, char *respBuf, uint16_t bufSize)
 {
@@ -633,7 +628,7 @@ char *NFC_ProcessCommand(const char *cmd, char *respBuf, uint16_t bufSize)
     while (*cmd == ' ' || *cmd == '\r' || *cmd == '\n') cmd++;
     if (*cmd == '\0') { strncpy(respBuf, "OK\n", bufSize); return respBuf; }
 
-    /* ---- ÎŞĞè RC522 µÄÃüÁî (½ö»º´æ/²éÑ¯, ²»Ëø) ---- */
+    /* ---- æ— éœ€ RC522 çš„å‘½ä»¤ (ä»…ç¼“å­˜/æŸ¥è¯¢, ä¸é”) ---- */
     if (strncmp(cmd, "IMGA", 4) == 0) {
         int idx; const char *hex;
         if (sscanf(cmd + 4, "%d:", &idx) == 1 && (hex = strchr(cmd + 4, ':')))
@@ -653,18 +648,18 @@ char *NFC_ProcessCommand(const char *cmd, char *respBuf, uint16_t bufSize)
         else resp = "ERR:IMG_BLOCK\n";
     }
     else if (strncmp(cmd, "LIST", 4) == 0) {
-        uint32_t maxCount = 0;  /* 0 = È«²¿ */
+        uint32_t maxCount = 0;  /* 0 = å…¨éƒ¨ */
         if (cmd[4] == ':') {
             if (strncmp(cmd + 5, "ALL", 3) != 0) {
                 maxCount = (uint32_t)atoi(cmd + 5);
             }
         }
         Record_List(maxCount);
-        Record_MarkAllUploaded();  /* LIST ²éÑ¯¹ı¼´ÊÓÎªÒÑÉÏ´« */
+        Record_MarkAllUploaded();  /* LIST æŸ¥è¯¢è¿‡å³è§†ä¸ºå·²ä¸Šä¼  */
         resp = "LIST:END\n";
     }
     else if (strncmp(cmd, "LOST:", 5) == 0) {
-        /* ¹ÒÊ§: ½«¿¨ UID ¼ÓÈëºÚÃûµ¥ */
+        /* æŒ‚å¤±: å°†å¡ UID åŠ å…¥é»‘åå• */
         uint32_t uid = 0;
         if (sscanf(cmd + 5, "%8lx", (unsigned long*)&uid) == 1 && uid != 0) {
             if (Blacklist_Add(uid)) {
@@ -679,7 +674,7 @@ char *NFC_ProcessCommand(const char *cmd, char *respBuf, uint16_t bufSize)
         }
     }
     else if (strncmp(cmd, "UNLOST:", 7) == 0) {
-        /* ½â³ı¹ÒÊ§: ´ÓºÚÃûµ¥ÒÆ³ı */
+        /* è§£é™¤æŒ‚å¤±: ä»é»‘åå•ç§»é™¤ */
         uint32_t uid = 0;
         if (sscanf(cmd + 7, "%8lx", (unsigned long*)&uid) == 1 && uid != 0) {
             if (Blacklist_Remove(uid)) {
@@ -694,7 +689,7 @@ char *NFC_ProcessCommand(const char *cmd, char *respBuf, uint16_t bufSize)
         }
     }
     else {
-        /* ---- ĞèÒª RC522 µÄÃüÁî: ÏÈËø¶¨ÔÙÖ´ĞĞ (´øÖØÊÔ, ÈİÈÌ nfcTask ¶ÌÔİ³ÖËø) ---- */
+        /* ---- éœ€è¦ RC522 çš„å‘½ä»¤: å…ˆé”å®šå†æ‰§è¡Œ (å¸¦é‡è¯•, å®¹å¿ nfcTask çŸ­æš‚æŒé”) ---- */
         {
             int retry;
             for (retry = 0; retry < 50; retry++) {
@@ -726,14 +721,14 @@ char *NFC_ProcessCommand(const char *cmd, char *respBuf, uint16_t bufSize)
                 NFC_ClearImageCache();
                 uint8_t zero[16] = {0};
 
-                /* ÇåÁãÕË»§Í· Block1 */
+                /* æ¸…é›¶è´¦æˆ·å¤´ Block1 */
                 st = RC522_AuthState(RC522_PICC_AUTHENT1A, 3, (uint8_t*)s_defaultKey, uid);
                 if (st != RC522_OK) { NFC_Recover(); resp = "ERR:AUTH\n"; }
                 else {
                     st = RC522_WriteBlock(0, 1, zero);
                     if (st != RC522_OK) { NFC_Recover(); resp = "ERR:WRITE_B1\n"; }
                     else {
-                        /* ÇåÁãËùÓĞÍ¼ÏñÊı¾İ¿é (ÉÈÇø 1~15, Ã¿ÉÈÇø¿é 0~2) */
+                        /* æ¸…é›¶æ‰€æœ‰å›¾åƒæ•°æ®å— (æ‰‡åŒº 1~15, æ¯æ‰‡åŒºå— 0~2) */
                         int sec, blk;
                         for (sec = 1; sec <= 15 && st == RC522_OK; sec++) {
                             st = RC522_AuthState(RC522_PICC_AUTHENT1A,
@@ -764,7 +759,7 @@ char *NFC_ProcessCommand(const char *cmd, char *respBuf, uint16_t bufSize)
 
         NFC_UnlockReader();
 
-        /* ±ê¼Ç´ıÍ¨Öª, ÓÉ uartTask ÔÚ·¢ËÍÏìÓ¦ºóµ÷ÓÃ NFC_FlushCmdNotify() */
+        /* æ ‡è®°å¾…é€šçŸ¥, ç”± uartTask åœ¨å‘é€å“åº”åè°ƒç”¨ NFC_FlushCmdNotify() */
         s_pendingNotify = 1;
     }
 

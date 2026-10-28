@@ -1,9 +1,9 @@
 /**
  * @file    bsp_rtc.h
- * @brief   RTC 日历驱动 - 封�?? STM32 HAL RTC, 提供易用的日期时间�?�写接口
- * @note    依赖 CubeMX 生成�? MX_RTC_Init() 已完�? RTC �?件初始化 (hrtc)
- *          �?驱动通过备份寄存器判�?�?否�?��?�上�?, 避免每�?��?�位重置时间
- *          �?电保持需�? VBAT 引脚接电池或并接 VDD
+ * @brief   RTC 鏃ュ巻椹卞姩 - 灏佽?? STM32 HAL RTC, 鎻愪緵鏄撶敤鐨勬棩鏈熸椂闂磋?诲啓鎺ュ彛
+ * @note    渚濊禆 CubeMX 鐢熸垚鐨? MX_RTC_Init() 宸插畬鎴? RTC 纭?浠跺垵濮嬪寲 (hrtc)
+ *          鏈?椹卞姩閫氳繃澶囦唤瀵勫瓨鍣ㄥ垽鏂?鏄?鍚﹂?栨?′笂鐢?, 閬垮厤姣忔?″?嶄綅閲嶇疆鏃堕棿
+ *          鏂?鐢典繚鎸侀渶瑕? VBAT 寮曡剼鎺ョ數姹犳垨骞舵帴 VDD
  */
 #ifndef __BSP_RTC_H__
 #define __BSP_RTC_H__
@@ -15,97 +15,97 @@ extern "C" {
 #include "main.h"
 
 /* -----------------------------------------------------------
- *  日期时间结构�?
+ *  鏃ユ湡鏃堕棿缁撴瀯浣?
  * --------------------------------------------------------- */
 typedef struct {
-    uint16_t year;    /* �?, 完整 4 �?, �? 2026            */
-    uint8_t  month;   /* �?, 1-12                          */
-    uint8_t  day;     /* �?, 1-31                          */
-    uint8_t  weekday; /* 星期, 0=周日 1=周一 ... 6=周六     */
-    uint8_t  hour;    /* �?, 0-23                          */
-    uint8_t  minute;  /* �?, 0-59                          */
-    uint8_t  second;  /* �?, 0-59                          */
+    uint16_t year;    /* 骞?, 瀹屾暣 4 浣?, 濡? 2026            */
+    uint8_t  month;   /* 鏈?, 1-12                          */
+    uint8_t  day;     /* 鏃?, 1-31                          */
+    uint8_t  weekday; /* 鏄熸湡, 0=鍛ㄦ棩 1=鍛ㄤ竴 ... 6=鍛ㄥ叚     */
+    uint8_t  hour;    /* 鏃?, 0-23                          */
+    uint8_t  minute;  /* 鍒?, 0-59                          */
+    uint8_t  second;  /* 绉?, 0-59                          */
 } BSP_RTC_DateTime_t;
 
-/* 备份寄存器配�? —�? 用于判断�?否�?��?�上�? */
+/* 澶囦唤瀵勫瓨鍣ㄩ厤缃? 鈥斺€? 鐢ㄤ簬鍒ゆ柇鏄?鍚﹂?栨?′笂鐢? */
 #define BSP_RTC_BKUP_DR     RTC_BKP_DR0
 #define BSP_RTC_BKUP_MAGIC  0x5051U
 
 /* -----------------------------------------------------------
- *  全局日期时间变量
- *  每�?? BSP_RTC_GetDateTime() 读取后自动更�?, 方便其他任务直接访问
+ *  鍏ㄥ眬鏃ユ湡鏃堕棿鍙橀噺
+ *  姣忔?? BSP_RTC_GetDateTime() 璇诲彇鍚庤嚜鍔ㄦ洿鏂?, 鏂逛究鍏朵粬浠诲姟鐩存帴璁块棶
  * --------------------------------------------------------- */
 extern BSP_RTC_DateTime_t g_rtc_datetime;
 
 /* -----------------------------------------------------------
- *  �?共接�?
+ *  鍏?鍏辨帴鍙?
  * --------------------------------------------------------- */
 
 /**
- * @brief  判断�?否�?��?�上�? (备份寄存器中无魔�?)
- * @retval 1: 首�?�上�?   0: 非�?��?? (RTC 已�??初�?�化�?)
+ * @brief  鍒ゆ柇鏄?鍚﹂?栨?′笂鐢? (澶囦唤瀵勫瓨鍣ㄤ腑鏃犻瓟鏁?)
+ * @retval 1: 棣栨?′笂鐢?   0: 闈為?栨?? (RTC 宸茶??鍒濆?嬪寲杩?)
  */
 uint8_t BSP_RTC_IsFirstPowerOn(void);
 
 /**
- * @brief  标�?? RTC 已初始化 (向�?�份寄存器写入魔�?)
+ * @brief  鏍囪?? RTC 宸插垵濮嬪寲 (鍚戝?囦唤瀵勫瓨鍣ㄥ啓鍏ラ瓟鏁?)
  */
 void BSP_RTC_MarkInitialized(void);
 
 /**
- * @brief  读取 RTC 日期时间
- * @param  dt: 输出, 指向日期时间结构�?; �? NULL 时仅更新全局变量
- * @retval HAL_OK 成功, 其他失败
- * @note   读取结果会同时存入全局变量 g_rtc_datetime, 方便其他任务访问
+ * @brief  璇诲彇 RTC 鏃ユ湡鏃堕棿
+ * @param  dt: 杈撳嚭, 鎸囧悜鏃ユ湡鏃堕棿缁撴瀯浣?; 浼? NULL 鏃朵粎鏇存柊鍏ㄥ眬鍙橀噺
+ * @retval HAL_OK 鎴愬姛, 鍏朵粬澶辫触
+ * @note   璇诲彇缁撴灉浼氬悓鏃跺瓨鍏ュ叏灞€鍙橀噺 g_rtc_datetime, 鏂逛究鍏朵粬浠诲姟璁块棶
  */
 HAL_StatusTypeDef BSP_RTC_GetDateTime(BSP_RTC_DateTime_t *dt);
 
 /**
- * @brief  设置 RTC 日期
- * @param  year:  �?, �? 2026
- * @param  month: �? 1-12
- * @param  day:   �? 1-31
- * @retval HAL_OK 成功, 其他失败
+ * @brief  璁剧疆 RTC 鏃ユ湡
+ * @param  year:  骞?, 濡? 2026
+ * @param  month: 鏈? 1-12
+ * @param  day:   鏃? 1-31
+ * @retval HAL_OK 鎴愬姛, 鍏朵粬澶辫触
  */
 HAL_StatusTypeDef BSP_RTC_SetDate(uint16_t year, uint8_t month, uint8_t day);
 
 /**
- * @brief  设置 RTC 时间
- * @param  hour:   �? 0-23
- * @param  minute: �? 0-59
- * @param  second: �? 0-59
- * @retval HAL_OK 成功, 其他失败
+ * @brief  璁剧疆 RTC 鏃堕棿
+ * @param  hour:   鏃? 0-23
+ * @param  minute: 鍒? 0-59
+ * @param  second: 绉? 0-59
+ * @retval HAL_OK 鎴愬姛, 鍏朵粬澶辫触
  */
 HAL_StatusTypeDef BSP_RTC_SetTime(uint8_t hour, uint8_t minute, uint8_t second);
 
 /**
- * @brief  同时设置 RTC 日期和时�?
- * @param  dt: 指向日期时间结构�?
- * @retval HAL_OK 成功, 其他失败
+ * @brief  鍚屾椂璁剧疆 RTC 鏃ユ湡鍜屾椂闂?
+ * @param  dt: 鎸囧悜鏃ユ湡鏃堕棿缁撴瀯浣?
+ * @retval HAL_OK 鎴愬姛, 鍏朵粬澶辫触
  */
 HAL_StatusTypeDef BSP_RTC_SetDateTime(const BSP_RTC_DateTime_t *dt);
 
 /**
- * @brief  根据日期计算星期
- * @param  year:  �?
- * @param  month: �?
- * @param  day:   �?
- * @retval 0=周日, 1=周一, ... 6=周六
+ * @brief  鏍规嵁鏃ユ湡璁＄畻鏄熸湡
+ * @param  year:  骞?
+ * @param  month: 鏈?
+ * @param  day:   鏃?
+ * @retval 0=鍛ㄦ棩, 1=鍛ㄤ竴, ... 6=鍛ㄥ叚
  */
 uint8_t BSP_RTC_CalcWeekday(uint16_t year, uint8_t month, uint8_t day);
 
 /**
- * @brief  判断闰年
- * @param  year: �?
- * @retval 1: 闰年  0: 平年
+ * @brief  鍒ゆ柇闂板勾
+ * @param  year: 骞?
+ * @retval 1: 闂板勾  0: 骞冲勾
  */
 uint8_t BSP_RTC_IsLeapYear(uint16_t year);
 
 /**
- * @brief  获取某月最大天�?
- * @param  year:  �?
- * @param  month: �?
- * @retval 该月天数 (28-31)
+ * @brief  鑾峰彇鏌愭湀鏈€澶уぉ鏁?
+ * @param  year:  骞?
+ * @param  month: 鏈?
+ * @retval 璇ユ湀澶╂暟 (28-31)
  */
 uint8_t BSP_RTC_DaysInMonth(uint16_t year, uint8_t month);
 

@@ -1,11 +1,11 @@
 /**
  * @file    record.h
- * @brief   ´ò¿¨¼ÇÂ¼´æ´¢Ä£¿é - SPI Flash ÅäÖÃ/¼ÇÂ¼/»º´æ/CRC
- * @details ´Ó display.h ²ð·Ö, ¶ÀÁ¢¹ÜÀí Flash ³Ö¾Ã»¯Êý¾Ý:
- *          - ÏµÍ³ÅäÖÃ (Ë«±¸·Ý)
- *          - Ë¢¿¨¼ÇÂ¼ (Ñ­»·Ð´Èë)
- *          - LRU ¿¨Æ¬»º´æ
- *          - CRC16 Ð£Ñé
+ * @brief   ï¿½ò¿¨¼ï¿½Â¼ï¿½æ´¢Ä£ï¿½ï¿½ - SPI Flash ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½Â¼/ï¿½ï¿½ï¿½ï¿½/CRC
+ * @details ï¿½ï¿½ display.h ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Flash ï¿½Ö¾Ã»ï¿½ï¿½ï¿½ï¿½ï¿½:
+ *          - ÏµÍ³ï¿½ï¿½ï¿½ï¿½ (Ë«ï¿½ï¿½ï¿½ï¿½)
+ *          - Ë¢ï¿½ï¿½ï¿½ï¿½Â¼ (Ñ­ï¿½ï¿½Ð´ï¿½ï¿½)
+ *          - LRU ï¿½ï¿½Æ¬ï¿½ï¿½ï¿½ï¿½
+ *          - CRC16 Ð£ï¿½ï¿½
  */
 
 #ifndef __RECORD_H__
@@ -14,7 +14,7 @@
 #include "main.h"
 #include <stdint.h>
 
-/* ====== ÏµÍ³ÅäÖÃ (SPI Flash ³Ö¾Ã»¯) ====== */
+/* ====== ÏµÍ³ï¿½ï¿½ï¿½ï¿½ (SPI Flash ï¿½Ö¾Ã»ï¿½) ====== */
 
 #define CONFIG_FLASH_ADDR     0x00000000U
 #define CONFIG_BAK_ADDR       0x00001000U
@@ -29,7 +29,7 @@ typedef struct {
     uint16_t crc16;
 } SysConfig_t;
 
-/* ====== ¼ÇÂ¼ÇøÍ·²¿ (SPI Flash ÉÈÇø2) ====== */
+/* ====== ï¿½ï¿½Â¼ï¿½ï¿½Í·ï¿½ï¿½ (SPI Flash ï¿½ï¿½ï¿½ï¿½2) ====== */
 
 #define RECHEAD_FLASH_ADDR    0x00002000U
 #define RECHEAD_MAGIC         0x4E46436EU  /* "NFCn" */
@@ -44,7 +44,7 @@ typedef struct {
     uint8_t  reserved[12];
 } RecordHeader_t;
 
-/* ====== Ë¢¿¨¼ÇÂ¼ (32B, ¹² 128 Ìõ = 1 ÉÈÇø 4KB) ====== */
+/* ====== Ë¢ï¿½ï¿½ï¿½ï¿½Â¼ (32B, ï¿½ï¿½ 128 ï¿½ï¿½ = 1 ï¿½ï¿½ï¿½ï¿½ 4KB) ====== */
 
 #define RECORD_FLASH_ADDR     0x00003000U
 #define RECORD_SIZE           32
@@ -72,7 +72,7 @@ typedef struct {
     uint8_t  reserved;
 } SwipeRecord_t;
 
-/* ====== LRU ¿¨Æ¬»º´æ ====== */
+/* ====== LRU ï¿½ï¿½Æ¬ï¿½ï¿½ï¿½ï¿½ ====== */
 
 #define CARD_CACHE_SIZE  32
 #define CACHE_MISS       0xFF
@@ -84,7 +84,7 @@ typedef struct {
     uint32_t accessTick;
 } CardCache_t;
 
-/* ====== ºÚÃûµ¥ (SPI Flash ÉÈÇø4) ====== */
+/* ====== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (SPI Flash ï¿½ï¿½ï¿½ï¿½4) ====== */
 
 #define BLACKLIST_FLASH_ADDR  0x00004000U
 #define BLACKLIST_MAGIC       0x424BU   /* "BK" */
@@ -98,36 +98,35 @@ typedef struct {
     uint8_t  reserved[2];
 } BlacklistData_t;
 
-/* ====== º¯ÊýÉùÃ÷ ====== */
+/* ====== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ====== */
 
 /* CRC16 */
 uint16_t CRC16_Calc(const uint8_t *pData, uint16_t len);
 
-/* ÏµÍ³ÅäÖÃ */
-void Config_Init(void);
+/* ÏµÍ³ï¿½ï¿½ï¿½ï¿½ */
 void Config_Load(void);
 void Config_Save(void);
 
-/* Ë¢¿¨¼ÇÂ¼ */
+/* Ë¢ï¿½ï¿½ï¿½ï¿½Â¼ */
 void Record_Init(void);
 void Record_Add(const SwipeRecord_t *pRec);
 int  Record_QueryLast(uint32_t cardId, SwipeRecord_t *pOut);
 void Record_List(uint32_t maxCount);
 void Record_FixAllTimeOffsets(int32_t deltaSecs);
-void     Record_MarkAllUploaded(void);      /**< ±ê¼ÇËùÓÐ¼ÇÂ¼ÒÑÉÏ´« */
-uint32_t Record_GetUnuploadCount(void);     /**< »ñÈ¡Î´ÉÏ´«¼ÇÂ¼Êý */
+void     Record_MarkAllUploaded(void);      /**< ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½Â¼ï¿½ï¿½ï¿½Ï´ï¿½ */
+uint32_t Record_GetUnuploadCount(void);     /**< ï¿½ï¿½È¡Î´ï¿½Ï´ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ */
 
-/* LRU »º´æ */
+/* LRU ï¿½ï¿½ï¿½ï¿½ */
 uint8_t Cache_Find(uint32_t cardId, uint32_t *pEnterSecs);
 void    Cache_Update(uint32_t cardId, uint8_t eventType, uint32_t enterSecs);
 void    Cache_Clear(void);
 
-/* ÔËÐÐÊ±»ñÈ¡¹ÜÀíÔ±ÅäÖÃ */
+/* ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ */
 void Config_SetAdmin(uint16_t deviceId, uint8_t attendMode);
 uint16_t Config_GetDeviceId(void);
 uint8_t  Config_GetAttendMode(void);
 
-/* ºÚÃûµ¥¹ÜÀí */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 void    Blacklist_Init(void);
 uint8_t Blacklist_Add(uint32_t uid);
 uint8_t Blacklist_Remove(uint32_t uid);

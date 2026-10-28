@@ -186,9 +186,9 @@ typedef struct {
 } tGUI_ENC_APIList;
 
 typedef struct {
-	unsigned char utf8[4];   // ×î¶à 4 ×Ö½Ú UTF-8
-	U8 utf8_len;             // Êµ¼Ê³¤¶È
-	unsigned char gbk[2];    // GBK ×î¶à 2 ×Ö½Ú£¨GB2312 ÊÇÆä×Ó¼¯£©
+	unsigned char utf8[4];   // æœ€å¤š 4 å­—èŠ‚ UTF-8
+	U8 utf8_len;             // å®é™…é•¿åº¦
+	unsigned char gbk[2];    // GBK æœ€å¤š 2 å­—èŠ‚ï¼ˆGB2312 æ˜¯å…¶å­é›†ï¼‰
 	U8 gbk_len;
 } Utf8ToGbkMap;
 
@@ -257,8 +257,8 @@ extern char               GUI_DecChar;
 *
 **********************************************************************
 */
-int   GUI_Init(void);		// GUIÍ¼ĞÎ¿â³õÊ¼»¯£¬°üÀ¨Òº¾§ÆÁ³õÊ¼»¯
-void  GUI_Update(void);		// ÆÁÄ»ÏÔÊ¾Ë¢ĞÂ
+int   GUI_Init(void);		// GUIå›¾å½¢åº“åˆå§‹åŒ–ï¼ŒåŒ…æ‹¬æ¶²æ™¶å±åˆå§‹åŒ–
+void  GUI_Update(void);		// å±å¹•æ˜¾ç¤ºåˆ·æ–°
 int GUI_GetXSize(void);
 int GUI_GetYSize(void);
 GUI_COLOR GUI_GetColor(void);

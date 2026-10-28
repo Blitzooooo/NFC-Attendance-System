@@ -1,8 +1,8 @@
 /**
  * @file    display.c
- * @brief   OLED ÏÔÊ¾Ä£¿éÊµÏÖ - ×´Ì¬»úÇı¶¯
- * @details ËÄ¸öºËĞÄ×´Ì¬: CLOCK / RESULT / TIME_SET / ADMIN_SET
- *          ËùÓĞ GUI äÖÈ¾º¯Êı¼¯ÖĞÔÚ´Ë, ½öÔÚ guiTask ÉÏÏÂÎÄÖĞµ÷ÓÃ.
+ * @brief   OLED æ˜¾ç¤ºæ¨¡å—å®ç° - çŠ¶æ€æœºé©±åŠ¨
+ * @details å››ä¸ªæ ¸å¿ƒçŠ¶æ€: CLOCK / RESULT / TIME_SET / ADMIN_SET
+ *          æ‰€æœ‰ GUI æ¸²æŸ“å‡½æ•°é›†ä¸­åœ¨æ­¤, ä»…åœ¨ guiTask ä¸Šä¸‹æ–‡ä¸­è°ƒç”¨.
  */
 
 #include "display.h"
@@ -16,14 +16,14 @@
 #include <stdio.h>
 #include <string.h>
 
-/* ====== Íâ²¿×Ö¿â & Î»Í¼ÉùÃ÷ ====== */
+/* ====== å¤–éƒ¨å­—åº“ & ä½å›¾å£°æ˜ ====== */
 extern GUI_FLASH const GUI_FONT GUI_FontHZ_SimSun_16;
 extern GUI_FLASH const GUI_FONT GUI_FontHZ_SimSun_32;
 extern GUI_CONST_STORAGE GUI_BITMAP bmHDU;
 
-/* ====== Ä£¿éÄÚ²¿±äÁ¿ ====== */
+/* ====== æ¨¡å—å†…éƒ¨å˜é‡ ====== */
 
-/** ÖĞÎÄĞÇÆÚ±í (0=ÖÜÈÕ ~ 6=ÖÜÁù) */
+/** ä¸­æ–‡æ˜ŸæœŸè¡¨ (0=å‘¨æ—¥ ~ 6=å‘¨å…­) */
 static const char *s_weekdays_cn[] = {
     "\xe5\x91\xa8\xe6\x97\xa5",
     "\xe5\x91\xa8\xe4\xb8\x80",
@@ -34,67 +34,67 @@ static const char *s_weekdays_cn[] = {
     "\xe5\x91\xa8\xe5\x85\xad",
 };
 
-/** Ë¢¿¨ĞÅÏ¢¹²Ïí»º³å (nfcTask Ğ´Èë -> guiTask ¶ÁÈ¡) */
+/** åˆ·å¡ä¿¡æ¯å…±äº«ç¼“å†² (nfcTask å†™å…¥ -> guiTask è¯»å–) */
 static DispCardInfo_t   s_cardInfo;
-static DispCardBitmap_t s_cardBitmap;       /* ¿¨Æ¬Î»Í¼»º´æ (½ö guiTask Ğ´) */
-static DispCardBitmap_t s_producerBitmap;   /* Î»Í¼Éú²ú»º³å (½ö nfcTask Ğ´) */
-static volatile uint32_t s_nfcQueueDropCnt; /* NFC ¶ÓÁĞÂú¶ªÆú¼ÆÊı */
+static DispCardBitmap_t s_cardBitmap;       /* å¡ç‰‡ä½å›¾ç¼“å­˜ (ä»… guiTask å†™) */
+static DispCardBitmap_t s_producerBitmap;   /* ä½å›¾ç”Ÿäº§ç¼“å†² (ä»… nfcTask å†™) */
+static volatile uint32_t s_nfcQueueDropCnt; /* NFC é˜Ÿåˆ—æ»¡ä¸¢å¼ƒè®¡æ•° */
 static DispState_t      s_state = DISP_STATE_CLOCK;
-static DispAdminCfg_t   s_adminCfg = {1, 2};  /* Ä¬ÈÏÉè±¸1, ³öÈë¿ÚÄ£Ê½ */
+static DispAdminCfg_t   s_adminCfg = {1, 2};  /* é»˜è®¤è®¾å¤‡1, å‡ºå…¥å£æ¨¡å¼ */
 
-/** ¿¼ÇÚÄ£Ê½Ãû³Æ */
+/** è€ƒå‹¤æ¨¡å¼åç§° */
 static const char *s_modeNames[] = {
-    "\xe5\x85\xa5\xe5\x8f\xa3",       /* Èë¿Ú */
-    "\xe5\x87\xba\xe5\x8f\xa3",       /* ³ö¿Ú */
-    "\xe5\x87\xba\xe5\x85\xa5\xe5\x8f\xa3", /* ³öÈë¿Ú */
+    "\xe5\x85\xa5\xe5\x8f\xa3",       /* å…¥å£ */
+    "\xe5\x87\xba\xe5\x8f\xa3",       /* å‡ºå£ */
+    "\xe5\x87\xba\xe5\x85\xa5\xe5\x8f\xa3", /* å‡ºå…¥å£ */
 };
 
-/** ÌìÆø¹ö¶¯»º´æ (defaultTask Ğ´Èë, guiTask DISP_ShowClock ¶ÁÈ¡) */
+/** å¤©æ°”æ»šåŠ¨ç¼“å­˜ (defaultTask å†™å…¥, guiTask DISP_ShowClock è¯»å–) */
 static DispWeatherCache_t s_weatherCache;
 
-/** NTP Ê±¼äÆ«²î (networkTask Ğ´Èë, nfcTask ¶ÁÈ¡) */
+/** NTP æ—¶é—´åå·® (networkTask å†™å…¥, nfcTask è¯»å–) */
 static int32_t s_timeOffset = (int32_t)TIME_OFFSET_UNCALIBRATED;
 static struct {
-    BSP_RTC_DateTime_t dt;      /* ±à¼­ÖĞµÄÊ±¼ä¸±±¾ */
-    uint8_t cursor;             /* ¹â±êÎ»ÖÃ 0=Äê 1=ÔÂ 2=ÈÕ 3=Ê± 4=·Ö 5=Ãë */
-    uint32_t enterTick;         /* ½øÈëÊ±¼ä */
+    BSP_RTC_DateTime_t dt;      /* ç¼–è¾‘ä¸­çš„æ—¶é—´å‰¯æœ¬ */
+    uint8_t cursor;             /* å…‰æ ‡ä½ç½® 0=å¹´ 1=æœˆ 2=æ—¥ 3=æ—¶ 4=åˆ† 5=ç§’ */
+    uint32_t enterTick;         /* è¿›å…¥æ—¶é—´ */
 } s_timeSet;
 
-/** ¹ÜÀíÔ±ÉèÖÃÄÚ²¿×´Ì¬ */
+/** ç®¡ç†å‘˜è®¾ç½®å†…éƒ¨çŠ¶æ€ */
 static struct {
-    uint8_t cursor;             /* 0=Éè±¸ID 1=¿¼ÇÚÄ£Ê½ */
-    uint32_t enterTick;         /* ½øÈëÊ±¼ä */
-    DispAdminCfg_t backup;      /* ½øÈëÊ±µÄÅäÖÃ¸±±¾, È¡ÏûÊ±»Ö¸´ */
+    uint8_t cursor;             /* 0=è®¾å¤‡ID 1=è€ƒå‹¤æ¨¡å¼ */
+    uint32_t enterTick;         /* è¿›å…¥æ—¶é—´ */
+    DispAdminCfg_t backup;      /* è¿›å…¥æ—¶çš„é…ç½®å‰¯æœ¬, å–æ¶ˆæ—¶æ¢å¤ */
 } s_adminSet;
 
-/* (CRC16_Calc ÒÑÇ¨ÒÆÖÁ record.c) */
+/* (CRC16_Calc å·²è¿ç§»è‡³ record.c) */
 
-/* ====== RTC Ê±¼ä´Á¹¤¾ß ====== */
+/* ====== RTC æ—¶é—´æˆ³å·¥å…· ====== */
 
-/** Ã¿ÔÂÌìÊı (·ÇÈòÄê) */
+/** æ¯æœˆå¤©æ•° (éé—°å¹´) */
 static const uint8_t s_daysInMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 /**
- * @brief  ½« BSP_RTC_DateTime_t ×ªÎª¾à 2024-01-01 00:00:00 µÄÃëÊı
- * @note   Ö§³Ö¿çÌìÊ±³¤¼ÆËã, uint32_t ¿É¸²¸Ç ~136 Äê
+ * @brief  å°† BSP_RTC_DateTime_t è½¬ä¸ºè· 2024-01-01 00:00:00 çš„ç§’æ•°
+ * @note   æ”¯æŒè·¨å¤©æ—¶é•¿è®¡ç®—, uint32_t å¯è¦†ç›– ~136 å¹´
  */
 uint32_t DISP_DateTimeToSeconds(const BSP_RTC_DateTime_t *dt)
 {
     uint32_t days = 0;
     uint16_t y;
 
-    /* ÀÛ¼ÓÕûÄêÌìÊı */
+    /* ç´¯åŠ æ•´å¹´å¤©æ•° */
     for (y = 2024; y < dt->year; y++) {
         days += BSP_RTC_IsLeapYear(y) ? 366U : 365U;
     }
 
-    /* ÀÛ¼Óµ±ÄêÕûÔÂÌìÊı */
+    /* ç´¯åŠ å½“å¹´æ•´æœˆå¤©æ•° */
     for (uint8_t m = 1; m < dt->month; m++) {
         days += s_daysInMonth[m - 1];
         if (m == 2 && BSP_RTC_IsLeapYear(dt->year)) days++;
     }
 
-    /* ÀÛ¼Óµ±ÔÂÌìÊı */
+    /* ç´¯åŠ å½“æœˆå¤©æ•° */
     days += (uint32_t)(dt->day - 1);
 
     return days * 86400U + (uint32_t)dt->hour * 3600U
@@ -102,14 +102,14 @@ uint32_t DISP_DateTimeToSeconds(const BSP_RTC_DateTime_t *dt)
                          + (uint32_t)dt->second;
 }
 
-/* (Cache_*, Config_*, Record_* ÒÑÇ¨ÒÆÖÁ record.c) */
+/* (Cache_*, Config_*, Record_* å·²è¿ç§»è‡³ record.c) */
 
 const DispAdminCfg_t *DISP_GetAdminCfg(void) { return &s_adminCfg; }
 
-/** GUI ÈÎÎñ¾ä±ú (ÓÉ freertos.c ÔÚ³õÊ¼»¯Ê±ÉèÖÃ) */
+/** GUI ä»»åŠ¡å¥æŸ„ (ç”± freertos.c åœ¨åˆå§‹åŒ–æ—¶è®¾ç½®) */
 extern osThreadId_t guiTaskHandle;
 
-/* ====== ÄÚ²¿¸¨Öú: »æÖÆ LOGO & ĞÅÏ¢Ò³ ====== */
+/* ====== å†…éƒ¨è¾…åŠ©: ç»˜åˆ¶ LOGO & ä¿¡æ¯é¡µ ====== */
 
 static void drawLogo(void);
 static void drawInfoPage(void);
@@ -135,7 +135,7 @@ void DISP_ShowInfoPage(void)
     osDelay(2000);
 }
 
-/* ====== ÄÚ²¿¸¨Öú: »æÖÆĞÅÏ¢Ò³ ====== */
+/* ====== å†…éƒ¨è¾…åŠ©: ç»˜åˆ¶ä¿¡æ¯é¡µ ====== */
 
 static void drawInfoPage(void)
 {
@@ -153,19 +153,19 @@ static void drawInfoPage(void)
 }
 
 
-/* ====== ¹«¿ª API: ³õÊ¼»¯ & ×´Ì¬¹ÜÀí ====== */
+/* ====== å…¬å¼€ API: åˆå§‹åŒ– & çŠ¶æ€ç®¡ç† ====== */
 
-/* ====== OLED ·À¿¨¶Ù¿´ÃÅ¹· ====== */
+/* ====== OLED é˜²å¡é¡¿çœ‹é—¨ç‹— ====== */
 
-/** ³¬¹ı´ËÊ±¼ä(ms)ÎŞË¢ĞÂÊÓÎª¿¨¶Ù, ´¥·¢ OLED Ó²¼ş¸´Î» */
+/** è¶…è¿‡æ­¤æ—¶é—´(ms)æ— åˆ·æ–°è§†ä¸ºå¡é¡¿, è§¦å‘ OLED ç¡¬ä»¶å¤ä½ */
 #define DISP_STUCK_TIMEOUT_MS  3000
 
-/** ×îºóÒ»´ÎË¢ĞÂÊ±¿Ì (FreeRTOS tick) */
+/** æœ€åä¸€æ¬¡åˆ·æ–°æ—¶åˆ» (FreeRTOS tick) */
 static uint32_t s_lastFrameTick = 0;
 
 /**
- * @brief  Î¹¹·: ¼ÇÂ¼µ±Ç°Ö¡Ë¢ĞÂÊ±¿Ì
- * @note   Ã¿Ö¡äÖÈ¾Íê³Éºóµ÷ÓÃ (guiTask ÉÏÏÂÎÄ)
+ * @brief  å–‚ç‹—: è®°å½•å½“å‰å¸§åˆ·æ–°æ—¶åˆ»
+ * @note   æ¯å¸§æ¸²æŸ“å®Œæˆåè°ƒç”¨ (guiTask ä¸Šä¸‹æ–‡)
  */
 void DISP_FeedWatchdog(void)
 {
@@ -173,28 +173,28 @@ void DISP_FeedWatchdog(void)
 }
 
 /**
- * @brief  ¼ì²â OLED ÊÇ·ñ¿¨¶Ù
- * @return 1=¿¨¶Ù (³¬¹ı DISP_STUCK_TIMEOUT_MS Î´Ë¢ĞÂ), 0=Õı³£
+ * @brief  æ£€æµ‹ OLED æ˜¯å¦å¡é¡¿
+ * @return 1=å¡é¡¿ (è¶…è¿‡ DISP_STUCK_TIMEOUT_MS æœªåˆ·æ–°), 0=æ­£å¸¸
  */
 uint8_t DISP_CheckStuck(void)
 {
-    if (s_lastFrameTick == 0) return 0;  /* ÉĞÎ´Íê³ÉÊ×Ö¡äÖÈ¾ */
+    if (s_lastFrameTick == 0) return 0;  /* å°šæœªå®Œæˆé¦–å¸§æ¸²æŸ“ */
     uint32_t elapsed = osKernelGetTickCount() - s_lastFrameTick;
     return (elapsed >= DISP_STUCK_TIMEOUT_MS) ? 1 : 0;
 }
 
 /**
- * @brief  ÖØÖÃ OLED: Ó²¼ş¸´Î» + ÖØĞÂ³õÊ¼»¯Ğ¾Æ¬ºÍ GUI + ÇåÆÁË¢ĞÂ
- * @note   ÔÚ¼ì²âµ½¿¨¶Ùºóµ÷ÓÃ, »Ö¸´ OLED Õı³£ÏÔÊ¾
+ * @brief  é‡ç½® OLED: ç¡¬ä»¶å¤ä½ + é‡æ–°åˆå§‹åŒ–èŠ¯ç‰‡å’Œ GUI + æ¸…å±åˆ·æ–°
+ * @note   åœ¨æ£€æµ‹åˆ°å¡é¡¿åè°ƒç”¨, æ¢å¤ OLED æ­£å¸¸æ˜¾ç¤º
  */
 void DISP_ResetOLED(void)
 {
-    SSD1306_init();       /* ÖØĞÂ³õÊ¼»¯ OLED Ğ¾Æ¬ (º¬×Ô¼ì+ÅäÖÃ) */
-    GUI_Init();           /* ÖØĞÂ³õÊ¼»¯ GUI ÉÏÏÂÎÄ */
-    GUI_Clear();          /* Çå¿ÕÖ¡»º³å */
+    SSD1306_init();       /* é‡æ–°åˆå§‹åŒ– OLED èŠ¯ç‰‡ (å«è‡ªæ£€+é…ç½®) */
+    GUI_Init();           /* é‡æ–°åˆå§‹åŒ– GUI ä¸Šä¸‹æ–‡ */
+    GUI_Clear();          /* æ¸…ç©ºå¸§ç¼“å†² */
     GUI_SetColor(GUI_COLOR_WHITE);
-    GUI_Update();         /* Á¢¼´Ë¢ĞÂÒ»Ö¡ºÚÆÁ, Çå³ı¿ÉÄÜµÄ»¨ÆÁ */
-    DISP_FeedWatchdog();  /* ÖØÖÃ¿´ÃÅ¹·Ê±¼ä´Á */
+    GUI_Update();         /* ç«‹å³åˆ·æ–°ä¸€å¸§é»‘å±, æ¸…é™¤å¯èƒ½çš„èŠ±å± */
+    DISP_FeedWatchdog();  /* é‡ç½®çœ‹é—¨ç‹—æ—¶é—´æˆ³ */
 }
 
 /* ================================================================ */
@@ -205,13 +205,13 @@ void DISP_Init(void)
     memset(&s_cardBitmap, 0, sizeof(s_cardBitmap));
     s_state = DISP_STATE_CLOCK;
     s_adminCfg.deviceId = 1;
-    s_adminCfg.attendMode = 2;  /* Ä¬ÈÏ³öÈë¿ÚÄ£Ê½ */
-    s_lastFrameTick = 0;  /* ÖØÖÃ¿´ÃÅ¹·Ê±¼ä´Á */
+    s_adminCfg.attendMode = 2;  /* é»˜è®¤å‡ºå…¥å£æ¨¡å¼ */
+    s_lastFrameTick = 0;  /* é‡ç½®çœ‹é—¨ç‹—æ—¶é—´æˆ³ */
 }
 
 /**
- * @brief  Ó¦ÓÃ I2C Ê±ÖÓÅäÖÃ (¸²¸Ç CubeMX Ä¬ÈÏÖµ)
- * @note   ÔÚ MX_I2C1_Init() Ö®ºóµ÷ÓÃ, È·±£ I2C ÆµÂÊÓë DISP_I2C_TARGET_HZ Ò»ÖÂ
+ * @brief  åº”ç”¨ I2C æ—¶é’Ÿé…ç½® (è¦†ç›– CubeMX é»˜è®¤å€¼)
+ * @note   åœ¨ MX_I2C1_Init() ä¹‹åè°ƒç”¨, ç¡®ä¿ I2C é¢‘ç‡ä¸ DISP_I2C_TARGET_HZ ä¸€è‡´
  */
 void DISP_ApplyI2CConfig(void)
 {
@@ -229,22 +229,22 @@ DispState_t DISP_GetState(void)
 
 void DISP_SetState(DispState_t state)
 {
-    /* ´Ó¹ÜÀíÔ±ÉèÖÃÍË³öÇÒ·Ç K6 ±£´æ ¡ú »Ö¸´¾ÉÅäÖÃ */
+    /* ä»ç®¡ç†å‘˜è®¾ç½®é€€å‡ºä¸”é K6 ä¿å­˜ â†’ æ¢å¤æ—§é…ç½® */
     if (s_state == DISP_STATE_ADMIN_SET && state != DISP_STATE_ADMIN_SET) {
         s_adminCfg = s_adminSet.backup;
     }
     s_state = state;
-    /* ½øÈëÊ±¼äÉèÖÃÊ±¸´ÖÆµ±Ç° RTC Öµ */
+    /* è¿›å…¥æ—¶é—´è®¾ç½®æ—¶å¤åˆ¶å½“å‰ RTC å€¼ */
     if (state == DISP_STATE_TIME_SET) {
         BSP_RTC_GetDateTime(&s_timeSet.dt);
         s_timeSet.cursor = 0;
         s_timeSet.enterTick = osKernelGetTickCount();
     }
-    /* ½øÈë¹ÜÀíÔ±ÉèÖÃÊ±¼ÇÂ¼Ê±¼ä */
+    /* è¿›å…¥ç®¡ç†å‘˜è®¾ç½®æ—¶è®°å½•æ—¶é—´ */
     if (state == DISP_STATE_ADMIN_SET) {
         s_adminSet.cursor = 0;
         s_adminSet.enterTick = osKernelGetTickCount();
-        s_adminSet.backup = s_adminCfg;  /* ±£´æ¸±±¾, È¡ÏûÊ±»Ö¸´ */
+        s_adminSet.backup = s_adminCfg;  /* ä¿å­˜å‰¯æœ¬, å–æ¶ˆæ—¶æ¢å¤ */
     }
 }
 
@@ -252,7 +252,7 @@ void DISP_RunStartup(void)
 {
     drawLogo();
     GUI_Update();
-    osDelay(2000);  /* LOGO ÏÔÊ¾ 2s */
+    osDelay(2000);  /* LOGO æ˜¾ç¤º 2s */
 
     drawInfoPage();
     GUI_Update();
@@ -260,8 +260,8 @@ void DISP_RunStartup(void)
 }
 
 /**
- * @brief  ÏÔÊ¾ÏµÍ³³õÊ¼»¯½ø¶ÈĞÅÏ¢ (OLED ¾ÓÖĞµ¥ĞĞ)
- * @param  msg  ÖĞÎÄÌáÊ¾×Ö·û´®
+ * @brief  æ˜¾ç¤ºç³»ç»Ÿåˆå§‹åŒ–è¿›åº¦ä¿¡æ¯ (OLED å±…ä¸­å•è¡Œ)
+ * @param  msg  ä¸­æ–‡æç¤ºå­—ç¬¦ä¸²
  */
 void DISP_ShowInitMsg(const char *msg)
 {
@@ -273,11 +273,11 @@ void DISP_ShowInitMsg(const char *msg)
     GUI_Update();
 }
 
-/* ====== ¹«¿ª API: CLOCK ×´Ì¬ ====== */
+/* ====== å…¬å¼€ API: CLOCK çŠ¶æ€ ====== */
 
 /**
- * @brief  Ô¤¼ÆËã UTF-8 ×Ö·û´®ÖĞÃ¿¸ö×Ö·ûµÄ×Ö½Ú³¤¶ÈºÍÏñËØ¿í¶È
- * @note   SimSun_16 ×ÖÌå: ASCII¡ú8px, CJK(3B UTF-8)¡ú16px
+ * @brief  é¢„è®¡ç®— UTF-8 å­—ç¬¦ä¸²ä¸­æ¯ä¸ªå­—ç¬¦çš„å­—èŠ‚é•¿åº¦å’Œåƒç´ å®½åº¦
+ * @note   SimSun_16 å­—ä½“: ASCIIâ†’8px, CJK(3B UTF-8)â†’16px
  */
 static void computeCharWidths(const char *str,
                               uint8_t *charByteLen, uint8_t *charPixelW,
@@ -313,13 +313,13 @@ static void computeCharWidths(const char *str,
     *totalW    = w;
 }
 
-/** µ¥ĞĞ¹ö¶¯ÎÄ±¾Æ´½Ó + äÖÈ¾ (¸º x Æ½»¬¹ö¶¯) */
+/** å•è¡Œæ»šåŠ¨æ–‡æœ¬æ‹¼æ¥ + æ¸²æŸ“ (è´Ÿ x å¹³æ»‘æ»šåŠ¨) */
 static void renderScrollLine(const char *src, int srcLen,
                              const uint8_t *charBL, const uint8_t *charPW,
                              uint8_t charCnt, int totalW,
                              int scrollOff, int yPos)
 {
-    /* ÕÒµ½ scrollOff ¶ÔÓ¦µÄÆğÊ¼×Ö·û */
+    /* æ‰¾åˆ° scrollOff å¯¹åº”çš„èµ·å§‹å­—ç¬¦ */
     int charIdx = 0, byteOff = 0, accumW = 0;
     while (charIdx < charCnt &&
            accumW + charPW[charIdx] <= scrollOff) {
@@ -330,7 +330,7 @@ static void renderScrollLine(const char *src, int srcLen,
     int subOff = scrollOff - accumW;
     if (subOff < 0) subOff = 0;
 
-    /* Æ´½ÓÏÔÊ¾»º³å */
+    /* æ‹¼æ¥æ˜¾ç¤ºç¼“å†² */
     static char dispBuf[200];
     int  bufPos    = 0;
     int  curChar   = charIdx;
@@ -340,7 +340,7 @@ static void renderScrollLine(const char *src, int srcLen,
 
     while (renderedW < needW && bufPos < (int)sizeof(dispBuf) - 4) {
         if (curChar >= charCnt) {
-            /* Ñ­»·: 2 ¿Õ¸ñ¼ä¸ô */
+            /* å¾ªç¯: 2 ç©ºæ ¼é—´éš” */
             dispBuf[bufPos++] = ' '; dispBuf[bufPos++] = ' ';
             renderedW += 16;
             curChar = 0; curByte = 0;
@@ -359,7 +359,7 @@ static void renderScrollLine(const char *src, int srcLen,
     GUI_DispStringAt(dispBuf, -subOff, yPos);
 }
 
-/* ÎÂ¶È»º´æ: defaultTask Òì²½¸üĞÂ, guiTask Ö»¶Á (±ÜÃâ×èÈû OneWire) */
+/* æ¸©åº¦ç¼“å­˜: defaultTask å¼‚æ­¥æ›´æ–°, guiTask åªè¯» (é¿å…é˜»å¡ OneWire) */
 static volatile float g_cachedTemp = 25.0f;
 
 void DISP_UpdateTempCache(void)
@@ -383,12 +383,12 @@ void DISP_ShowClock(void)
     static uint32_t s_scrollTick = 0;
 
     BSP_RTC_GetDateTime(&dt);
-    temp = g_cachedTemp;  /* Òì²½»º´æ, ²»×èÈû */
+    temp = g_cachedTemp;  /* å¼‚æ­¥ç¼“å­˜, ä¸é˜»å¡ */
 
     GUI_Clear();
     GUI_SetColor(GUI_COLOR_WHITE);
 
-    /* ===== µÚÒ»ĞĞ: ÈÕÆÚĞÅÏ¢ (16px, ¹ö¶¯) ===== */
+    /* ===== ç¬¬ä¸€è¡Œ: æ—¥æœŸä¿¡æ¯ (16px, æ»šåŠ¨) ===== */
     GUI_SetFont((GUI_FONT *)&GUI_FontHZ_SimSun_16);
 
     {
@@ -421,12 +421,12 @@ void DISP_ShowClock(void)
         }
     }
 
-    /* ===== µÚ¶şĞĞ: Ê±¼ä (32px ´ó×Ö¾ÓÖĞ) ===== */
+    /* ===== ç¬¬äºŒè¡Œ: æ—¶é—´ (32px å¤§å­—å±…ä¸­) ===== */
     GUI_SetFont((GUI_FONT *)&GUI_FontHZ_SimSun_32);
     sprintf(buf, "%02d:%02d:%02d", dt.hour, dt.minute, dt.second);
     GUI_DispStringHCenterAt(buf, 64, 16);
 
-    /* ===== µÚÈıĞĞ: ÌìÆø¹ö¶¯ + ±¾µØÎÂ¶È ===== */
+    /* ===== ç¬¬ä¸‰è¡Œ: å¤©æ°”æ»šåŠ¨ + æœ¬åœ°æ¸©åº¦ ===== */
     GUI_SetFont((GUI_FONT *)&GUI_FontHZ_SimSun_16);
 
     if (s_weatherCache.ready && s_weatherCache.line[0] != '\0') {
@@ -436,7 +436,7 @@ void DISP_ShowClock(void)
         int textPixelW = (int)s_weatherCache.totalPixelW;
         if (textPixelW <= 0) textPixelW = 128;
 
-        /* ÎÂ¶Èºó×º: "±¾µØÎÂ¶È£º25.5¡æ" (5CJK¡Á16+4ASCII¡Á8+¡æ¡Á16=128px) */
+        /* æ¸©åº¦åç¼€: "æœ¬åœ°æ¸©åº¦ï¼š25.5â„ƒ" (5CJKÃ—16+4ASCIIÃ—8+â„ƒÃ—16=128px) */
         char tempStr[48];
         snprintf(tempStr, sizeof(tempStr),
                  "\xe6\x9c\xac\xe5\x9c\xb0\xe6\xb8\xa9\xe5\xba\xa6\xef\xbc\x9a"
@@ -450,14 +450,14 @@ void DISP_ShowClock(void)
         int scrollOff = (int)(((now - s_scrollTick) / DISP_SCROLL_MS_PER_PX)
                               % (uint32_t)cycleW);
 
-        /* ×Ü¿í²»³¬ÆÁ ¡ú ¾²Ì¬¾ÓÖĞ */
+        /* æ€»å®½ä¸è¶…å± â†’ é™æ€å±…ä¸­ */
         if (textPixelW + SCROLL_GAP + TEMP_PIXEL_W <= 128) {
             char combined[192];
             snprintf(combined, sizeof(combined), "%s  %s",
                      s_weatherCache.line, tempStr);
             GUI_DispStringHCenterAt(combined, 64, 48);
         } else {
-            /* ²éÕÒÆğÊ¼×Ö·û & ×ÓÏñËØÆ«ÒÆ */
+            /* æŸ¥æ‰¾èµ·å§‹å­—ç¬¦ & å­åƒç´ åç§» */
             int charIdx = 0, byteOff = 0, accumW = 0;
             while (charIdx < s_weatherCache.charCount &&
                    accumW + s_weatherCache.charPixelW[charIdx] <= scrollOff) {
@@ -468,14 +468,14 @@ void DISP_ShowClock(void)
             int subOff = scrollOff - accumW;
             if (subOff < 0) subOff = 0;
 
-            /* Æ´½Ó: ÌìÆøÎÄ±¾ ¡ú ¼ä¸ô ¡ú ÎÂ¶È ¡ú ¼ä¸ô ¡ú Ñ­»· */
+            /* æ‹¼æ¥: å¤©æ°”æ–‡æœ¬ â†’ é—´éš” â†’ æ¸©åº¦ â†’ é—´éš” â†’ å¾ªç¯ */
             static char dispBuf[200];
             int  bufPos    = 0;
             int  curChar   = charIdx;
             int  curByte   = byteOff;
             int  renderedW = 0;
             int  needW     = 128 + subOff;
-            int  phase     = 0;   /* 0=ÌìÆø 1=¼ä¸ô 2=ÎÂ¶È 3=¼ä¸ô */
+            int  phase     = 0;   /* 0=å¤©æ°” 1=é—´éš” 2=æ¸©åº¦ 3=é—´éš” */
             int  tempSent  = 0;
 
             while (renderedW < needW && bufPos < (int)sizeof(dispBuf) - 8) {
@@ -519,7 +519,7 @@ void DISP_ShowClock(void)
             GUI_DispStringAt(dispBuf, -subOff, 48);
         }
     } else {
-        /* ÌìÆøÎ´¾ÍĞ÷: ½öÏÔÊ¾ÎÂ¶È */
+        /* å¤©æ°”æœªå°±ç»ª: ä»…æ˜¾ç¤ºæ¸©åº¦ */
         snprintf(buf, sizeof(buf), "\xe6\x9c\xac\xe5\x9c\xb0\xe6\xb8\xa9\xe5\xba\xa6\xef\xbc\x9a%.1f\xe2\x84\x83", temp);
         GUI_DispStringHCenterAt(buf, 64, 48);
     }
@@ -527,7 +527,7 @@ void DISP_ShowClock(void)
     GUI_Update();
 }
 
-/* ====== ¹«¿ª API: RESULT ×´Ì¬ ====== */
+/* ====== å…¬å¼€ API: RESULT çŠ¶æ€ ====== */
 
 void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
 {
@@ -539,7 +539,7 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
     GUI_SetColor(GUI_COLOR_WHITE);
     GUI_SetFont((GUI_FONT *)&GUI_FontHZ_SimSun_16);
 
-    /* ===== ÖØ¸´Ë¢¿¨ / ÎŞĞ§ÖØ¸´ ===== */
+    /* ===== é‡å¤åˆ·å¡ / æ— æ•ˆé‡å¤ ===== */
     if (pInfo->event == DISP_EVT_CARD_DUP || pInfo->recordStatus == 1) {
         GUI_DispStringHCenterAt(
             "\xe8\xaf\xb7\xe5\x8b\xbf\xe9\x87\x8d\xe5\xa4\x8d\xe5\x88\xb7\xe5\x8d\xa1", 64, 16);
@@ -549,7 +549,7 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
         return;
     }
 
-    /* ===== ÎŞÈë³¡¼ÇÂ¼ ===== */
+    /* ===== æ— å…¥åœºè®°å½• ===== */
     if (pInfo->recordStatus == 2) {
         GUI_DispStringHCenterAt(
             "\xc3\x97 \xe6\x97\xa0\xe5\x85\xa5\xe5\x9c\xba\xe8\xae\xb0\xe5\xbd\x95", 64, 16);
@@ -559,7 +559,7 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
         return;
     }
 
-    /* ===== ÎŞĞ§¿¨ ===== */
+    /* ===== æ— æ•ˆå¡ ===== */
     if (pInfo->event == DISP_EVT_CARD_INVALID) {
         GUI_DispStringHCenterAt(
             "\xc3\x97 \xe6\x97\xa0\xe6\x95\x88\xe5\x8d\xa1", 64, 0);
@@ -572,20 +572,20 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
         return;
     }
 
-    /* ===== Èë¿Ú/³ö¿ÚÄ£Ê½: ¼ò»¯ UI, ²»ÏÔÊ¾¿¨Æ¬ÏêÇé ===== */
+    /* ===== å…¥å£/å‡ºå£æ¨¡å¼: ç®€åŒ– UI, ä¸æ˜¾ç¤ºå¡ç‰‡è¯¦æƒ… ===== */
     {
         uint8_t mode = DISP_GetAdminCfg()->attendMode;
 
-        /* ---- Èë¿ÚÄ£Ê½: Ç©µ½ / Ê±¿Ì / ÈÕÆÚ ---- */
+        /* ---- å…¥å£æ¨¡å¼: ç­¾åˆ° / æ—¶åˆ» / æ—¥æœŸ ---- */
         if (mode == 0) {
-            /* ĞĞ1: Ç©µ½ (16px) */
+            /* è¡Œ1: ç­¾åˆ° (16px) */
             GUI_DispStringHCenterAt(
                 "\xe7\xad\xbe\xe5\x88\xb0", 64, 8);
-            /* ĞĞ2: Ê±¿Ì (16px) */
+            /* è¡Œ2: æ—¶åˆ» (16px) */
             sprintf(buf, "%02d:%02d:%02d",
                     pInfo->swipeHour, pInfo->swipeMinute, pInfo->swipeSecond);
             GUI_DispStringHCenterAt(buf, 64, 24);
-            /* ĞĞ3: ÈÕÆÚ (16px) */
+            /* è¡Œ3: æ—¥æœŸ (16px) */
             {
                 BSP_RTC_DateTime_t dt;
                 BSP_RTC_GetDateTime(&dt);
@@ -596,9 +596,9 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
             return;
         }
 
-        /* ---- ³ö¿ÚÄ£Ê½: Àë¿ª / Ê±³¤(>1h ·ÖÁ½ĞĞ, <=1h µ¥ĞĞ) ---- */
+        /* ---- å‡ºå£æ¨¡å¼: ç¦»å¼€ / æ—¶é•¿(>1h åˆ†ä¸¤è¡Œ, <=1h å•è¡Œ) ---- */
         if (mode == 1) {
-            /* ĞĞ1: Àë¿ª (16px) */
+            /* è¡Œ1: ç¦»å¼€ (16px) */
             GUI_SetFont((GUI_FONT *)&GUI_FontHZ_SimSun_16);
             GUI_DispStringHCenterAt(
                 "\xe7\xa6\xbb\xe5\xbc\x80", 64, 8);
@@ -610,7 +610,7 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
                 uint32_t s = pInfo->durationSec % 60;
 
                 if (d > 0 || h > 0) {
-                    /* > 1h: ĞĞ2=Ìì+Ê±, ĞĞ3=·Ö+Ãë */
+                    /* > 1h: è¡Œ2=å¤©+æ—¶, è¡Œ3=åˆ†+ç§’ */
                     if (d > 0)
                         sprintf(buf, "%lu\xe5\xa4\xa9%lu\xe6\x97\xb6", d, h);
                     else
@@ -620,7 +620,7 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
                     sprintf(buf, "%lu\xe5\x88\x86%lu\xe7\xa7\x92", m, s);
                     GUI_DispStringHCenterAt(buf, 64, 40);
                 } else {
-                    /* <= 1h: ĞĞ2=Õı³£Ê±³¤(·Ö+Ãë) */
+                    /* <= 1h: è¡Œ2=æ­£å¸¸æ—¶é•¿(åˆ†+ç§’) */
                     if (m > 0)
                         sprintf(buf, "%lu\xe5\x88\x86%lu\xe7\xa7\x92", m, s);
                     else
@@ -628,7 +628,7 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
                     GUI_DispStringHCenterAt(buf, 64, 28);
                 }
             } else {
-                /* ÎŞ duration: ÏÔÊ¾Àë¿ªÊ±¿Ì */
+                /* æ—  duration: æ˜¾ç¤ºç¦»å¼€æ—¶åˆ» */
                 sprintf(buf, "%02d:%02d:%02d",
                         pInfo->swipeHour, pInfo->swipeMinute, pInfo->swipeSecond);
                 GUI_DispStringHCenterAt(buf, 64, 28);
@@ -638,11 +638,11 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
         }
     }
 
-    /* ===== Í¼Ïñ¿¨: Í·Ïñ(¿ÉÑ¡) + Î»Í¼ ===== */
+    /* ===== å›¾åƒå¡: å¤´åƒ(å¯é€‰) + ä½å›¾ ===== */
     if (pInfo->cardType == 0x01) {
         int xOff = s_cardBitmap.hasAvatar ? 48 : 0;
 
-        /* Í·Ïñ 48¡Á64 (ÓĞÊı¾İ²Å»æÖÆ) */
+        /* å¤´åƒ 48Ã—64 (æœ‰æ•°æ®æ‰ç»˜åˆ¶) */
         if (s_cardBitmap.hasAvatar) {
             GUI_BITMAP bmAv;
             bmAv.XSize = DISP_AVATAR_W;
@@ -654,7 +654,7 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
             GUI_DrawBitmap(&bmAv, 0, 0);
         }
 
-        /* ĞÕÃûÎ»Í¼ 80¡Á16 */
+        /* å§“åä½å›¾ 80Ã—16 */
         {
             GUI_BITMAP bm;
             bm.XSize = DISP_NAME_W; bm.YSize = DISP_NAME_H;
@@ -662,7 +662,7 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
             bm.pData = s_cardBitmap.name; bm.pPal = NULL;
             GUI_DrawBitmap(&bm, xOff, 0);
         }
-        /* ²¿ÃÅÎ»Í¼ 80¡Á16 */
+        /* éƒ¨é—¨ä½å›¾ 80Ã—16 */
         {
             GUI_BITMAP bm;
             bm.XSize = DISP_DEPT_W; bm.YSize = DISP_DEPT_H;
@@ -670,7 +670,7 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
             bm.pData = s_cardBitmap.dept; bm.pPal = NULL;
             GUI_DrawBitmap(&bm, xOff, 16);
         }
-        /* Ç©µ½/Àë¿ª + Ê±³¤ */
+        /* ç­¾åˆ°/ç¦»å¼€ + æ—¶é•¿ */
         if (pInfo->eventType == 0) {
             sprintf(buf, "\xe7\xad\xbe\xe5\x88\xb0 %02d:%02d:%02d",
                     pInfo->swipeHour, pInfo->swipeMinute, pInfo->swipeSecond);
@@ -693,7 +693,7 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
         }
         GUI_DispStringAt(buf, xOff, 48);
 
-        /* ÎŞÍ·ÏñÊ±ÓÃ¹¤ºÅÌî³ä */
+        /* æ— å¤´åƒæ—¶ç”¨å·¥å·å¡«å…… */
         if (!s_cardBitmap.hasAvatar) {
             sprintf(buf, "\xe5\xb7\xa5\xe5\x8f\xb7:%lu", (unsigned long)pInfo->sid);
             GUI_DispStringAt(buf, xOff, 32);
@@ -703,8 +703,8 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
         return;
     }
 
-    /* ===== ÆÕÍ¨¿¨/¹ÜÀíÔ±¿¨: Î»Í¼ 80¡Á16 ¾ÓÖĞ + ÎÄ±¾ ===== */
-    /* ĞĞ1 y=0: ĞÕÃûÎ»Í¼ 80¡Á16 (¾ÓÖĞ: (128-80)/2=24) */
+    /* ===== æ™®é€šå¡/ç®¡ç†å‘˜å¡: ä½å›¾ 80Ã—16 å±…ä¸­ + æ–‡æœ¬ ===== */
+    /* è¡Œ1 y=0: å§“åä½å›¾ 80Ã—16 (å±…ä¸­: (128-80)/2=24) */
     {
         GUI_BITMAP bm;
         bm.XSize = DISP_NAME_W; bm.YSize = DISP_NAME_H;
@@ -713,7 +713,7 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
         GUI_DrawBitmap(&bm, 24, 0);
     }
 
-    /* ĞĞ2 y=16: ²¿ÃÅÎ»Í¼ 80¡Á16 (¾ÓÖĞ) */
+    /* è¡Œ2 y=16: éƒ¨é—¨ä½å›¾ 80Ã—16 (å±…ä¸­) */
     {
         GUI_BITMAP bm;
         bm.XSize = DISP_DEPT_W; bm.YSize = DISP_DEPT_H;
@@ -722,12 +722,12 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
         GUI_DrawBitmap(&bm, 24, 16);
     }
 
-    /* ĞĞ3 y=32: ¹¤ºÅ (¾ÓÖĞ) */
+    /* è¡Œ3 y=32: å·¥å· (å±…ä¸­) */
     sprintf(buf, "\xe5\xb7\xa5\xe5\x8f\xb7:%lu",
             (unsigned long)pInfo->sid);
     GUI_DispStringHCenterAt(buf, 64, 32);
 
-    /* ĞĞ4 y=48: Ç©µ½/Àë¿ª + Ê±¿Ì (+ Ê±³¤) */
+    /* è¡Œ4 y=48: ç­¾åˆ°/ç¦»å¼€ + æ—¶åˆ» (+ æ—¶é•¿) */
     if (pInfo->eventType == 0) {
         sprintf(buf, "\xe7\xad\xbe\xe5\x88\xb0 %02d:%02d:%02d",
                 pInfo->swipeHour, pInfo->swipeMinute, pInfo->swipeSecond);
@@ -753,9 +753,9 @@ void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec)
     GUI_Update();
 }
 
-/* ====== ¹«¿ª API: TIME_SET ×´Ì¬ ====== */
+/* ====== å…¬å¼€ API: TIME_SET çŠ¶æ€ ====== */
 
-/** ¹â±êÉÁË¸ÖÜÆÚ (ms) */
+/** å…‰æ ‡é—ªçƒå‘¨æœŸ (ms) */
 #define CURSOR_BLINK_MS   400
 
 void DISP_ShowTimeSet(void)
@@ -763,10 +763,10 @@ void DISP_ShowTimeSet(void)
     BSP_RTC_DateTime_t *dt = &s_timeSet.dt;
     char buf[32];
     int blinkOn;
-    int xPos[6] = {24, 64, 88, 32, 56, 80};  /* ¾ÓÖĞºóµÄ×Ö¶Î X ×ø±ê */
+    int xPos[6] = {24, 64, 88, 32, 56, 80};  /* å±…ä¸­åçš„å­—æ®µ X åæ ‡ */
     int yLine1 = 16, yLine2 = 32;
 
-    /* ¹â±êÉÁË¸ */
+    /* å…‰æ ‡é—ªçƒ */
     uint32_t elapsed = osKernelGetTickCount() - s_timeSet.enterTick;
     blinkOn = ((elapsed / CURSOR_BLINK_MS) % 2) == 0;
 
@@ -774,23 +774,23 @@ void DISP_ShowTimeSet(void)
     GUI_SetColor(GUI_COLOR_WHITE);
     GUI_SetFont((GUI_FONT *)&GUI_FontHZ_SimSun_16);
 
-    /* ±êÌâ */
+    /* æ ‡é¢˜ */
     GUI_DispStringHCenterAt(
-        "\xe6\x97\xb6\xe9\x97\xb4\xe8\xae\xbe\xe7\xbd\xae", 64, 0);  /* Ê±¼äÉèÖÃ */
+        "\xe6\x97\xb6\xe9\x97\xb4\xe8\xae\xbe\xe7\xbd\xae", 64, 0);  /* æ—¶é—´è®¾ç½® */
 
-    /* µÚÒ»ĞĞ: Äê-ÔÂ-ÈÕ (¾ÓÖĞ) */
+    /* ç¬¬ä¸€è¡Œ: å¹´-æœˆ-æ—¥ (å±…ä¸­) */
     sprintf(buf, "%04d-%02d-%02d", dt->year, dt->month, dt->day);
     GUI_DispStringHCenterAt(buf, 64, yLine1);
 
-    /* µÚ¶şĞĞ: Ê±:·Ö:Ãë (¾ÓÖĞ) */
+    /* ç¬¬äºŒè¡Œ: æ—¶:åˆ†:ç§’ (å±…ä¸­) */
     sprintf(buf, "%02d:%02d:%02d", dt->hour, dt->minute, dt->second);
     GUI_DispStringHCenterAt(buf, 64, yLine2);
 
-    /* ¹â±ê: ·´É«»æÖÆµ±Ç°Ñ¡ÖĞ×Ö¶Î */
+    /* å…‰æ ‡: åè‰²ç»˜åˆ¶å½“å‰é€‰ä¸­å­—æ®µ */
     if (blinkOn) {
         int cx = xPos[s_timeSet.cursor];
         int cy = (s_timeSet.cursor < 3) ? yLine1 : yLine2;
-        int cw = (s_timeSet.cursor == 0) ? 32 : 16;  /* Äê¿í4Î», ÆäËû¿í2Î» */
+        int cw = (s_timeSet.cursor == 0) ? 32 : 16;  /* å¹´å®½4ä½, å…¶ä»–å®½2ä½ */
         GUI_SetColor(GUI_COLOR_WHITE);
         GUI_FillRect(cx, cy - 1, cx + cw - 1, cy + 15);
         GUI_SetColor(GUI_COLOR_BLACK);
@@ -808,9 +808,9 @@ void DISP_ShowTimeSet(void)
         GUI_SetColor(GUI_COLOR_WHITE);
     }
 
-    /* µ×²¿°´¼üÌáÊ¾ (¾ÓÖĞ) */
+    /* åº•éƒ¨æŒ‰é”®æç¤º (å±…ä¸­) */
     GUI_DispStringHCenterAt(
-        "1+4- <> 5\xe8\xbf\x94" "6\xe5\xad\x98", 64, 48);  /* 1+4- <> 5·µ6´æ */
+        "1+4- <> 5\xe8\xbf\x94" "6\xe5\xad\x98", 64, 48);  /* 1+4- <> 5è¿”6å­˜ */
 
     GUI_Update();
 }
@@ -821,21 +821,21 @@ void DISP_TimeSetKey(uint8_t keyIdx, uint8_t isShort, uint8_t isLong)
 
     if (!isShort && !isLong) return;
 
-    /* ===== K2 ¹â±ê×óÒÆ (ÉÏÒ»¸ö×Ö¶Î) ===== */
+    /* ===== K2 å…‰æ ‡å·¦ç§» (ä¸Šä¸€ä¸ªå­—æ®µ) ===== */
     if (keyIdx == 1 && isShort) {
         if (s_timeSet.cursor > 0) s_timeSet.cursor--;
         osThreadFlagsSet(guiTaskHandle, DISP_EVT_KEY_PRESSED);
         return;
     }
 
-    /* ===== K3 ¹â±êÓÒÒÆ (ÏÂÒ»¸ö×Ö¶Î) ===== */
+    /* ===== K3 å…‰æ ‡å³ç§» (ä¸‹ä¸€ä¸ªå­—æ®µ) ===== */
     if (keyIdx == 2 && isShort) {
         if (s_timeSet.cursor < 5) s_timeSet.cursor++;
         osThreadFlagsSet(guiTaskHandle, DISP_EVT_KEY_PRESSED);
         return;
     }
 
-    /* ===== K6 ±£´æ²¢ÍË³ö ===== */
+    /* ===== K6 ä¿å­˜å¹¶é€€å‡º ===== */
     if (keyIdx == 5 && isShort) {
         BSP_RTC_SetDateTime(dt);
         s_state = DISP_STATE_CLOCK;
@@ -843,56 +843,56 @@ void DISP_TimeSetKey(uint8_t keyIdx, uint8_t isShort, uint8_t isLong)
         return;
     }
 
-    /* ===== K1 ¼Ó / K4 ¼õ ===== */
+    /* ===== K1 åŠ  / K4 å‡ ===== */
     if (keyIdx != 0 && keyIdx != 3) return;
 
-    /* year ÊÇ uint16_t, ÆäÓà×Ö¶ÎÊÇ uint8_t */
+    /* year æ˜¯ uint16_t, å…¶ä½™å­—æ®µæ˜¯ uint8_t */
     if (s_timeSet.cursor == 0) {
-        /* Äê·İ: uint16_t, ·¶Î§ 2020~2099 */
+        /* å¹´ä»½: uint16_t, èŒƒå›´ 2020~2099 */
         uint16_t *pYear = &dt->year;
-        if (keyIdx == 0) {  /* K1 ¼Ó */
+        if (keyIdx == 0) {  /* K1 åŠ  */
             if (*pYear >= 2099U) *pYear = 2020U;
             else (*pYear)++;
-        } else {            /* K4 ¼õ */
+        } else {            /* K4 å‡ */
             if (*pYear <= 2020U) *pYear = 2099U;
             else (*pYear)--;
         }
     } else {
-        /* ÔÂ/ÈÕ/Ê±/·Ö/Ãë: uint8_t, min/max ¸÷²»Í¬ */
+        /* æœˆ/æ—¥/æ—¶/åˆ†/ç§’: uint8_t, min/max å„ä¸åŒ */
         uint8_t *pU8 = NULL;
         uint8_t  minVal = 0;
         uint8_t  maxVal = 0;
 
         switch (s_timeSet.cursor) {
-        case 1: /* ÔÂ: 1~12 */
+        case 1: /* æœˆ: 1~12 */
             pU8 = &dt->month; minVal = 1;  maxVal = 12;
             break;
-        case 2: /* ÈÕ: 1~µ±ÔÂ×î´óÌìÊı */
+        case 2: /* æ—¥: 1~å½“æœˆæœ€å¤§å¤©æ•° */
             pU8 = &dt->day;   minVal = 1;
             maxVal = BSP_RTC_DaysInMonth(dt->year, dt->month);
             break;
-        case 3: /* Ê±: 0~23 */
+        case 3: /* æ—¶: 0~23 */
             pU8 = &dt->hour;  minVal = 0;  maxVal = 23;
             break;
-        case 4: /* ·Ö: 0~59 */
+        case 4: /* åˆ†: 0~59 */
             pU8 = &dt->minute; minVal = 0; maxVal = 59;
             break;
-        case 5: /* Ãë: 0~59 */
+        case 5: /* ç§’: 0~59 */
             pU8 = &dt->second; minVal = 0; maxVal = 59;
             break;
         default: return;
         }
 
-        if (keyIdx == 0) {  /* K1 ¼Ó */
+        if (keyIdx == 0) {  /* K1 åŠ  */
             if (*pU8 >= maxVal) *pU8 = minVal;
             else (*pU8)++;
-        } else {            /* K4 ¼õ */
+        } else {            /* K4 å‡ */
             if (*pU8 <= minVal) *pU8 = maxVal;
             else (*pU8)--;
         }
     }
 
-    /* ÔÂ·İ/Äê·İ±ä¶¯ºó, Ç¯Î» day µ½ĞÂÔÂ·İµÄÓĞĞ§·¶Î§ */
+    /* æœˆä»½/å¹´ä»½å˜åŠ¨å, é’³ä½ day åˆ°æ–°æœˆä»½çš„æœ‰æ•ˆèŒƒå›´ */
     {
         uint8_t daysMax = BSP_RTC_DaysInMonth(dt->year, dt->month);
         if (dt->day > daysMax) dt->day = daysMax;
@@ -901,7 +901,7 @@ void DISP_TimeSetKey(uint8_t keyIdx, uint8_t isShort, uint8_t isLong)
     osThreadFlagsSet(guiTaskHandle, DISP_EVT_KEY_PRESSED);
 }
 
-/* ====== ¹«¿ª API: ADMIN_SET ×´Ì¬ ====== */
+/* ====== å…¬å¼€ API: ADMIN_SET çŠ¶æ€ ====== */
 
 void DISP_ShowAdminSet(void)
 {
@@ -915,11 +915,11 @@ void DISP_ShowAdminSet(void)
     GUI_SetColor(GUI_COLOR_WHITE);
     GUI_SetFont((GUI_FONT *)&GUI_FontHZ_SimSun_16);
 
-    /* ±êÌâ */
+    /* æ ‡é¢˜ */
     GUI_DispStringHCenterAt(
         "\xe7\xae\xa1\xe7\x90\x86\xe5\x91\x98\xe8\xae\xbe\xe7\xbd\xae", 64, 0);
 
-    /* 1. Éè±¸ID */
+    /* 1. è®¾å¤‡ID */
     sprintf(buf, "1.\xe8\xae\xbe\xe5\xa4\x87ID: %03d", s_adminCfg.deviceId);
     if (s_adminSet.cursor == 0 && blinkOn) {
         GUI_SetColor(GUI_COLOR_WHITE);
@@ -931,14 +931,14 @@ void DISP_ShowAdminSet(void)
         GUI_DispStringAt(buf, 4, 24);
     }
 
-    /* 2. ¿¼ÇÚÄ£Ê½ */
+    /* 2. è€ƒå‹¤æ¨¡å¼ */
     sprintf(buf, "2.\xe6\xa8\xa1\xe5\xbc\x8f: %s", s_modeNames[s_adminCfg.attendMode]);
     if (s_adminSet.cursor == 1 && blinkOn) {
         GUI_SetColor(GUI_COLOR_WHITE);
         GUI_FillRect(2, 44, 124, 61);
         GUI_SetColor(GUI_COLOR_BLACK);
         GUI_DispStringAt(buf, 4, 46);
-        GUI_SetColor(GUI_COLOR_WHITE);  /* »Ö¸´ÑÕÉ«, ·ÀÖ¹ÏÂ´ÎäÖÈ¾·´É« */
+        GUI_SetColor(GUI_COLOR_WHITE);  /* æ¢å¤é¢œè‰², é˜²æ­¢ä¸‹æ¬¡æ¸²æŸ“åè‰² */
     } else {
         GUI_SetColor(GUI_COLOR_WHITE);
         GUI_DispStringAt(buf, 4, 46);
@@ -952,7 +952,7 @@ void DISP_AdminSetKey(uint8_t keyIdx, uint8_t isShort, uint8_t isLong)
     if (!isShort && !isLong) return;
 
     switch (keyIdx) {
-    case 0: /* K1 - ¼Ó */
+    case 0: /* K1 - åŠ  */
         if (isShort || isLong) {
             if (s_adminSet.cursor == 0) {
                 if (s_adminCfg.deviceId < 999) s_adminCfg.deviceId++;
@@ -964,19 +964,19 @@ void DISP_AdminSetKey(uint8_t keyIdx, uint8_t isShort, uint8_t isLong)
             osThreadFlagsSet(guiTaskHandle, DISP_EVT_KEY_PRESSED);
         }
         break;
-    case 1: /* K2 - ¹â±ê×óÒÆ */
+    case 1: /* K2 - å…‰æ ‡å·¦ç§» */
         if (isShort) {
             if (s_adminSet.cursor > 0) s_adminSet.cursor--;
             osThreadFlagsSet(guiTaskHandle, DISP_EVT_KEY_PRESSED);
         }
         break;
-    case 2: /* K3 - ¹â±êÓÒÒÆ */
+    case 2: /* K3 - å…‰æ ‡å³ç§» */
         if (isShort && s_adminSet.cursor < 1) {
             s_adminSet.cursor++;
             osThreadFlagsSet(guiTaskHandle, DISP_EVT_KEY_PRESSED);
         }
         break;
-    case 3: /* K4 - ¼õ */
+    case 3: /* K4 - å‡ */
         if (isShort || isLong) {
             if (s_adminSet.cursor == 0) {
                 if (s_adminCfg.deviceId > 1) s_adminCfg.deviceId--;
@@ -988,17 +988,17 @@ void DISP_AdminSetKey(uint8_t keyIdx, uint8_t isShort, uint8_t isLong)
             osThreadFlagsSet(guiTaskHandle, DISP_EVT_KEY_PRESSED);
         }
         break;
-    case 4: /* K5 - ·µ»Ø (²»±£´æ, »Ö¸´¾ÉÖµ) */
+    case 4: /* K5 - è¿”å› (ä¸ä¿å­˜, æ¢å¤æ—§å€¼) */
         if (isShort) {
-            s_adminCfg = s_adminSet.backup;  /* »Ö¸´¸±±¾ */
+            s_adminCfg = s_adminSet.backup;  /* æ¢å¤å‰¯æœ¬ */
             s_state = DISP_STATE_CLOCK;
             osThreadFlagsSet(guiTaskHandle, DISP_EVT_KEY_PRESSED);
         }
         break;
-    case 5: /* K6 - ±£´æ²¢ÍË³ö */
+    case 5: /* K6 - ä¿å­˜å¹¶é€€å‡º */
         if (isShort) {
             Config_Save();
-            Cache_Clear();  /* Ä£Ê½ÇĞ»»Çå»º´æ */
+            Cache_Clear();  /* æ¨¡å¼åˆ‡æ¢æ¸…ç¼“å­˜ */
             s_state = DISP_STATE_CLOCK;
             osThreadFlagsSet(guiTaskHandle, DISP_EVT_KEY_PRESSED);
         }
@@ -1008,45 +1008,14 @@ void DISP_AdminSetKey(uint8_t keyIdx, uint8_t isShort, uint8_t isLong)
     }
 }
 
-/* ====== ¹«¿ª API: NFC Í¨ĞÅ ====== */
+/* ====== å…¬å¼€ API: NFC é€šä¿¡ ====== */
 
 const DispCardInfo_t *DISP_GetCardInfo(void)
 {
     return &s_cardInfo;
 }
 
-void DISP_NotifyCardEvent(uint32_t event, const uint8_t *pUid, uint8_t uidLen,
-                          uint32_t cardId, uint32_t sid, uint32_t points,
-                          uint8_t cardType, uint8_t statusFlag,
-                          uint8_t hour, uint8_t minute, uint8_t second,
-                          uint8_t eventType, uint8_t recStatus, uint32_t durationSec)
-{
-    s_cardInfo.event = event;
-    if (pUid != NULL && uidLen > 0) {
-        uint8_t len = (uidLen > 7) ? 7 : uidLen;
-        memcpy(s_cardInfo.uid, pUid, len);
-        s_cardInfo.uidLen = len;
-    } else {
-        s_cardInfo.uidLen = 0;
-    }
-    s_cardInfo.cardId    = cardId;
-    s_cardInfo.sid       = sid;
-    s_cardInfo.points    = points;
-    s_cardInfo.cardType  = cardType;
-    s_cardInfo.statusFlag = statusFlag;
-    s_cardInfo.swipeHour = hour;
-    s_cardInfo.swipeMinute = minute;
-    s_cardInfo.swipeSecond = second;
-    s_cardInfo.eventType    = eventType;
-    s_cardInfo.recordStatus = recStatus;
-    s_cardInfo.durationSec  = durationSec;
-
-    if (guiTaskHandle != NULL) {
-        osThreadFlagsSet(guiTaskHandle, event);
-    }
-}
-
-/** NFC ¶ÓÁĞ·¢ËÍ ¡ª nfcTask µ÷ÓÃ, Ïû³ı¹²ÏíÄÚ´æ¾ºÌ¬ */
+/** NFC é˜Ÿåˆ—å‘é€ â€” nfcTask è°ƒç”¨, æ¶ˆé™¤å…±äº«å†…å­˜ç«æ€ */
 void DISP_SendNfcEvent(osMessageQueueId_t queue,
                        uint32_t event, const uint8_t *pUid, uint8_t uidLen,
                        uint32_t cardId, uint32_t sid, uint32_t points,
@@ -1057,7 +1026,7 @@ void DISP_SendNfcEvent(osMessageQueueId_t queue,
     NfcCardMsg_t msg;
     memset(&msg, 0, sizeof(msg));
 
-    /* ¿½±´¿¨Æ¬ĞÅÏ¢ */
+    /* æ‹·è´å¡ç‰‡ä¿¡æ¯ */
     msg.info.event = event;
     if (pUid != NULL && uidLen > 0) {
         uint8_t len = (uidLen > 7) ? 7 : uidLen;
@@ -1076,10 +1045,10 @@ void DISP_SendNfcEvent(osMessageQueueId_t queue,
     msg.info.recordStatus = recStatus;
     msg.info.durationSec  = durationSec;
 
-    /* ¿½±´Éú²ú»º³å (nfcTask ÒÑÍ¨¹ı NFC_ReadCard Ìî³ä) */
+    /* æ‹·è´ç”Ÿäº§ç¼“å†² (nfcTask å·²é€šè¿‡ NFC_ReadCard å¡«å……) */
     msg.bitmap = s_producerBitmap;
 
-    /* ·Ç×èÈûÈë¶Ó; ¶ÓÁĞÂúÊ±¼ÆÊı, ±ÜÃâ¶ª¿¨ÎŞÉù */
+    /* éé˜»å¡å…¥é˜Ÿ; é˜Ÿåˆ—æ»¡æ—¶è®¡æ•°, é¿å…ä¸¢å¡æ— å£° */
     if (osMessageQueuePut(queue, &msg, 0, 0) != osOK) {
         s_nfcQueueDropCnt++;
         printf("[NFC] queue full, drop event=%lu total=%lu\r\n",
@@ -1087,7 +1056,7 @@ void DISP_SendNfcEvent(osMessageQueueId_t queue,
     }
 }
 
-/** NFC ¶ÓÁĞ½ÓÊÕ ¡ª guiTask Ã¿ÂÖÑ­»·µ÷ÓÃ, ·Ç×èÈû */
+/** NFC é˜Ÿåˆ—æ¥æ”¶ â€” guiTask æ¯è½®å¾ªç¯è°ƒç”¨, éé˜»å¡ */
 uint32_t DISP_CheckNfcEvent(osMessageQueueId_t queue)
 {
     NfcCardMsg_t msg;
@@ -1096,7 +1065,7 @@ uint32_t DISP_CheckNfcEvent(osMessageQueueId_t queue)
         return DISP_EVT_NONE;
     }
 
-    /* Ğ´Èë±¾µØ»º´æ (½ö guiTask ·ÃÎÊ, ÎŞ¾ºÌ¬) */
+    /* å†™å…¥æœ¬åœ°ç¼“å­˜ (ä»… guiTask è®¿é—®, æ— ç«æ€) */
     s_cardInfo   = msg.info;
     s_cardBitmap = msg.bitmap;
 
@@ -1120,8 +1089,8 @@ void DISP_SetWeatherCache(const char *line)
     strncpy(s_weatherCache.line, line, DISP_WEATHER_LINE_LEN - 1);
     s_weatherCache.line[DISP_WEATHER_LINE_LEN - 1] = '\0';
 
-    /* Ô¤¼ÆËãÃ¿¸ö UTF-8 ×Ö·ûµÄ×Ö½Ú³¤¶ÈºÍÏñËØ¿í¶È
-     * SimSun_16 ×ÖÌå: ASCII ¡ú 8px, ÖĞÎÄ(CJK) ¡ú 16px */
+    /* é¢„è®¡ç®—æ¯ä¸ª UTF-8 å­—ç¬¦çš„å­—èŠ‚é•¿åº¦å’Œåƒç´ å®½åº¦
+     * SimSun_16 å­—ä½“: ASCII â†’ 8px, ä¸­æ–‡(CJK) â†’ 16px */
     {
         const uint8_t *p = (const uint8_t *)s_weatherCache.line;
         uint16_t totalW = 0;
@@ -1129,20 +1098,20 @@ void DISP_SetWeatherCache(const char *line)
 
         while (*p && count < DISP_WEATHER_MAX_CHARS) {
             uint8_t blen = 1;
-            uint8_t pw   = 8;   /* Ä¬ÈÏ ASCII °ë½Ç¿í¶È */
+            uint8_t pw   = 8;   /* é»˜è®¤ ASCII åŠè§’å®½åº¦ */
 
             if (*p <= 0x7F) {
                 blen = 1;
                 pw   = 8;
             } else if ((*p & 0xE0) == 0xC0) {
                 blen = 2;
-                pw   = 8;       /* À­¶¡À©Õ¹, ½üËÆ°ë½Ç */
+                pw   = 8;       /* æ‹‰ä¸æ‰©å±•, è¿‘ä¼¼åŠè§’ */
             } else if ((*p & 0xF0) == 0xE0) {
                 blen = 3;
-                pw   = 16;      /* ÖĞÎÄ/ÈÕº« È«½Ç */
+                pw   = 16;      /* ä¸­æ–‡/æ—¥éŸ© å…¨è§’ */
             } else if ((*p & 0xF8) == 0xF0) {
                 blen = 4;
-                pw   = 16;      /* Emoji µÈ²¹³äÆ½Ãæ, ½üËÆÈ«½Ç */
+                pw   = 16;      /* Emoji ç­‰è¡¥å……å¹³é¢, è¿‘ä¼¼å…¨è§’ */
             }
 
             s_weatherCache.charByteLen[count] = blen;
@@ -1156,7 +1125,7 @@ void DISP_SetWeatherCache(const char *line)
         s_weatherCache.totalPixelW = totalW;
     }
 
-    /* ÄÚ´æÆÁÕÏ: È·±£ÒÔÉÏËùÓĞĞ´ÈëÔÚ ready=1 Ö®Ç°¶Ô guiTask ¿É¼û */
+    /* å†…å­˜å±éšœ: ç¡®ä¿ä»¥ä¸Šæ‰€æœ‰å†™å…¥åœ¨ ready=1 ä¹‹å‰å¯¹ guiTask å¯è§ */
     __asm__ volatile("dmb" ::: "memory");
     s_weatherCache.ready = 1;
 }
@@ -1176,7 +1145,7 @@ uint8_t DISP_IsRtcCalibrated(void)
     return (s_timeOffset != (int32_t)TIME_OFFSET_UNCALIBRATED) ? 1 : 0;
 }
 
-/* ====== Ê±¼äÍ¬²½Ëø ====== */
+/* ====== æ—¶é—´åŒæ­¥é” ====== */
 
 static uint8_t s_timeSyncBusy = 0;
 
@@ -1195,4 +1164,4 @@ uint8_t DISP_IsTimeSyncBusy(void)
     return s_timeSyncBusy;
 }
 
-/* (Record_FixAllTimeOffsets ÒÑÇ¨ÒÆÖÁ record.c) */
+/* (Record_FixAllTimeOffsets å·²è¿ç§»è‡³ record.c) */

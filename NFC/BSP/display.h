@@ -1,15 +1,15 @@
 /**
  * @file    display.h
- * @brief   OLED ÏÔÊ¾Ä£¿é - ·â×°ËùÓÐÏÔÊ¾³¡¾°, Í³Ò»ÔÚ guiTask ÉÏÏÂÎÄÖÐµ÷ÓÃ
- * @details ×´Ì¬»úÇý¶¯:
- *          - CLOCK: Ê±ÖÓ´ý»ú (Ä¬ÈÏ), Ë¢¿¨¡úRESULT, K5³¤°´¡úTIME_SET
- *          - RESULT: Ë¢¿¨½á¹û, 3s×Ô¶¯·µ»Ø / °´¼ü¡úCLOCK, ¹ÜÀí¿¨¡úADMIN_SET
- *          - TIME_SET: Ê±¼äÉèÖÃ, K6±£´æ¡úCLOCK
- *          - ADMIN_SET: ¹ÜÀíÔ±ÉèÖÃ, 120s³¬Ê± / K6±£´æ¡úCLOCK
+ * @brief   OLED ï¿½ï¿½Ê¾Ä£ï¿½ï¿½ - ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½, Í³Ò»ï¿½ï¿½ guiTask ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½
+ * @details ×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:
+ *          - CLOCK: Ê±ï¿½Ó´ï¿½ï¿½ï¿½ (Ä¬ï¿½ï¿½), Ë¢ï¿½ï¿½ï¿½ï¿½RESULT, K5ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½TIME_SET
+ *          - RESULT: Ë¢ï¿½ï¿½ï¿½ï¿½ï¿½, 3sï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ / ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½CLOCK, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ADMIN_SET
+ *          - TIME_SET: Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, K6ï¿½ï¿½ï¿½ï¿½ï¿½CLOCK
+ *          - ADMIN_SET: ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½, 120sï¿½ï¿½Ê± / K6ï¿½ï¿½ï¿½ï¿½ï¿½CLOCK
  *
- *          Óë nfcTask Í¨ÐÅ»úÖÆ:
- *          nfcTask Í¨¹ý osThreadFlagsSet(guiTaskHandle, DISP_EVT_xxx) ·¢ËÍÊÂ¼þ,
- *          guiTask Í¨¹ý osThreadFlagsWait() ½ÓÊÕºóµ÷ÓÃ±¾Ä£¿éäÖÈ¾.
+ *          ï¿½ï¿½ nfcTask Í¨ï¿½Å»ï¿½ï¿½ï¿½:
+ *          nfcTask Í¨ï¿½ï¿½ osThreadFlagsSet(guiTaskHandle, DISP_EVT_xxx) ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½,
+ *          guiTask Í¨ï¿½ï¿½ osThreadFlagsWait() ï¿½ï¿½ï¿½Õºï¿½ï¿½ï¿½Ã±ï¿½Ä£ï¿½ï¿½ï¿½ï¿½È¾.
  */
 
 #ifndef __DISPLAY_H__
@@ -26,23 +26,23 @@ extern "C" {
 #include <stdint.h>
 
 /* ================================================================
- *  ÏÔÊ¾ÐÔÄÜµ÷²ÎÇø (ÐÞ¸ÄºóÖØÐÂ±àÒë¼´¿ÉÉúÐ§, ÎÞÐè¸Ä¶à´¦´úÂë)
+ *  ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½Þ¸Äºï¿½ï¿½ï¿½ï¿½Â±ï¿½ï¿½ë¼´ï¿½ï¿½ï¿½ï¿½Ð§, ï¿½ï¿½ï¿½ï¿½Ä¶à´¦ï¿½ï¿½ï¿½ï¿½)
  * ================================================================ */
 
-/** GUI Ë¢ÐÂ¼ä¸ô (ms) ¡ª Ô½Ð¡Ö¡ÂÊÔ½¸ß, ÊÜ I2C ´ø¿íÏÞÖÆ
- *  @note  I2C@400kHz ´«Êä 1048B/Ö¡ ¡Ö 32ms, ¼ÓÉÏÖÐ¶Ï¿ªÏú½¨Òé ¡Ý 55ms
- *         ÉèÖÃ¹ýÐ¡»áµ¼ÖÂ I2C ±»ÇÀÕ¼¡úÖ¡²»ÍêÕû¡ú»¨ÆÁ */
+/** GUI Ë¢ï¿½Â¼ï¿½ï¿½ (ms) ï¿½ï¿½ Ô½Ð¡Ö¡ï¿½ï¿½Ô½ï¿½ï¿½, ï¿½ï¿½ I2C ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ *  @note  I2C@400kHz ï¿½ï¿½ï¿½ï¿½ 1048B/Ö¡ ï¿½ï¿½ 32ms, ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ 55ms
+ *         ï¿½ï¿½ï¿½Ã¹ï¿½Ð¡ï¿½áµ¼ï¿½ï¿½ I2C ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 #define DISP_FRAME_INTERVAL_MS   55
 
-/** ¹ö¶¯ËÙ¶È: Ã¿ÏñËØºÄÊ± (ms/px), Ô½Ð¡¹ö¶¯Ô½¿ì
- *  @note  62=~16px/s (Ä¬ÈÏ), 31=~32px/s, 15=~66px/s */
+/** ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½: Ã¿ï¿½ï¿½ï¿½Øºï¿½Ê± (ms/px), Ô½Ð¡ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½
+ *  @note  62=~16px/s (Ä¬ï¿½ï¿½), 31=~32px/s, 15=~66px/s */
 #define DISP_SCROLL_MS_PER_PX    62
 
-/** I2C Ä¿±êÊ±ÖÓÆµÂÊ (Hz) ¡ª ÐèÓë CubeMX ioc ÖÐµÄ I2C1 ClockSpeed ±£³ÖÒ»ÖÂ
- *  @note  STM32F4 I2C Fast Mode ×î´ó 400kHz, ÎÞÐèÐÞ¸Ä */
+/** I2C Ä¿ï¿½ï¿½Ê±ï¿½ï¿½Æµï¿½ï¿½ (Hz) ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ CubeMX ioc ï¿½Ðµï¿½ I2C1 ClockSpeed ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
+ *  @note  STM32F4 I2C Fast Mode ï¿½ï¿½ï¿½ 400kHz, ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½ */
 #define DISP_I2C_TARGET_HZ       400000
 
-/* ====== ÏÔÊ¾×´Ì¬Ã¶¾Ù ====== */
+/* ====== ï¿½ï¿½Ê¾×´Ì¬Ã¶ï¿½ï¿½ ====== */
 
 typedef enum {
     DISP_STATE_CLOCK     = 0,
@@ -51,7 +51,7 @@ typedef enum {
     DISP_STATE_ADMIN_SET = 3,
 } DispState_t;
 
-/* ====== ÏÔÊ¾ÊÂ¼þ±êÖ¾ ====== */
+/* ====== ï¿½ï¿½Ê¾ï¿½Â¼ï¿½ï¿½ï¿½Ö¾ ====== */
 
 #define DISP_EVT_NONE          0x00000000U
 #define DISP_EVT_CARD_VALID    (1UL << 0)
@@ -62,7 +62,7 @@ typedef enum {
                                 DISP_EVT_CARD_DUP   | DISP_EVT_CARD_ADMIN)
 #define DISP_EVT_KEY_PRESSED   (1UL << 16)
 
-/* ====== Ë¢¿¨ÐÅÏ¢½á¹¹ ====== */
+/* ====== Ë¢ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½á¹¹ ====== */
 
 typedef struct {
     uint8_t  uid[7];
@@ -81,7 +81,7 @@ typedef struct {
     uint32_t durationSec;
 } DispCardInfo_t;
 
-/* ====== ¿¨Æ¬Î»Í¼»º´æ ====== */
+/* ====== ï¿½ï¿½Æ¬Î»Í¼ï¿½ï¿½ï¿½ï¿½ ====== */
 
 #define DISP_AVATAR_W   48
 #define DISP_AVATAR_H   64
@@ -100,37 +100,37 @@ typedef struct {
     uint8_t  dept[DISP_DEPT_BYTES];
 } DispCardBitmap_t;
 
-/* ====== ¹ÜÀíÔ±ÅäÖÃ (ÔËÐÐÊ±) ====== */
+/* ====== ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½Ê±) ====== */
 
 typedef struct {
     uint16_t deviceId;
     uint8_t  attendMode;
 } DispAdminCfg_t;
 
-/* ====== RTC Ê±¼ä´Á¹¤¾ß ====== */
+/* ====== RTC Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ====== */
 uint32_t DISP_DateTimeToSeconds(const BSP_RTC_DateTime_t *dt);
 
-/* »ñÈ¡ÔËÐÐÊ±ÅäÖÃ */
+/* ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ */
 const DispAdminCfg_t *DISP_GetAdminCfg(void);
 
-/* ====== ¿¨Æ¬Î»Í¼»º´æ ====== */
+/* ====== ï¿½ï¿½Æ¬Î»Í¼ï¿½ï¿½ï¿½ï¿½ ====== */
 
-/* ====== ÌìÆø»º´æ ====== */
+/* ====== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ====== */
 
-/** ÌìÆø¹ö¶¯ÐÅÏ¢»º³åÇø (defaultTask Ð´Èë, guiTask ¶ÁÈ¡) */
+/** ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (defaultTask Ð´ï¿½ï¿½, guiTask ï¿½ï¿½È¡) */
 #define DISP_WEATHER_LINE_LEN   128
-#define DISP_WEATHER_MAX_CHARS  64          /**< µ¥ÐÐ×î¶à×Ö·ûÊý */
+#define DISP_WEATHER_MAX_CHARS  64          /**< ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ */
 
 typedef struct {
-    char     line[DISP_WEATHER_LINE_LEN];   /**< ¹ö¶¯ÎÄ±¾ÐÐ (UTF-8), \0 ½áÎ² */
-    uint8_t  charByteLen[DISP_WEATHER_MAX_CHARS]; /**< Ã¿¸ö×Ö·ûµÄ UTF-8 ×Ö½Ú³¤¶È */
-    uint8_t  charPixelW[DISP_WEATHER_MAX_CHARS];  /**< Ã¿¸ö×Ö·ûµÄäÖÈ¾ÏñËØ¿í¶È */
-    uint8_t  charCount;                     /**< ×Ö·û×ÜÊý */
-    uint16_t totalPixelW;                   /**< ÕûÐÐ×ÜÏñËØ¿í¶È */
-    uint8_t  ready;                         /**< 1=Êý¾ÝÒÑ¾ÍÐ÷ (volatile: ¿çÈÎÎñ¶ÁÐ´) */
+    char     line[DISP_WEATHER_LINE_LEN];   /**< ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ (UTF-8), \0 ï¿½ï¿½Î² */
+    uint8_t  charByteLen[DISP_WEATHER_MAX_CHARS]; /**< Ã¿ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ UTF-8 ï¿½Ö½Ú³ï¿½ï¿½ï¿½ */
+    uint8_t  charPixelW[DISP_WEATHER_MAX_CHARS];  /**< Ã¿ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½È¾ï¿½ï¿½ï¿½Ø¿ï¿½ï¿½ï¿½ */
+    uint8_t  charCount;                     /**< ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ */
+    uint16_t totalPixelW;                   /**< ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¿ï¿½ï¿½ï¿½ */
+    uint8_t  ready;                         /**< 1=ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ (volatile: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´) */
 } DispWeatherCache_t;
 
-/* ====== NFC Ë¢¿¨ÏûÏ¢ (nfcTask ¡ú myQueue04 ¡ú guiTask) ====== */
+/* ====== NFC Ë¢ï¿½ï¿½ï¿½ï¿½Ï¢ (nfcTask ï¿½ï¿½ myQueue04 ï¿½ï¿½ guiTask) ====== */
 
 typedef struct {
     DispCardInfo_t   info;
@@ -141,43 +141,38 @@ typedef struct {
 
 void DISP_Init(void);
 void DISP_RunStartup(void);
-void DISP_ApplyI2CConfig(void);      /**< Ó¦ÓÃ I2C Ê±ÖÓÅäÖÃ, ¸²¸Ç CubeMX Ä¬ÈÏÖµ */
+void DISP_ApplyI2CConfig(void);      /**< Ó¦ï¿½ï¿½ I2C Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ CubeMX Ä¬ï¿½ï¿½Öµ */
 
-/* OLED ·À¿¨¶Ù¿´ÃÅ¹· */
-void    DISP_FeedWatchdog(void);    /**< Î¹¹·: Ã¿Ö¡äÖÈ¾ºóµ÷ÓÃ */
-uint8_t DISP_CheckStuck(void);      /**< ¼ì²â OLED ÊÇ·ñ¿¨¶Ù (>3s ÎÞË¢ÐÂ) */
-void    DISP_ResetOLED(void);       /**< Ç¿ÖÆ¸´Î» OLED Ó²¼þ + ÇåÆÁ */
+/* OLED ï¿½ï¿½ï¿½ï¿½ï¿½Ù¿ï¿½ï¿½Å¹ï¿½ */
+void    DISP_FeedWatchdog(void);    /**< Î¹ï¿½ï¿½: Ã¿Ö¡ï¿½ï¿½È¾ï¿½ï¿½ï¿½ï¿½ï¿½ */
+uint8_t DISP_CheckStuck(void);      /**< ï¿½ï¿½ï¿½ OLED ï¿½Ç·ñ¿¨¶ï¿½ (>3s ï¿½ï¿½Ë¢ï¿½ï¿½) */
+void    DISP_ResetOLED(void);       /**< Ç¿ï¿½Æ¸ï¿½Î» OLED Ó²ï¿½ï¿½ + ï¿½ï¿½ï¿½ï¿½ */
 void DISP_ShowInitMsg(const char *msg);
 void DISP_ShowLogo(void);
 void DISP_ShowInfoPage(void);
 
-/* ×´Ì¬¹ÜÀí */
+/* ×´Ì¬ï¿½ï¿½ï¿½ï¿½ */
 DispState_t DISP_GetState(void);
 void        DISP_SetState(DispState_t state);
 
-/* ¸÷×´Ì¬äÖÈ¾ */
+/* ï¿½ï¿½×´Ì¬ï¿½ï¿½È¾ */
 void DISP_ShowClock(void);
-void DISP_UpdateTempCache(void);    /**< defaultTask µ÷ÓÃ, Òì²½¸üÐÂÎÂ¶È»º´æ */
-float DISP_GetCachedTemp(void);     /**< »ñÈ¡»º´æµÄÎÂ¶ÈÖµ */
+void DISP_UpdateTempCache(void);    /**< defaultTask ï¿½ï¿½ï¿½ï¿½, ï¿½ì²½ï¿½ï¿½ï¿½ï¿½ï¿½Â¶È»ï¿½ï¿½ï¿½ */
+float DISP_GetCachedTemp(void);     /**< ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¶ï¿½Öµ */
 void DISP_ShowCardResult(const DispCardInfo_t *pInfo, int countdownSec);
 void DISP_ShowTimeSet(void);
 void DISP_ShowAdminSet(void);
 
-/* Ê±¼äÉèÖÃ×´Ì¬ÏÂ´¦Àí°´¼ü */
+/* Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½Â´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 void DISP_TimeSetKey(uint8_t keyIdx, uint8_t isShort, uint8_t isLong);
 
-/* ¹ÜÀíÔ±ÉèÖÃ×´Ì¬ÏÂ´¦Àí°´¼ü */
+/* ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½Â´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 void DISP_AdminSetKey(uint8_t keyIdx, uint8_t isShort, uint8_t isLong);
 
-/* NFC Í¨ÐÅ */
+/* NFC Í¨ï¿½ï¿½ */
 const DispCardInfo_t *DISP_GetCardInfo(void);
-void DISP_NotifyCardEvent(uint32_t event, const uint8_t *pUid, uint8_t uidLen,
-                          uint32_t cardId, uint32_t sid, uint32_t points,
-                          uint8_t cardType, uint8_t statusFlag,
-                          uint8_t hour, uint8_t minute, uint8_t second,
-                          uint8_t eventType, uint8_t recStatus, uint32_t durationSec);
 
-/* NFC ¶ÓÁÐÍ¨ÐÅ (Ìæ´úÖ±½Óµ÷ DISP_NotifyCardEvent, Ïû³ý¾ºÌ¬) */
+/* NFC queue: nfcTask -> guiTask via DISP_SendNfcEvent/DISP_CheckNfcEvent */
 void     DISP_SendNfcEvent(osMessageQueueId_t queue,
                            uint32_t event, const uint8_t *pUid, uint8_t uidLen,
                            uint32_t cardId, uint32_t sid, uint32_t points,
@@ -186,43 +181,43 @@ void     DISP_SendNfcEvent(osMessageQueueId_t queue,
                            uint8_t eventType, uint8_t recStatus, uint32_t durationSec);
 uint32_t DISP_CheckNfcEvent(osMessageQueueId_t queue);
 
-/* ¿¨Æ¬Î»Í¼´æ´¢ (nfcTask µ÷ÓÃÀ´Ð´Èë´Ó¿¨¶ÁÈ¡µÄÍ¼ÏñÊý¾Ý) */
+/* ï¿½ï¿½Æ¬Î»Í¼ï¿½æ´¢ (nfcTask ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½Ó¿ï¿½ï¿½ï¿½È¡ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½) */
 DispCardBitmap_t *DISP_GetBitmapBuf(void);
 
-/* ÌìÆø»º´æÐ´Èë (defaultTask Ð´Èë, guiTask ÔÚ DISP_ShowClock ÖÐ¶ÁÈ¡) */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ (defaultTask Ð´ï¿½ï¿½, guiTask ï¿½ï¿½ DISP_ShowClock ï¿½Ð¶ï¿½È¡) */
 void DISP_SetWeatherCache(const char *line);
 
-/* ====== NTP Ê±¼äÆ«²î¹ÜÀí ====== */
+/* ====== NTP Ê±ï¿½ï¿½Æ«ï¿½ï¿½ï¿½ï¿½ï¿½ ====== */
 
-/** Î´Ð£×¼±ê¼Ç: timeOffset == 0xFFFF ±íÊ¾ RTC ÉÐÎ´¾­ NTP Ð£×¼ */
+/** Î´Ð£×¼ï¿½ï¿½ï¿½: timeOffset == 0xFFFF ï¿½ï¿½Ê¾ RTC ï¿½ï¿½Î´ï¿½ï¿½ NTP Ð£×¼ */
 #define TIME_OFFSET_UNCALIBRATED  0xFFFF
 
-/** ÉèÖÃ NTP Ð£×¼Æ«²î (networkTask ÔÚ NTP ³É¹¦ºóµ÷ÓÃ) */
+/** ï¿½ï¿½ï¿½ï¿½ NTP Ð£×¼Æ«ï¿½ï¿½ (networkTask ï¿½ï¿½ NTP ï¿½É¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½) */
 void DISP_SetTimeOffset(int32_t offsetSec);
 
-/** »ñÈ¡µ±Ç°Ê±¼äÆ«²î, TIME_OFFSET_UNCALIBRATED ±íÊ¾ÉÐÎ´Ð£×¼ */
+/** ï¿½ï¿½È¡ï¿½ï¿½Ç°Ê±ï¿½ï¿½Æ«ï¿½ï¿½, TIME_OFFSET_UNCALIBRATED ï¿½ï¿½Ê¾ï¿½ï¿½Î´Ð£×¼ */
 int32_t DISP_GetTimeOffset(void);
 
-/** RTC ÊÇ·ñÒÑ¾­¹ý NTP Ð£×¼ (1=ÊÇ 0=·ñ) */
+/** RTC ï¿½Ç·ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ NTP Ð£×¼ (1=ï¿½ï¿½ 0=ï¿½ï¿½) */
 uint8_t DISP_IsRtcCalibrated(void);
 
-/* ====== Ê±¼äÍ¬²½Ëø (Ð£×¼»ØÐ´ÆÚ¼ä½ûÖ¹Ë¢¿¨/·¢¿¨) ====== */
+/* ====== Ê±ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ (Ð£×¼ï¿½ï¿½Ð´ï¿½Ú¼ï¿½ï¿½Ö¹Ë¢ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½) ====== */
 
-/** ½øÈëÊ±¼äÍ¬²½×´Ì¬, ½ûÖ¹ NFC/·¢¿¨²Ù×÷ */
+/** ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Í¬ï¿½ï¿½×´Ì¬, ï¿½ï¿½Ö¹ NFC/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 void DISP_EnterTimeSync(void);
 
-/** ÍË³öÊ±¼äÍ¬²½×´Ì¬ */
+/** ï¿½Ë³ï¿½Ê±ï¿½ï¿½Í¬ï¿½ï¿½×´Ì¬ */
 void DISP_ExitTimeSync(void);
 
-/** ÊÇ·ñÕýÔÚÊ±¼äÍ¬²½ (nfcTask/uartTask ÔÚ²Ù×÷Ç°¼ì²é) */
+/** ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Í¬ï¿½ï¿½ (nfcTask/uartTask ï¿½Ú²ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½) */
 uint8_t DISP_IsTimeSyncBusy(void);
 
-/* ====== ¼ÇÂ¼ÇøÅúÁ¿ÐÞÕý ====== */
+/* ====== ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ====== */
 
 /**
- * @brief  ±éÀú Flash ÖÐËùÓÐ´ò¿¨¼ÇÂ¼, ½« OFS=0xFFFF µÄÐÞÕýÎª deltaSecs
- * @param  deltaSecs  NTP ÐÞÕýÁ¿ (Ãë), ÕýÖµ=RTCÂýÁË
- * @note   ÄÚ²¿»á²Á³ýÕû¸ö¼ÇÂ¼ÉÈÇø, ºÄÊ±Ô¼ 500ms
+ * @brief  ï¿½ï¿½ï¿½ï¿½ Flash ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ò¿¨¼ï¿½Â¼, ï¿½ï¿½ OFS=0xFFFF ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª deltaSecs
+ * @param  deltaSecs  NTP ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½), ï¿½ï¿½Öµ=RTCï¿½ï¿½ï¿½ï¿½
+ * @note   ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½Ê±Ô¼ 500ms
  */
 void Record_FixAllTimeOffsets(int32_t deltaSecs);
 
