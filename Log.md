@@ -48,3 +48,8 @@
 - 纠正：OLED 走硬件 I2C1 阻塞式轮询 (`HAL_I2C_Mem_Write`，超时 100ms)，非中断式；临界区屏蔽中断并不直接干扰 OLED 传输
 - 发现：`myQueue04` (NFC 队列，4×1024B) 为死队列，只创建未使用，浪费约 4KB FreeRTOS heap (总堆 48KB)
 - 发现：共享数据 `s_cardInfo` / `s_cardBitmap` 无互斥锁，当前靠"先写数据后置事件标志"的顺序 + `DISP_STATE_RESULT` 状态守卫隐式防竞态
+
+### 分支 feature/nfc-queue: 接入 NFC 队列
+- 目的：把死队列 `myQueue04` 接线，让 guiTask 成为共享缓存的唯一写者，彻底消除 `s_cardInfo` / `s_cardBitmap` 的共享内存竞态
+- 方案：nfcTask 改走 `DISP_SendNfcEvent`，guiTask 循环改走 `DISP_CheckNfcEvent`
+- 收益：回收约 4KB FreeRTOS heap；消除无锁共享数据隐患
