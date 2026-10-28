@@ -39,3 +39,12 @@
 
 ### NFC 考勤系统核心功能完成
 - 三种考勤模式 + OLED 状态机 + 串口发卡协议 + 图像卡 + SPI Flash 存储
+
+## 2026-10-28
+
+### 文档整理 + 问题排查结论
+- 新增 README §18「临界区与延时函数选择规范」：临界区概念、`osDelay` vs `delay_us`、OLED I2C 轮询结论、读卡刷新冲突修正版
+- 新增三篇应用模块手册：NFC / record / display + 驱动模块总览与分类索引
+- 纠正：OLED 走硬件 I2C1 阻塞式轮询 (`HAL_I2C_Mem_Write`，超时 100ms)，非中断式；临界区屏蔽中断并不直接干扰 OLED 传输
+- 发现：`myQueue04` (NFC 队列，4×1024B) 为死队列，只创建未使用，浪费约 4KB FreeRTOS heap (总堆 48KB)
+- 发现：共享数据 `s_cardInfo` / `s_cardBitmap` 无互斥锁，当前靠"先写数据后置事件标志"的顺序 + `DISP_STATE_RESULT` 状态守卫隐式防竞态
